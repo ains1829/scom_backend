@@ -1,59 +1,62 @@
 package com.ains.myspring.controller;
 
+import java.net.http.HttpClient;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.ains.myspring.models.Etudiant;
-import com.ains.myspring.services.EtudiantService;
-import java.util.List;
+
+import com.ains.myspring.models.Administration;
+import com.ains.myspring.models.jsontoclass.AuthUser;
+import com.ains.myspring.models.jsontoclass.RegisterUser;
+import com.ains.myspring.security.function.AuthentificationService;
+import com.ains.myspring.services.AdministrationService;
 
 @RestController
-
-@CrossOrigin(origins = "*")
-@RequestMapping("/main")
+@RequestMapping("/hello")
 public class MainController {
   @Autowired
-  private EtudiantService _serviceEtudiant;
+  private AuthentificationService _serviceAuth;
 
-  @GetMapping("/list_etudiant")
-  public List<Etudiant> getAllEtudiant() {
-    return _serviceEtudiant.getAllEtudiant();
+  @Autowired
+  private AdministrationService _serviceAdmin;
+
+  @GetMapping("/world")
+  public String getHello() {
+    return "Hello world";
   }
 
-  @PutMapping("/update_etudiant")
-  public ResponseEntity<?> UpdateEtudiant(@RequestBody Etudiant update_etudiant) {
+  @GetMapping("/myfriends")
+  public Administration getMyFriends() {
+    return _serviceAdmin.getAdminByEmail("andyrakotonavalona0@gmail.com").get();
+  }
+
+  @PostMapping("/inscription")
+  public ResponseEntity<?> Inscription(@RequestBody RegisterUser register) {
     try {
-      return new ResponseEntity<>(_serviceEtudiant.UpdateEtudiant(update_etudiant), HttpStatus.OK);
+      _serviceAuth.Inscription(register);
+      return ResponseEntity.status(HttpStatus.CREATED).body("INSCRIPTION");
     } catch (Exception e) {
-      return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+      return ResponseEntity.status(HttpStatus.CONFLICT).body("ERROR");
     }
   }
 
-  @PostMapping("/create_etudiant")
-  public ResponseEntity<?> CreateEtuant(@RequestBody Etudiant newEtudiant) {
+  @PostMapping("/authentification")
+  public ResponseEntity<?> Auth(@RequestBody AuthUser userform) {
+    System.out.println("salut my friends");
     try {
-      return new ResponseEntity<>(_serviceEtudiant.CreateEtudiant(newEtudiant), HttpStatus.CREATED);
+      _serviceAuth.authenticate(userform);
+      return ResponseEntity.status(HttpStatus.OK).body(_serviceAuth.authenticate(userform));
     } catch (Exception e) {
-      return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
-    }
-  }
-
-  @DeleteMapping("/delete_etudiant")
-  public ResponseEntity<?> DeleteEtudiant(@RequestParam("idetudiant") int IdEtudiant) {
-    try {
-      _serviceEtudiant.DeleteEtudiant(IdEtudiant);
-      return new ResponseEntity<>("Etudiant is delete", HttpStatus.OK);
-    } catch (Exception e) {
-      return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
   }
 }
