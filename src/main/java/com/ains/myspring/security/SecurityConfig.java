@@ -27,7 +27,7 @@ public class SecurityConfig {
                 .disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/hello/**").permitAll()
-                .anyRequest() // Toute autre
+                .anyRequest()
                 .authenticated()
                 .and()
                 .sessionManagement()

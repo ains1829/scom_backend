@@ -13,7 +13,6 @@ public class RegisterUser {
   String addresse;
   String photo;
   int idprofil;
-  int idregion;
 
   public String getNameadministration() {
     return nameadministration;
@@ -93,13 +92,5 @@ public class RegisterUser {
 
   public void setIdprofil(int idprofil) {
     this.idprofil = idprofil;
-  }
-
-  public int getIdregion() {
-    return idregion;
-  }
-
-  public void setIdregion(int idregion) {
-    this.idregion = idregion;
   }
 }

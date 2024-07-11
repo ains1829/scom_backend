@@ -44,7 +44,7 @@ public class AuthentificationService {
           request.getEmail(), request.getTelephone(), passwordEncoder.encode(request
               .getMdp()),
           request.getBirthday(), request.getGender(),
-          request.getAddresse(), request.getPhoto(), request.getIdprofil(), request.getIdregion()));
+          request.getAddresse(), request.getPhoto(), request.getIdprofil()));
     } catch (Exception e) {
       throw new Exception(e.getMessage());
     }

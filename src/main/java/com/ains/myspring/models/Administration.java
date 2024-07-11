@@ -26,11 +26,10 @@ public class Administration implements UserDetails {
   String addresse;
   String photo;
   int idprofil;
-  int idregion;
   boolean isactive;
 
   public Administration(String nameadministration, String matricule, String email, String telephone, String mdp,
-      Date birthday, int gender, String addresse, String photo, int idprofil, int idregion) {
+      Date birthday, int gender, String addresse, String photo, int idprofil) {
     this.nameadministration = nameadministration;
     this.matricule = matricule;
     this.email = email;
@@ -41,7 +40,6 @@ public class Administration implements UserDetails {
     this.addresse = addresse;
     this.photo = photo;
     this.idprofil = idprofil;
-    this.idregion = idregion;
   }
 
   public int getIdadministration() {
@@ -132,14 +130,6 @@ public class Administration implements UserDetails {
     this.idprofil = idprofil;
   }
 
-  public int getIdregion() {
-    return idregion;
-  }
-
-  public void setIdregion(int idregion) {
-    this.idregion = idregion;
-  }
-
   public boolean isIsactive() {
     return isactive;
   }
@@ -153,7 +143,7 @@ public class Administration implements UserDetails {
 
   public Administration(int idadministration, String nameadministration, String matricule, String email,
       String telephone, String mdp, Date birthday, int gender, String addresse, String photo, int idprofil,
-      int idregion, boolean isactive) {
+      boolean isactive) {
     this.idadministration = idadministration;
     this.nameadministration = nameadministration;
     this.matricule = matricule;
@@ -165,7 +155,6 @@ public class Administration implements UserDetails {
     this.addresse = addresse;
     this.photo = photo;
     this.idprofil = idprofil;
-    this.idregion = idregion;
     this.isactive = isactive;
   }
 

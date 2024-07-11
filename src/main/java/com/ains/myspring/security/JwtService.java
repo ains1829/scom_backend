@@ -5,11 +5,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -42,17 +40,14 @@ public class JwtService {
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() +
-                        tokenValidityInMilliseconds))
+                .setExpiration(new Date(System.currentTimeMillis() + tokenValidityInMilliseconds))
                 .signWith(getSignIngKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // Pour valider un token
     public boolean isTokenValid(String jwtToken, UserDetails userDetails) {
         final String username = extractUserMail(jwtToken);
-        return (username.equals(userDetails.getUsername())) &&
-                !isTokenExpired(jwtToken);
+        return (username.equals(userDetails.getUsername())) && !isTokenExpired(jwtToken);
     }
 
     private boolean isTokenExpired(String jwtToken) {
@@ -66,7 +61,6 @@ public class JwtService {
     private Claims extractAllClaims(String jwtToken) {
         return Jwts
                 .parserBuilder()
-                // pour créer la signature
                 .setSigningKey(getSignIngKey())
                 .build()
                 .parseClaimsJws(jwtToken)

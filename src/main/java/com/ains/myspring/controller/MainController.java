@@ -1,43 +1,26 @@
 package com.ains.myspring.controller;
 
-import java.net.http.HttpClient;
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.ains.myspring.models.Administration;
 import com.ains.myspring.models.jsontoclass.AuthUser;
 import com.ains.myspring.models.jsontoclass.RegisterUser;
 import com.ains.myspring.security.function.AuthentificationService;
-import com.ains.myspring.services.AdministrationService;
+import com.ains.myspring.services.CodeService;
 
 @RestController
 @RequestMapping("/hello")
 public class MainController {
   @Autowired
   private AuthentificationService _serviceAuth;
-
   @Autowired
-  private AdministrationService _serviceAdmin;
-
-  @GetMapping("/world")
-  public String getHello() {
-    return "Hello world";
-  }
-
-  @GetMapping("/myfriends")
-  public Administration getMyFriends() {
-    return _serviceAdmin.getAdminByEmail("andyrakotonavalona0@gmail.com").get();
-  }
+  private CodeService _serviceCode;
 
   @PostMapping("/inscription")
   public ResponseEntity<?> Inscription(@RequestBody RegisterUser register) {
@@ -57,6 +40,15 @@ public class MainController {
       return ResponseEntity.status(HttpStatus.OK).body(_serviceAuth.authenticate(userform));
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+  }
+
+  @GetMapping("/sendcode")
+  public ResponseEntity<?> LostPassword(@RequestParam("email") String email) {
+    try {
+      return ResponseEntity.status(HttpStatus.OK).body(_serviceCode.RenvoyeCode(email));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
   }
 }
