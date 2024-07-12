@@ -17,6 +17,7 @@ public class Coderecuperation {
   LocalDateTime datebegin;
   LocalDateTime dateexpiration;
   boolean isexpired;
+  boolean isavailable;
 
   public Coderecuperation() {
   }
@@ -85,5 +86,13 @@ public class Coderecuperation {
 
   public void setIsexpired(boolean isexpired) {
     this.isexpired = isexpired;
+  }
+
+  public boolean isIsavailable() {
+    return isavailable;
+  }
+
+  public void setIsavailable(boolean isavailable) {
+    this.isavailable = isavailable;
   }
 }
