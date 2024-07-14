@@ -6,10 +6,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.multipart.MultipartFile;
+import com.ains.myspring.models.jsontoclass.JsonAdministration;
 import com.ains.myspring.services.admin.AccountService;
 
 @RequestMapping("/scomadminstration")
@@ -44,6 +47,17 @@ public class PrivateController {
     try {
       _serviceAccount.ValidateAccount(idaccoount);
       return ResponseEntity.status(HttpStatus.OK).body("Account validate");
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+  }
+
+  @PreAuthorize("hasRole('DSI')")
+  @PutMapping("/newperson")
+  public ResponseEntity<?> NewAdministration(@RequestBody JsonAdministration administration,
+      @RequestPart("photo") MultipartFile photo) {
+    try {
+      return ResponseEntity.status(HttpStatus.OK).body("Sucess");
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }

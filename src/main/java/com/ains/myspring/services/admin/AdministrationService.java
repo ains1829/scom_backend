@@ -14,4 +14,8 @@ public class AdministrationService {
   public Optional<Administration> getAdministrationByEmail(String email) {
     return _contextAdminitration.getAdministrationByEmail(email);
   }
+
+  public Administration CreateNewAdministration(Administration administration) {
+    return _contextAdminitration.save(administration);
+  }
 }
