@@ -17,7 +17,7 @@ public class Coderecuperation {
   LocalDateTime datebegin;
   LocalDateTime dateexpiration;
   boolean isexpired;
-  boolean isavailable;
+  boolean isavailable = true;
 
   public Coderecuperation() {
   }

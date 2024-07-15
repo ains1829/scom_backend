@@ -38,4 +38,8 @@ public class DetailequipeService {
       throw new Exception(e.getMessage());
     }
   }
+
+  public void DesactivateAccountChef(int administration) {
+    _context.DesactiveCompteChefEquipe(administration);
+  }
 }

@@ -1,6 +1,9 @@
 package com.ains.myspring.models.admin;
 
 import java.sql.Date;
+
+import com.ains.myspring.models.modules.lieu.Region;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,16 +20,65 @@ public class Administration {
   String matricule;
   String email;
   String telephone;
-  Date BIRTHDAY;
-  int GENDER;
-  String ADDRESSE;
+  Date birthday;
+  int gender;
+  String addresse;
   String photo;
   @ManyToOne
   @JoinColumn(name = "idprofil")
   Profil profil;
-
-  boolean haveaccount;
+  @ManyToOne
+  @JoinColumn(name = "idregion")
+  Region region;
+  boolean haveaccount = true;
   boolean isactive;
+
+  public Administration(String nameadministration, String matricule, String email, String telephone, Date birthday,
+      int gender, String addresse, String photo, Profil profil, Region region, boolean haveaccount) {
+    this.nameadministration = nameadministration;
+    this.matricule = matricule;
+    this.email = email;
+    this.telephone = telephone;
+    this.birthday = birthday;
+    this.gender = gender;
+    this.addresse = addresse;
+    this.photo = photo;
+    this.profil = profil;
+    this.region = region;
+    this.haveaccount = haveaccount;
+  }
+
+  public Region getRegion() {
+    return region;
+  }
+
+  public void setRegion(Region region) {
+    this.region = region;
+  }
+
+  public Date getBirthday() {
+    return birthday;
+  }
+
+  public void setBirthday(Date birthday) {
+    this.birthday = birthday;
+  }
+
+  public int getGender() {
+    return gender;
+  }
+
+  public void setGender(int gender) {
+    this.gender = gender;
+  }
+
+  public String getAddresse() {
+    return addresse;
+  }
+
+  public void setAddresse(String addresse) {
+    this.addresse = addresse;
+  }
 
   public int getIdadministration() {
     return idadministration;
@@ -66,30 +118,6 @@ public class Administration {
 
   public void setTelephone(String telephone) {
     this.telephone = telephone;
-  }
-
-  public Date getBIRTHDAY() {
-    return BIRTHDAY;
-  }
-
-  public void setBIRTHDAY(Date bIRTHDAY) {
-    BIRTHDAY = bIRTHDAY;
-  }
-
-  public int getGENDER() {
-    return GENDER;
-  }
-
-  public void setGENDER(int gENDER) {
-    GENDER = gENDER;
-  }
-
-  public String getADDRESSE() {
-    return ADDRESSE;
-  }
-
-  public void setADDRESSE(String aDDRESSE) {
-    ADDRESSE = aDDRESSE;
   }
 
   public String getPhoto() {

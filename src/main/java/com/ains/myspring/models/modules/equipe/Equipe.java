@@ -12,9 +12,9 @@ public class Equipe {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   int idequipe;
   String nameequipe;
-  @Column(name = "idaministration")
+  @Column(name = "idadministration")
   int chefequipe;
-  boolean isactive;
+  boolean isactive = true;
   int idregion;
 
   public Equipe() {

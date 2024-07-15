@@ -76,6 +76,9 @@ public class MainController {
 
   @PostMapping("/resetpassword")
   public ResponseEntity<?> resetPassword(@RequestBody LostPassword requestnewpasswod) {
+    if (requestnewpasswod.getPassword().equals(requestnewpasswod.getConfirpassword()) == false) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Password not same");
+    }
     try {
       _ServiceCode.UpdateCodeToNotAvailable(requestnewpasswod.getEmail(), requestnewpasswod.getCode());
       _ServiceAccount.UpdatePassword(requestnewpasswod.getEmail(), requestnewpasswod.getPassword());

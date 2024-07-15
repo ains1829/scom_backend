@@ -1,15 +1,6 @@
-package com.ains.myspring.models.modules;
+package com.ains.myspring.models.jsontoclass;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-
-@Entity
-public class Societe {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  int idsociete;
+public class JsonSociete {
   String namesociete;
   String description;
   String nif;
@@ -20,33 +11,6 @@ public class Societe {
   String responsable;
   String telephone;
   String numerofiscal;
-
-  public Societe() {
-  }
-
-  public Societe(String namesociete, String description, String nif, String stat, int idregion, int iddistrict,
-      String addresse, String responsable, String telephone, String numerofiscal) {
-    this.namesociete = namesociete;
-    this.description = description;
-    this.nif = nif;
-    this.stat = stat;
-    this.idregion = idregion;
-    this.iddistrict = iddistrict;
-    this.addresse = addresse;
-    this.responsable = responsable;
-    this.telephone = telephone;
-    this.numerofiscal = numerofiscal;
-  }
-
-  boolean societeactive = true;
-
-  public int getIdsociete() {
-    return idsociete;
-  }
-
-  public void setIdsociete(int idsociete) {
-    this.idsociete = idsociete;
-  }
 
   public String getNamesociete() {
     return namesociete;
@@ -88,6 +52,14 @@ public class Societe {
     this.idregion = idregion;
   }
 
+  public int getIddistrict() {
+    return iddistrict;
+  }
+
+  public void setIddistrict(int iddistrict) {
+    this.iddistrict = iddistrict;
+  }
+
   public String getAddresse() {
     return addresse;
   }
@@ -119,21 +91,4 @@ public class Societe {
   public void setNumerofiscal(String numerofiscal) {
     this.numerofiscal = numerofiscal;
   }
-
-  public int getIddistrict() {
-    return iddistrict;
-  }
-
-  public void setIddistrict(int iddistrict) {
-    this.iddistrict = iddistrict;
-  }
-
-  public boolean isSocieteactive() {
-    return societeactive;
-  }
-
-  public void setSocieteactive(boolean societeactive) {
-    this.societeactive = societeactive;
-  }
-
 }

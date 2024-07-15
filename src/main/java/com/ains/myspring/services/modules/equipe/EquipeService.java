@@ -1,5 +1,7 @@
 package com.ains.myspring.services.modules.equipe;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ains.myspring.models.jsontoclass.equipe.Jsonequipe;
@@ -41,6 +43,15 @@ public class EquipeService {
     } catch (Exception e) {
       throw new Exception(e.getMessage());
     }
+  }
 
+  public Equipe DesactivateEquipe(int idequipe) throws Exception {
+    Optional<Equipe> getEquipeById = _contextEquipe.findById(idequipe);
+    if (getEquipeById.isPresent()) {
+      getEquipeById.get().setIsactive(false);
+      _contextEquipe.save(getEquipeById.get());
+      _serviceEquipe.DesactivateAccountChef(getEquipeById.get().getChefequipe());
+    }
+    throw new Exception("Equipe not found");
   }
 }
