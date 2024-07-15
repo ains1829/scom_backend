@@ -12,23 +12,23 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+@Service
 public class FileUpload {
-  @Value("${urlbytescale}")
+  @Value("${app.urlbytescale.url}")
   private String uploadUrl;
   @Value("${tokenpublic}")
   private String token;
-
-  public FileUpload() {
-  }
 
   public String uploadFile(MultipartFile file)
       throws IOException, InterruptedException {
     try (CloseableHttpClient client = HttpClients.createDefault()) {
       Gson gson = new Gson();
+      System.out.println("eto keyly oe : " + uploadUrl + "token : " + token);
       HttpPost post = new HttpPost(uploadUrl);
       post.addHeader("Authorization", "Bearer " + token);
       MultipartEntityBuilder builder = MultipartEntityBuilder.create();
@@ -41,7 +41,6 @@ public class FileUpload {
         HttpEntity responseEntity = response.getEntity();
         String responseBody = EntityUtils.toString(responseEntity);
         if (response.getStatusLine().getStatusCode() == 200) {
-          System.out.println(responseBody);
           JsonObject jsonResponse = gson.fromJson(responseBody, JsonObject.class);
           String fileUrl = jsonResponse.getAsJsonArray("files")
               .get(0)

@@ -21,6 +21,9 @@ import com.ains.myspring.services.admin.AccountService;
 import com.ains.myspring.services.admin.AdministrationService;
 import com.ains.myspring.services.modules.SocieteService;
 import com.ains.myspring.services.modules.equipe.EquipeService;
+import com.google.gson.Gson;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RequestMapping("/scomadminstration")
 @RestController
@@ -67,11 +70,11 @@ public class PrivateController {
 
   @PreAuthorize("hasRole('DSI')")
   @PostMapping("/newperson")
-  public ResponseEntity<?> NewAdministration(@RequestPart("photo") MultipartFile photo,
-      @RequestBody JsonAdministration adminjson) {
+  public ResponseEntity<?> NewAdministration(@RequestPart("photo") MultipartFile photo, HttpServletRequest request) {
     try {
+      JsonAdministration admin = new JsonAdministration(request);
       return ResponseEntity.status(HttpStatus.OK)
-          .body(_serviceAdministration.CreateNewAdministration(photo, adminjson));
+          .body(_serviceAdministration.CreateNewAdministration(photo, admin));
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }

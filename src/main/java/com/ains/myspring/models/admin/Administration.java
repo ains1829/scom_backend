@@ -31,7 +31,10 @@ public class Administration {
   @JoinColumn(name = "idregion")
   Region region;
   boolean haveaccount = true;
-  boolean isactive;
+  boolean isactive = true;
+
+  public Administration() {
+  }
 
   public Administration(String nameadministration, String matricule, String email, String telephone, Date birthday,
       int gender, String addresse, String photo, Profil profil, Region region, boolean haveaccount) {

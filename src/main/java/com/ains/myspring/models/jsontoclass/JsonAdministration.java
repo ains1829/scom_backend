@@ -2,6 +2,8 @@ package com.ains.myspring.models.jsontoclass;
 
 import java.sql.Date;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 public class JsonAdministration {
   String nameadministration;
   String matricule;
@@ -12,6 +14,21 @@ public class JsonAdministration {
   int idregion;
   int idprofil;
   String addresse;
+
+  public JsonAdministration() {
+  }
+
+  public JsonAdministration(HttpServletRequest request) {
+    setNameadministration(request.getParameter("nameadministration"));
+    setEmail(request.getParameter("email"));
+    setAddresse(request.getParameter("addresse"));
+    setBirthday(Date.valueOf(request.getParameter("date")));
+    setMatricule(request.getParameter("matricule"));
+    setIdprofil(Integer.valueOf(request.getParameter("profil")));
+    setIdregion(Integer.valueOf(request.getParameter("region")));
+    setTelephone(request.getParameter("telephone"));
+    setGender(Integer.valueOf(request.getParameter("gender")));
+  }
 
   public String getNameadministration() {
     return nameadministration;

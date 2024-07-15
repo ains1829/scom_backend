@@ -1,5 +1,7 @@
 package com.ains.myspring.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,7 @@ import com.ains.myspring.services.CodeRecuperationService;
 import com.ains.myspring.services.admin.AccountService;
 import com.ains.myspring.services.admin.AdministrationService;
 import com.ains.myspring.services.function.Fonction;
+import com.ains.myspring.services.function.mail.SendingMail;
 
 @RequestMapping("/auth")
 @RestController
@@ -28,7 +31,8 @@ public class MainController {
   private AdministrationService _serviceAdmin;
   @Autowired
   private AuthService _ServieAuth;
-
+  @Autowired
+  private SendingMail email_service;
   @Autowired
   private CodeRecuperationService _ServiceCode;
 
@@ -55,7 +59,15 @@ public class MainController {
     Optional<Administration> getAdminByEmail = _serviceAdmin.getAdministrationByEmail(email);
     int code = new Fonction().generateCode();
     if (getAdminByEmail.isPresent()) {
-      // send code email
+      String subjet = "Code de verification";
+      String body = "Veuillez ne pas partager le code de vérification reçu : " + code;
+      try {
+        List<String> destinataire = new ArrayList<>();
+        destinataire.add(email);
+        email_service.sendEmail(destinataire, subjet, body);
+      } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+      }
       _ServiceCode.newCodeOfRecuperation(code, email);
       return ResponseEntity.status(HttpStatus.OK).body("Check your email");
     } else {

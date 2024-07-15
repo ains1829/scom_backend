@@ -20,7 +20,8 @@ public class AdministrationService {
 
   @Autowired
   private ProfilService _serviceProfil;
-
+  @Autowired
+  private FileUpload upload;
   @Autowired
   private RegionService _serviceRegion;
 
@@ -34,13 +35,13 @@ public class AdministrationService {
     }
     Profil getProfil = _serviceProfil.getProfilByid(adminjson.getIdprofil());
     Region region = _serviceRegion.getRegionById(adminjson.getIdregion());
-    String urlPhoto = new FileUpload().uploadFile(photo);
+    String urlPhoto = upload.uploadFile(photo);
     boolean haveaccount = true;
     if (adminjson.getIdprofil() == 6 || adminjson.getIdprofil() == 7) {
       haveaccount = false;
     }
-    return new Administration(adminjson.getNameadministration(),
+    return _contextAdminitration.save(new Administration(adminjson.getNameadministration(),
         adminjson.getMatricule(), adminjson.getEmail(), adminjson.getTelephone(), adminjson.getBirthday(),
-        adminjson.getGender(), adminjson.getAddresse(), urlPhoto, getProfil, region, haveaccount);
+        adminjson.getGender(), adminjson.getAddresse(), urlPhoto, getProfil, region, haveaccount));
   }
 }
