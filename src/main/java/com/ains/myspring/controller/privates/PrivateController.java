@@ -21,7 +21,6 @@ import com.ains.myspring.services.admin.AccountService;
 import com.ains.myspring.services.admin.AdministrationService;
 import com.ains.myspring.services.modules.SocieteService;
 import com.ains.myspring.services.modules.equipe.EquipeService;
-import com.google.gson.Gson;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -103,4 +102,5 @@ public class PrivateController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
   }
+
 }

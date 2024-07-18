@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Typeproduct {
@@ -11,7 +13,17 @@ public class Typeproduct {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   int idtypeproduct;
   String nametypeproduct;
-  int idunite;
+  @ManyToOne
+  @JoinColumn(name = "idunite")
+  Unite unite;
+
+  public Unite getUnite() {
+    return unite;
+  }
+
+  public void setUnite(Unite unite) {
+    this.unite = unite;
+  }
 
   public int getIdtypeproduct() {
     return idtypeproduct;
@@ -27,13 +39,5 @@ public class Typeproduct {
 
   public void setNametypeproduct(String nametypeproduct) {
     this.nametypeproduct = nametypeproduct;
-  }
-
-  public int getIdunite() {
-    return idunite;
-  }
-
-  public void setIdunite(int idunite) {
-    this.idunite = idunite;
   }
 }

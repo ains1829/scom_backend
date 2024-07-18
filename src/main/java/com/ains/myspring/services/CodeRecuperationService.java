@@ -38,7 +38,7 @@ public class CodeRecuperationService {
 
   public Coderecuperation newCodeOfRecuperation(int code, String email) {
     LocalDateTime begin = LocalDateTime.now();
-    LocalDateTime expiration = begin.plusMinutes(30);
+    LocalDateTime expiration = begin.plusMinutes(10);
     return _contextCode.save(new Coderecuperation(email, code, begin, expiration));
   }
 }

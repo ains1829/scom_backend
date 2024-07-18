@@ -6,13 +6,17 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ains.myspring.models.jsontoclass.module.typeproduct.Jsonproduct;
 import com.ains.myspring.models.modules.Typeproduct;
+import com.ains.myspring.models.modules.Unite;
 import com.ains.myspring.repository.modules.TypeproductRepository;
 
 @Service
 public class TypeproductService {
   @Autowired
   private TypeproductRepository _context;
+  @Autowired
+  private UniteService serviceUnite;
 
   public List<Typeproduct> getAllTypeproduct() {
     return _context.findAll();
@@ -24,6 +28,14 @@ public class TypeproductService {
     } else {
       throw new Exception("typeproduct not found");
     }
+  }
+
+  public Typeproduct Save(Jsonproduct productjson) throws Exception {
+    Unite unite = serviceUnite.getUniteById(productjson.getId());
+    Typeproduct typeproduct = new Typeproduct();
+    typeproduct.setNametypeproduct(productjson.getName());
+    typeproduct.setUnite(unite);
+    return CreateNewType(typeproduct);
   }
 
   public Typeproduct CreateNewType(Typeproduct typeproduct) throws Exception {

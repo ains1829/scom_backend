@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ains.myspring.models.jsontoclass.module.typeproduct.Jsonproduct;
 import com.ains.myspring.models.modules.Product;
 import com.ains.myspring.models.modules.Typeproduct;
 import com.ains.myspring.repository.modules.ProductRepository;
@@ -19,6 +20,10 @@ public class ProductService {
 
   public List<Product> getAllProduct() {
     return _context.findAll();
+  }
+
+  public Product Save(Jsonproduct product) throws Exception {
+    return CreateNewProduct(product.getName(), product.getId());
   }
 
   public Product CreateNewProduct(String nameproduct, int idtypeproduct) throws Exception {
