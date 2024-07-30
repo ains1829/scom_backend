@@ -1,5 +1,7 @@
 package com.ains.myspring.models.modules.mission.enquete;
 
+import java.sql.Date;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,9 +14,18 @@ public class Pvaudition {
   int idpvaudition;
   int idenquete;
   int idequipe;
-  String numero_reference;
   String urlrapport_pvaudition;
-  String dateaudition;
+  Date dateaudition;
+
+  public Pvaudition() {
+  }
+
+  public Pvaudition(int idenquete, int idequipe, String urlrapport_pvaudition, Date dateaudition) {
+    this.idenquete = idenquete;
+    this.idequipe = idequipe;
+    this.urlrapport_pvaudition = urlrapport_pvaudition;
+    this.dateaudition = dateaudition;
+  }
 
   public int getIdpvaudition() {
     return idpvaudition;
@@ -40,14 +51,6 @@ public class Pvaudition {
     this.idequipe = idequipe;
   }
 
-  public String getNumero_reference() {
-    return numero_reference;
-  }
-
-  public void setNumero_reference(String numero_reference) {
-    this.numero_reference = numero_reference;
-  }
-
   public String getUrlrapport_pvaudition() {
     return urlrapport_pvaudition;
   }
@@ -56,11 +59,11 @@ public class Pvaudition {
     this.urlrapport_pvaudition = urlrapport_pvaudition;
   }
 
-  public String getDateaudition() {
+  public Date getDateaudition() {
     return dateaudition;
   }
 
-  public void setDateaudition(String dateaudition) {
+  public void setDateaudition(Date dateaudition) {
     this.dateaudition = dateaudition;
   }
 }

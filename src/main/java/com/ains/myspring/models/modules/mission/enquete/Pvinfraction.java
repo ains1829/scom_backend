@@ -13,9 +13,18 @@ public class Pvinfraction {
   int idpvinfraction;
   int idenquete;
   int idequipe;
-  String numero_reference;
   String urlrapport_pvinfraction;
   Date dateinfraction;
+
+  public Pvinfraction() {
+  }
+
+  public Pvinfraction(int idenquete, int idequipe, String urlrapport_pvinfraction, Date dateinfraction) {
+    this.idenquete = idenquete;
+    this.idequipe = idequipe;
+    this.urlrapport_pvinfraction = urlrapport_pvinfraction;
+    this.dateinfraction = dateinfraction;
+  }
 
   public int getIdpvinfraction() {
     return idpvinfraction;
@@ -39,14 +48,6 @@ public class Pvinfraction {
 
   public void setIdequipe(int idequipe) {
     this.idequipe = idequipe;
-  }
-
-  public String getNumero_reference() {
-    return numero_reference;
-  }
-
-  public void setNumero_reference(String numero_reference) {
-    this.numero_reference = numero_reference;
   }
 
   public String getUrlrapport_pvinfraction() {

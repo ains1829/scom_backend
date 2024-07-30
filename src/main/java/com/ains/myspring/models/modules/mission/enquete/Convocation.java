@@ -1,5 +1,7 @@
 package com.ains.myspring.models.modules.mission.enquete;
 
+import java.sql.Date;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,10 +12,18 @@ public class Convocation {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   int idconvocation;
-  String numeroconvocation;
   int idenquete;
-  int idordermission;
-  String muni;
+  String urlfileconvocation;
+  Date dateconvocation;
+
+  public Convocation() {
+  }
+
+  public Convocation(int idenquete, String urlfileconvocation, Date date) {
+    this.idenquete = idenquete;
+    this.urlfileconvocation = urlfileconvocation;
+    this.dateconvocation = date;
+  }
 
   public int getIdconvocation() {
     return idconvocation;
@@ -21,14 +31,6 @@ public class Convocation {
 
   public void setIdconvocation(int idconvocation) {
     this.idconvocation = idconvocation;
-  }
-
-  public String getNumeroconvocation() {
-    return numeroconvocation;
-  }
-
-  public void setNumeroconvocation(String numeroconvocation) {
-    this.numeroconvocation = numeroconvocation;
   }
 
   public int getIdenquete() {
@@ -39,19 +41,19 @@ public class Convocation {
     this.idenquete = idenquete;
   }
 
-  public int getIdordermission() {
-    return idordermission;
+  public String getUrlfileconvocation() {
+    return urlfileconvocation;
   }
 
-  public void setIdordermission(int idordermission) {
-    this.idordermission = idordermission;
+  public void setUrlfileconvocation(String urlfileconvocation) {
+    this.urlfileconvocation = urlfileconvocation;
   }
 
-  public String getMuni() {
-    return muni;
+  public Date getDateconvocation() {
+    return dateconvocation;
   }
 
-  public void setMuni(String muni) {
-    this.muni = muni;
+  public void setDateconvocation(Date dateconvocation) {
+    this.dateconvocation = dateconvocation;
   }
 }

@@ -13,4 +13,11 @@ public class ConvocationService {
   public Convocation Save(Convocation convocation) {
     return _contextConvocation.save(convocation);
   }
+
+  public boolean RefConvocationExist(String ref) throws Exception {
+    if (_contextConvocation.RefConvocationExist(ref) > 0) {
+      throw new Exception("Reference already exist");
+    }
+    return false;
+  }
 }

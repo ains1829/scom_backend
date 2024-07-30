@@ -13,18 +13,16 @@ public class Fichetechnique {
   int idfichetechnique;
   int idenquete;
   int idequipe;
-  String numero_reference;
   String url_fichetechnique;
   Date datefichetechnique;
 
   public Fichetechnique() {
   }
 
-  public Fichetechnique(int idenquete, int idequipe, String numero_reference, String url_fichetechnique,
+  public Fichetechnique(int idenquete, int idequipe, String url_fichetechnique,
       Date datefichetechnique) {
     this.idenquete = idenquete;
     this.idequipe = idequipe;
-    this.numero_reference = numero_reference;
     this.url_fichetechnique = url_fichetechnique;
     this.datefichetechnique = datefichetechnique;
   }
@@ -51,14 +49,6 @@ public class Fichetechnique {
 
   public void setIdequipe(int idequipe) {
     this.idequipe = idequipe;
-  }
-
-  public String getNumero_reference() {
-    return numero_reference;
-  }
-
-  public void setNumero_reference(String numero_reference) {
-    this.numero_reference = numero_reference;
   }
 
   public String getUrl_fichetechnique() {
