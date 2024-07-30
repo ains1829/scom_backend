@@ -4,13 +4,17 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Region {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   int idregion;
-  int idprovince;
+  @ManyToOne
+  @JoinColumn(name = "idprovince")
+  Province province;
   String nameregion;
 
   public int getIdregion() {
@@ -21,14 +25,6 @@ public class Region {
     this.idregion = idregion;
   }
 
-  public int getIdprovince() {
-    return idprovince;
-  }
-
-  public void setIdprovince(int idprovince) {
-    this.idprovince = idprovince;
-  }
-
   public String getNameregion() {
     return nameregion;
   }
@@ -36,4 +32,13 @@ public class Region {
   public void setNameregion(String nameregion) {
     this.nameregion = nameregion;
   }
+
+  public Province getProvince() {
+    return province;
+  }
+
+  public void setProvince(Province province) {
+    this.province = province;
+  }
+
 }

@@ -28,6 +28,10 @@ public class AccountService {
     return _contextaccount.getAccountbyemail(email);
   }
 
+  public Optional<Account> getAccountActive(String email) {
+    return _contextaccount.getAccountActive(email);
+  }
+
   public Account CreateAccount(AuthUser createuser) throws Exception {
     Optional<Administration> administrationUser = _serviceAdmin.getAdministrationByEmail(createuser.getEmail());
     if (administrationUser.isPresent()) {
@@ -64,5 +68,14 @@ public class AccountService {
     } else {
       throw new AccesException("Account not found");
     }
+  }
+
+  public Account AccountDisabled(String email) {
+    Optional<Account> getAccount = getAccountbyemail(email);
+    if (getAccount.isPresent()) {
+      getAccount.get().setIsactive(false);
+      return _contextaccount.save(getAccount.get());
+    }
+    return null;
   }
 }

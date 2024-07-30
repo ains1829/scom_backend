@@ -1,7 +1,7 @@
 package com.ains.myspring.services.admin;
 
 import java.util.Optional;
-
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +12,10 @@ import com.ains.myspring.repository.ProfilRepository;
 public class ProfilService {
   @Autowired
   private ProfilRepository _contextProfil;
+
+  public List<Profil> getProfils() {
+    return _contextProfil.findAll();
+  }
 
   public Profil getProfilByid(int idprofil) throws Exception {
     Optional<Profil> getProfil = _contextProfil.findById(idprofil);

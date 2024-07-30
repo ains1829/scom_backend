@@ -1,9 +1,13 @@
 package com.ains.myspring.models.modules.equipe;
 
+import com.ains.myspring.models.admin.Administration;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Detailequipe {
@@ -11,15 +15,18 @@ public class Detailequipe {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   int iddetailequipe;
   int idequipe;
-  int idadministration;
+  @ManyToOne
+  @JoinColumn(name = "idadministration")
+  Administration administration;
+
   int statustaff;
 
   public Detailequipe() {
   }
 
-  public Detailequipe(int idequipe, int idadministration, int statustaff) {
+  public Detailequipe(int idequipe, Administration administration, int statustaff) {
     this.idequipe = idequipe;
-    this.idadministration = idadministration;
+    this.administration = administration;
     this.statustaff = statustaff;
   }
 
@@ -39,19 +46,19 @@ public class Detailequipe {
     this.idequipe = idequipe;
   }
 
-  public int getIdadministration() {
-    return idadministration;
-  }
-
-  public void setIdadministration(int idadministration) {
-    this.idadministration = idadministration;
-  }
-
   public int getStatustaff() {
     return statustaff;
   }
 
   public void setStatustaff(int statustaff) {
     this.statustaff = statustaff;
+  }
+
+  public Administration getAdministration() {
+    return administration;
+  }
+
+  public void setAdministration(Administration administration) {
+    this.administration = administration;
   }
 }

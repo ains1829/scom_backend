@@ -28,15 +28,10 @@ public class DetailequipeService {
   }
 
   public Detailequipe SaveDetail(Detailequipe detailequipe) throws Exception {
-    try {
-      if (!CheckMembreHaveEquipe(detailequipe.getIdadministration())) {
-        return _context.save(detailequipe);
-      } else {
-        throw new Exception("Probleme please try later");
-      }
-    } catch (Exception e) {
-      throw new Exception(e.getMessage());
+    if (!CheckMembreHaveEquipe(detailequipe.getAdministration().getIdadministration())) {
+      return _context.save(detailequipe);
     }
+    return null;
   }
 
   public void DesactivateAccountChef(int administration) {

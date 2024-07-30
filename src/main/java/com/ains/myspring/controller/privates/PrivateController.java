@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +20,6 @@ import com.ains.myspring.services.admin.AccountService;
 import com.ains.myspring.services.admin.AdministrationService;
 import com.ains.myspring.services.modules.SocieteService;
 import com.ains.myspring.services.modules.equipe.EquipeService;
-
 import jakarta.servlet.http.HttpServletRequest;
 
 @RequestMapping("/scomadminstration")
@@ -35,26 +33,6 @@ public class PrivateController {
   private EquipeService _serviceEquipe;
   @Autowired
   private AdministrationService _serviceAdministration;
-
-  @PreAuthorize("hasRole('SG') or hasRole('DSI')")
-  @GetMapping("/secure-data")
-  public ResponseEntity<?> getSecureData() {
-    try {
-      return ResponseEntity.ok("Données sécurisées accessibles uniquement aux utilisateurs avec le rôle SG");
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    }
-  }
-
-  @PreAuthorize("hasRole('DSI')")
-  @GetMapping("/secure-data-dsi")
-  public ResponseEntity<?> getSecureDataDSI() {
-    try {
-      return ResponseEntity.ok("Données sécurisées accessibles uniquement aux utilisateurs avec le rôle DSI");
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    }
-  }
 
   @PreAuthorize("hasRole('DSI')")
   @PutMapping("/validateaccount")

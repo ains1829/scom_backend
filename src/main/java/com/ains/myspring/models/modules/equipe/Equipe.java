@@ -1,10 +1,14 @@
 package com.ains.myspring.models.modules.equipe;
 
+import com.ains.myspring.models.admin.Administration;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Equipe {
@@ -12,15 +16,16 @@ public class Equipe {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   int idequipe;
   String nameequipe;
-  @Column(name = "idadministration")
-  int chefequipe;
+  @ManyToOne
+  @JoinColumn(name = "idadministration")
+  Administration chefequipe;
   boolean isactive = true;
   int idregion;
 
   public Equipe() {
   }
 
-  public Equipe(String nameequipe, int chefequipe, int idregion) {
+  public Equipe(String nameequipe, Administration chefequipe, int idregion) {
     this.nameequipe = nameequipe;
     this.chefequipe = chefequipe;
     this.idregion = idregion;
@@ -42,14 +47,6 @@ public class Equipe {
     this.nameequipe = nameequipe;
   }
 
-  public int getChefequipe() {
-    return chefequipe;
-  }
-
-  public void setChefequipe(int chefequipe) {
-    this.chefequipe = chefequipe;
-  }
-
   public boolean isIsactive() {
     return isactive;
   }
@@ -64,6 +61,14 @@ public class Equipe {
 
   public void setIdregion(int idregion) {
     this.idregion = idregion;
+  }
+
+  public Administration getChefequipe() {
+    return chefequipe;
+  }
+
+  public void setChefequipe(Administration chefequipe) {
+    this.chefequipe = chefequipe;
   }
 
 }

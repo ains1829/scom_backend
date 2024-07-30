@@ -30,15 +30,16 @@ public class Account implements UserDetails {
   Profil profil;
   Date datevalidate;
   boolean chefequipe;
+  boolean isactive = true;
+
+  public Account() {
+  }
 
   public Account(Administration administration, String email, String password, Profil profil) {
     this.administration = administration;
     this.email = email;
     this.password = password;
     this.profil = profil;
-  }
-
-  public Account() {
   }
 
   public int getIdaccount() {
@@ -103,6 +104,14 @@ public class Account implements UserDetails {
 
   public void setChefequipe(boolean chefequipe) {
     this.chefequipe = chefequipe;
+  }
+
+  public boolean isIsactive() {
+    return isactive;
+  }
+
+  public void setIsactive(boolean isactive) {
+    this.isactive = isactive;
   }
 
   @Override

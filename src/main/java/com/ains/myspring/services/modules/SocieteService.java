@@ -1,7 +1,6 @@
 package com.ains.myspring.services.modules;
 
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ains.myspring.models.modules.Societe;
