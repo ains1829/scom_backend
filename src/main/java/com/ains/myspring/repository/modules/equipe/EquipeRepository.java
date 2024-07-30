@@ -12,4 +12,7 @@ public interface EquipeRepository extends JpaRepository<Equipe, Integer> {
 
   @Query(value = "Select * from equipe where idequipe = :id and idregion = :region", nativeQuery = true)
   Optional<Equipe> getEquipeByid(int id, int region);
+
+  @Query(value = "elect * from equipe where idadministration = :chef and isactive ", nativeQuery = true)
+  Optional<Equipe> getEquipeByChef(int chef);
 }

@@ -70,4 +70,12 @@ public class EquipeService {
     }
     throw new Exception("Equipe not found");
   }
+
+  public Equipe getEquipeByChef(int chef) throws Exception {
+    Optional<Equipe> equipe = _contextEquipe.getEquipeByChef(chef);
+    if (equipe.isPresent()) {
+      return equipe.get();
+    }
+    throw new Exception("Equipe not found");
+  }
 }

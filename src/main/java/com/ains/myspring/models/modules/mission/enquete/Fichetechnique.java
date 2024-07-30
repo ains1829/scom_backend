@@ -1,7 +1,6 @@
 package com.ains.myspring.models.modules.mission.enquete;
 
 import java.sql.Date;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,6 +16,18 @@ public class Fichetechnique {
   String numero_reference;
   String url_fichetechnique;
   Date datefichetechnique;
+
+  public Fichetechnique() {
+  }
+
+  public Fichetechnique(int idenquete, int idequipe, String numero_reference, String url_fichetechnique,
+      Date datefichetechnique) {
+    this.idenquete = idenquete;
+    this.idequipe = idequipe;
+    this.numero_reference = numero_reference;
+    this.url_fichetechnique = url_fichetechnique;
+    this.datefichetechnique = datefichetechnique;
+  }
 
   public int getIdfichetechnique() {
     return idfichetechnique;
