@@ -1,5 +1,7 @@
 package com.ains.myspring.services.modules.mission;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,5 +15,13 @@ public class AutresuiviService {
 
   public Autresuivi Save(Autresuivi autresuivi) {
     return _contextAutresuivi.save(autresuivi);
+  }
+
+  public Autresuivi getAutresuiviByIdodremission(int ordre) throws Exception {
+    Optional<Autresuivi> getAutresuivi = _contextAutresuivi.getAutreSuivibyOrdremission(ordre);
+    if (getAutresuivi.isPresent()) {
+      return getAutresuivi.get();
+    }
+    throw new Exception("Autre suivi not found");
   }
 }

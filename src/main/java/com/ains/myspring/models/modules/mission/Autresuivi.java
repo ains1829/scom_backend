@@ -8,8 +8,19 @@ public class Autresuivi {
   @Id
   int idautresuivi;
   int idordermission;
-  String numero_reference;
   String urlrapport;
+  int statu;
+  int iddistrict;
+
+  public Autresuivi() {
+  }
+
+  public Autresuivi(int idordermission, String urlrapport, int statu, int iddistrict) {
+    this.idordermission = idordermission;
+    this.urlrapport = urlrapport;
+    this.statu = statu;
+    this.iddistrict = iddistrict;
+  }
 
   public int getIdautresuivi() {
     return idautresuivi;
@@ -27,19 +38,27 @@ public class Autresuivi {
     this.idordermission = idordermission;
   }
 
-  public String getNumero_reference() {
-    return numero_reference;
-  }
-
-  public void setNumero_reference(String numero_reference) {
-    this.numero_reference = numero_reference;
-  }
-
   public String getUrlrapport() {
     return urlrapport;
   }
 
   public void setUrlrapport(String urlrapport) {
     this.urlrapport = urlrapport;
+  }
+
+  public int getStatu() {
+    return statu;
+  }
+
+  public void setStatu(int statu) {
+    this.statu = statu;
+  }
+
+  public int getIddistrict() {
+    return iddistrict;
+  }
+
+  public void setIddistrict(int iddistrict) {
+    this.iddistrict = iddistrict;
   }
 }

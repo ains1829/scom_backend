@@ -8,6 +8,7 @@ public class MissionJson {
   String motifs;
   Date datedescente;
   int societe;
+  int district;
 
   public int getIdtypeordermission() {
     return idtypeordermission;
@@ -47,5 +48,13 @@ public class MissionJson {
 
   public void setSociete(int societe) {
     this.societe = societe;
+  }
+
+  public int getDistrict() {
+    return district;
+  }
+
+  public void setDistrict(int district) {
+    this.district = district;
   }
 }

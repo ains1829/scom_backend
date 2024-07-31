@@ -19,6 +19,7 @@ import com.ains.myspring.controller.other.ReturnMap;
 import com.ains.myspring.models.admin.Administration;
 import com.ains.myspring.models.jsontoclass.order.MissionJson;
 import com.ains.myspring.models.modules.equipe.Equipe;
+import com.ains.myspring.models.modules.mission.Enquete;
 import com.ains.myspring.models.modules.mission.Ordermission;
 import com.ains.myspring.models.modules.mission.enquete.Convocation;
 import com.ains.myspring.models.modules.mission.enquete.Fichetechnique;
@@ -112,6 +113,7 @@ public class MissionController {
       _serviveEnquete.FindById(idenquete);
       String url_file = "Wait serveur file"; // wait server file
       Date now = new Date(System.currentTimeMillis());
+      _serviveEnquete.ChangeStatus(idenquete, 100);
       return ResponseEntity
           .ok(new ReturnMap(200,
               _servicePvaudition.Save(new Pvaudition(idenquete, equipe.getIdequipe(), url_file, now))));
@@ -130,6 +132,7 @@ public class MissionController {
       _serviveEnquete.FindById(idenquete);
       String url_file = "Wait serveur file"; // wait server file
       Date now = new Date(System.currentTimeMillis());
+      _serviveEnquete.ChangeStatus(idenquete, 500);
       return ResponseEntity
           .ok(new ReturnMap(200,
               _servicePvinfraction.Save(new Pvinfraction(idenquete, equipe.getIdequipe(), url_file, now))));
@@ -137,6 +140,22 @@ public class MissionController {
       return ResponseEntity.ok(new ReturnMap(500, e.getMessage()).Mapping());
     }
   }
+
+  // @PreAuthorize("hasROle('CHEF_EQUIPE')")
+  // @PostMapping("/missionFinished")
+  // public ResponseEntity<?> MissionFinished(@RequestParam("enquete") int
+  // idenquete) {
+  // try {
+  // Enquete enquete = _serviveEnquete.FindById(idenquete);
+  // Ordermission ordermission =
+  // _serviceOrdre.getOrderMissionById(enquete.getIdordermission());
+  // if (enquete.getStatu() == 200) {
+  // // enquete
+  // }
+  // } catch (Exception e) {
+  // }
+
+  // }
 
   @PreAuthorize("hasRole('SG')")
   @PostMapping("/validation_ordre_mission")

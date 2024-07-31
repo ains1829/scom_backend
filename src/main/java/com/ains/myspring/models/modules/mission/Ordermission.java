@@ -1,8 +1,6 @@
 package com.ains.myspring.models.modules.mission;
 
 import java.sql.Date;
-
-import com.ains.myspring.models.modules.Societe;
 import com.ains.myspring.models.modules.equipe.Equipe;
 import com.ains.myspring.models.modules.lieu.Region;
 import jakarta.persistence.Entity;
@@ -32,15 +30,12 @@ public class Ordermission {
   boolean isbasculed;
   int status_validation;
   String fileordermission;
-  @ManyToOne
-  @JoinColumn(name = "idsociete")
-  Societe societe;
 
   public Ordermission() {
   }
 
   public Ordermission(int idtypeordermission, Equipe equipe, Region region, String motifs, String numeroserie,
-      Date dateorder, Date datedescente, Societe societe) {
+      Date dateorder, Date datedescente) {
     this.idtypeordermission = idtypeordermission;
     this.equipe = equipe;
     this.region = region;
@@ -48,7 +43,6 @@ public class Ordermission {
     this.numeroserie = numeroserie;
     this.dateorder = dateorder;
     this.datedescente = datedescente;
-    this.societe = societe;
   }
 
   public int getIdordermission() {
@@ -137,14 +131,6 @@ public class Ordermission {
 
   public void setFileordermission(String fileordermission) {
     this.fileordermission = fileordermission;
-  }
-
-  public Societe getSociete() {
-    return societe;
-  }
-
-  public void setSociete(Societe societe) {
-    this.societe = societe;
   }
 
 }

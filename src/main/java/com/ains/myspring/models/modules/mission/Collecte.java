@@ -14,6 +14,15 @@ public class Collecte {
   int iddistrict;
   int statu;
 
+  public Collecte() {
+  }
+
+  public Collecte(int idordermission, int iddistrict, int statu) {
+    this.idordermission = idordermission;
+    this.iddistrict = iddistrict;
+    this.statu = statu;
+  }
+
   public int getIdcollecte() {
     return idcollecte;
   }

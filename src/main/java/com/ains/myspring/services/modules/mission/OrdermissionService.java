@@ -15,7 +15,6 @@ import com.ains.myspring.models.modules.mission.Collecte;
 import com.ains.myspring.models.modules.mission.Enquete;
 import com.ains.myspring.models.modules.mission.Ordermission;
 import com.ains.myspring.repository.modules.mission.OrdermissionRepository;
-import com.ains.myspring.services.modules.SocieteService;
 import com.ains.myspring.services.modules.equipe.EquipeService;
 import com.ains.myspring.services.modules.lieu.RegionService;
 
@@ -33,8 +32,27 @@ public class OrdermissionService {
   private CollecteService _serviceCollecte;
   @Autowired
   private AutresuiviService _serviceAutresuivi;
-  @Autowired
-  private SocieteService _serviceSociete;
+
+  public Ordermission getOrderMissionById(int idorderdemission) throws Exception {
+    Optional<Ordermission> ordermission = _contextOrder.findById(idorderdemission);
+    if (ordermission.isPresent()) {
+      return ordermission.get();
+    }
+    throw new Exception("Ordermission not found");
+  }
+
+  public Ordermission SaveAll(MissionJson demaJson, int region) throws Exception {
+    Ordermission newordermission = Save(demaJson, region);
+    if (demaJson.getIdtypeordermission() == 1) {
+      _serviceEnquete.Save(new Enquete(
+          newordermission.getIdordermission(), demaJson.getSociete(), 0));
+    } else if (demaJson.getIdtypeordermission() == 2) {
+      _serviceCollecte.Save(new Collecte(newordermission.getIdordermission(), demaJson.getDistrict(), 0));
+    } else {
+      _serviceAutresuivi.Save(new Autresuivi(newordermission.getIdordermission(), "", 0, demaJson.getDistrict()));
+    }
+    return newordermission;
+  }
 
   public Ordermission Save(MissionJson demande, int region) throws Exception {
     Equipe equipe = _serviceEquipe.getById(demande.getIdequipe(), region);
@@ -42,7 +60,7 @@ public class OrdermissionService {
     String numero_serie = generateNumeroSerie();
     Date date_now = new Date(System.currentTimeMillis());
     Ordermission ordre = new Ordermission(demande.getIdtypeordermission(), equipe, _Objectregion, demande.getMotifs(),
-        numero_serie, date_now, demande.getDatedescente(), _serviceSociete.getSocieteById(demande.getSociete()).get());
+        numero_serie, date_now, demande.getDatedescente());
     return _contextOrder.save(ordre);
   }
 
@@ -70,6 +88,22 @@ public class OrdermissionService {
       ordermission.get().setStatus_validation(500);
     }
     return _contextOrder.save(ordermission.get());
+  }
+
+  private void IfModerationValidate(Ordermission ordermission) throws Exception {
+    if (ordermission.getIdtypeordermission() == 1) {
+      Enquete enquete = _serviceEnquete.getEnqueteByOrdermission(ordermission.getIdordermission());
+      enquete.setStatu(10);
+      _serviceEnquete.Save(enquete);
+    } else if (ordermission.getIdordermission() == 2) {
+      Collecte collecte = _serviceCollecte.getCollecteByOrdermission(ordermission.getIdordermission());
+      collecte.setStatu(10);
+      _serviceCollecte.Save(collecte);
+    } else {
+      Autresuivi autresuivi = _serviceAutresuivi.getAutresuiviByIdodremission(ordermission.getIdordermission());
+      autresuivi.setStatu(10);
+      _serviceAutresuivi.Save(autresuivi);
+    }
   }
 
   public Page<Ordermission> getOrderMissionFilterStatus(int status, int pagenumber) {
@@ -108,15 +142,5 @@ public class OrdermissionService {
 
   private String getUrlFileOrderOfmission() {
     return "";
-  }
-
-  private void IfModerationValidate(Ordermission ordermission) {
-    if (ordermission.getIdtypeordermission() == 1) {
-      _serviceEnquete.Save(new Enquete(ordermission.getIdordermission(), ordermission.getSociete().getIdsociete(), 0));
-    } else if (ordermission.getIdordermission() == 2) {
-      _serviceCollecte.Save(new Collecte());
-    } else {
-      _serviceAutresuivi.Save(new Autresuivi());
-    }
   }
 }
