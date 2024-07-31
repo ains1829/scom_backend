@@ -2,12 +2,12 @@ package com.ains.myspring.controller.privates.mission;
 
 import java.sql.Date;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,8 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import com.ains.myspring.controller.other.ReturnMap;
 import com.ains.myspring.models.admin.Administration;
+import com.ains.myspring.models.jsontoclass.order.ListCollecteprix;
 import com.ains.myspring.models.jsontoclass.order.MissionJson;
 import com.ains.myspring.models.modules.equipe.Equipe;
+import com.ains.myspring.models.modules.mission.Autresuivi;
+import com.ains.myspring.models.modules.mission.Collecte;
 import com.ains.myspring.models.modules.mission.Enquete;
 import com.ains.myspring.models.modules.mission.Ordermission;
 import com.ains.myspring.models.modules.mission.enquete.Convocation;
@@ -28,8 +31,11 @@ import com.ains.myspring.models.modules.mission.enquete.Pvinfraction;
 import com.ains.myspring.security.config.JwtService;
 import com.ains.myspring.services.admin.AdministrationService;
 import com.ains.myspring.services.modules.equipe.EquipeService;
+import com.ains.myspring.services.modules.mission.AutresuiviService;
+import com.ains.myspring.services.modules.mission.CollecteService;
 import com.ains.myspring.services.modules.mission.EnqueteService;
 import com.ains.myspring.services.modules.mission.OrdermissionService;
+import com.ains.myspring.services.modules.mission.collecte.DetailcollecteService;
 import com.ains.myspring.services.modules.mission.enquete.ConvocationService;
 import com.ains.myspring.services.modules.mission.enquete.FichetechniqueService;
 import com.ains.myspring.services.modules.mission.enquete.PvauditionService;
@@ -56,6 +62,29 @@ public class MissionController {
   private PvauditionService _servicePvaudition;
   @Autowired
   private PvinfractionService _servicePvinfraction;
+  @Autowired
+  private DetailcollecteService _serviceDetailcollecte;
+  @Autowired
+  private CollecteService _serviceCollecte;
+  @Autowired
+  private AutresuiviService _serviceAutresuivi;
+
+  @PreAuthorize("hasRole('SG')")
+  @PostMapping("/validation_ordre_mission")
+  public ResponseEntity<?> ModerationOrdremission(@RequestParam("idorderdemission") int id,
+      @RequestParam("confirmation") int confirmation) {
+    try {
+      if (confirmation == 0) {
+        _serviceOrdre.Moderation(id, false);
+        return ResponseEntity.ok(new ReturnMap(200, "Refuser"));
+      } else {
+        _serviceOrdre.Moderation(id, true);
+        return ResponseEntity.ok(new ReturnMap(200, "Valider"));
+      }
+    } catch (Exception e) {
+      return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
+    }
+  }
 
   @PreAuthorize("hasRole('DR')")
   @PostMapping("/demandeordre")
@@ -63,7 +92,7 @@ public class MissionController {
     try {
       Optional<Administration> administration = _serviceAdministration.getAdministrationByEmail(getEmailUserByToken());
       int region = administration.get().getRegion().getIdregion();
-      Ordermission mission = _serviceOrdre.Save(demande, region);
+      Ordermission mission = _serviceOrdre.SaveAll(demande, region);
       return ResponseEntity.ok(new ReturnMap(200, mission).Mapping());
     } catch (Exception e) {
       return ResponseEntity.ok(new ReturnMap(500, e.getMessage()).Mapping());
@@ -141,9 +170,9 @@ public class MissionController {
     }
   }
 
-  @PreAuthorize("hasROle('CHEF_EQUIPE')")
+  @PreAuthorize("hasRole('CHEF_EQUIPE')")
   @PostMapping("/enquete_missionFinished")
-  public ResponseEntity<?> MissionFinished(@RequestParam("enquete") int idenquete) {
+  public ResponseEntity<?> EnqueteMissionFinished(@RequestParam("enquete") int idenquete) {
     try {
       Enquete enquete = _serviveEnquete.ChangeStatusMissionFinished(idenquete);
       Ordermission ordermission = _serviceOrdre.getOrderMissionById(enquete.getIdordermission());
@@ -155,18 +184,47 @@ public class MissionController {
     }
   }
 
-  @PreAuthorize("hasRole('SG')")
-  @PostMapping("/validation_ordre_mission")
-  public ResponseEntity<?> ModerationOrdremission(@RequestParam("idorderdemission") int id,
-      @RequestParam("confirmation") int confirmation) {
+  @PreAuthorize("hasRole('CHEF_EQUIPE')")
+  @PostMapping("/collecte_missionFinished")
+  public ResponseEntity<?> CollecteMissionFinished(@RequestBody ListCollecteprix liste) {
     try {
-      if (confirmation == 0) {
-        _serviceOrdre.Moderation(id, false);
-        return ResponseEntity.ok(new ReturnMap(200, "Refuser"));
-      } else {
-        _serviceOrdre.Moderation(id, true);
-        return ResponseEntity.ok(new ReturnMap(200, "Valider"));
-      }
+      _serviceDetailcollecte.SaveDetail(liste);
+      Collecte collecte = _serviceCollecte.getCollecteByid(liste.getIdcollecte());
+      Ordermission ordermission = _serviceOrdre.getOrderMissionById(collecte.getIdordermission());
+      ordermission.setDateorderend(new Date(System.currentTimeMillis()));
+      _serviceOrdre.UpdateOrdermission(ordermission);
+      return ResponseEntity.ok(new ReturnMap(200, "Suivi economique terminer"));
+    } catch (Exception e) {
+      return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
+    }
+  }
+
+  @PreAuthorize("hasRole('DSI')")
+  @GetMapping("/validate_suivieconomique")
+  public ResponseEntity<?> ValidateCollecteEconomique(@RequestParam("idcollecte") int idcollecte) {
+    try {
+      Collecte collecte = _serviceCollecte.getCollecteByid(idcollecte);
+      collecte.setStatu(200);
+      _serviceCollecte.Save(collecte);
+      return ResponseEntity.ok(new ReturnMap(200, "Suivi economique valider par dsi"));
+    } catch (Exception e) {
+      return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
+    }
+  }
+
+  @PreAuthorize("hasRole('CHEF_EQUIPE')")
+  @PostMapping("/autresuivi_finished")
+  public ResponseEntity<?> AutreMissionFinished(@RequestParam("idautresuivi") int id,
+      @RequestPart("rapport") MultipartFile file) {
+    try {
+      String url_rapport = "";
+      Autresuivi suivi = _serviceAutresuivi.getById(id);
+      suivi.setUrlrapport(url_rapport);
+      _serviceAutresuivi.Save(suivi);
+      Ordermission ordermission = _serviceOrdre.getOrderMissionById(suivi.getIdordermission());
+      ordermission.setDateorderend(new Date(System.currentTimeMillis()));
+      _serviceOrdre.UpdateOrdermission(ordermission);
+      return ResponseEntity.ok(new ReturnMap(200, "Autre suivi terminer"));
     } catch (Exception e) {
       return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
     }

@@ -1,5 +1,7 @@
 package com.ains.myspring.models.modules.mission;
 
+import java.sql.Date;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,14 +15,16 @@ public class Collecte {
   int idordermission;
   int iddistrict;
   int statu;
+  Date datecollecte;
 
   public Collecte() {
   }
 
-  public Collecte(int idordermission, int iddistrict, int statu) {
+  public Collecte(int idordermission, int iddistrict, int statu, Date datecollecte) {
     this.idordermission = idordermission;
     this.iddistrict = iddistrict;
     this.statu = statu;
+    this.datecollecte = datecollecte;
   }
 
   public int getIdcollecte() {
@@ -53,5 +57,13 @@ public class Collecte {
 
   public void setStatu(int statu) {
     this.statu = statu;
+  }
+
+  public Date getDatecollecte() {
+    return datecollecte;
+  }
+
+  public void setDatecollecte(Date datecollecte) {
+    this.datecollecte = datecollecte;
   }
 }

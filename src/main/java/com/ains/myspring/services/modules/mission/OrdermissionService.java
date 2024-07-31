@@ -51,7 +51,8 @@ public class OrdermissionService {
       _serviceEnquete.Save(new Enquete(
           newordermission.getIdordermission(), demaJson.getSociete(), 0));
     } else if (demaJson.getIdtypeordermission() == 2) {
-      _serviceCollecte.Save(new Collecte(newordermission.getIdordermission(), demaJson.getDistrict(), 0));
+      _serviceCollecte.Save(new Collecte(newordermission.getIdordermission(), demaJson.getDistrict(), 0,
+          new Date(System.currentTimeMillis())));
     } else {
       _serviceAutresuivi.Save(new Autresuivi(newordermission.getIdordermission(), "", 0, demaJson.getDistrict()));
     }

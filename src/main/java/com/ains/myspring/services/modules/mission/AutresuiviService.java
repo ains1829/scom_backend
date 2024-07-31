@@ -17,6 +17,14 @@ public class AutresuiviService {
     return _contextAutresuivi.save(autresuivi);
   }
 
+  public Autresuivi getById(int idautresuivi) throws Exception {
+    Optional<Autresuivi> autresuivi = _contextAutresuivi.findById(idautresuivi);
+    if (autresuivi.isPresent()) {
+      return autresuivi.get();
+    }
+    throw new Exception("Autre suivi not found");
+  }
+
   public Autresuivi getAutresuiviByIdodremission(int ordre) throws Exception {
     Optional<Autresuivi> getAutresuivi = _contextAutresuivi.getAutreSuivibyOrdremission(ordre);
     if (getAutresuivi.isPresent()) {

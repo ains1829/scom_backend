@@ -17,6 +17,14 @@ public class CollecteService {
     return _contextCollecte.save(collecte);
   }
 
+  public Collecte getCollecteByid(int idcollecte) throws Exception {
+    Optional<Collecte> collecte = _contextCollecte.findById(idcollecte);
+    if (collecte.isPresent()) {
+      return collecte.get();
+    }
+    throw new Exception("Collecte not found");
+  }
+
   public Collecte getCollecteByOrdermission(int order) throws Exception {
     Optional<Collecte> collecte = _contextCollecte.getCollecteByOrdermission(order);
     if (collecte.isPresent()) {
