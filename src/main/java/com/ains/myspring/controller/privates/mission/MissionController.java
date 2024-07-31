@@ -141,21 +141,19 @@ public class MissionController {
     }
   }
 
-  // @PreAuthorize("hasROle('CHEF_EQUIPE')")
-  // @PostMapping("/missionFinished")
-  // public ResponseEntity<?> MissionFinished(@RequestParam("enquete") int
-  // idenquete) {
-  // try {
-  // Enquete enquete = _serviveEnquete.FindById(idenquete);
-  // Ordermission ordermission =
-  // _serviceOrdre.getOrderMissionById(enquete.getIdordermission());
-  // if (enquete.getStatu() == 200) {
-  // // enquete
-  // }
-  // } catch (Exception e) {
-  // }
-
-  // }
+  @PreAuthorize("hasROle('CHEF_EQUIPE')")
+  @PostMapping("/enquete_missionFinished")
+  public ResponseEntity<?> MissionFinished(@RequestParam("enquete") int idenquete) {
+    try {
+      Enquete enquete = _serviveEnquete.ChangeStatusMissionFinished(idenquete);
+      Ordermission ordermission = _serviceOrdre.getOrderMissionById(enquete.getIdordermission());
+      ordermission.setDateorderend(new Date(System.currentTimeMillis()));
+      _serviceOrdre.UpdateOrdermission(ordermission);
+      return ResponseEntity.ok(new ReturnMap(200, "Mission terminer"));
+    } catch (Exception e) {
+      return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
+    }
+  }
 
   @PreAuthorize("hasRole('SG')")
   @PostMapping("/validation_ordre_mission")

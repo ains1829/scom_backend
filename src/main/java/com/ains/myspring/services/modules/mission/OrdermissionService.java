@@ -33,6 +33,10 @@ public class OrdermissionService {
   @Autowired
   private AutresuiviService _serviceAutresuivi;
 
+  public Ordermission UpdateOrdermission(Ordermission ordermission) {
+    return _contextOrder.save(ordermission);
+  }
+
   public Ordermission getOrderMissionById(int idorderdemission) throws Exception {
     Optional<Ordermission> ordermission = _contextOrder.findById(idorderdemission);
     if (ordermission.isPresent()) {
