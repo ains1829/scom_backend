@@ -22,7 +22,6 @@ import com.ains.myspring.services.modules.AnomalyService;
 import com.ains.myspring.services.modules.ProductService;
 import com.ains.myspring.services.modules.TypeproductService;
 import com.ains.myspring.services.modules.UniteService;
-
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
