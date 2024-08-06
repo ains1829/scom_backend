@@ -1,9 +1,12 @@
 package com.ains.myspring.repository.modules.mission;
 
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import com.ains.myspring.models.modules.mission.Ordermission;
 
 public interface OrdermissionRepository extends JpaRepository<Ordermission, Integer> {
@@ -21,5 +24,8 @@ public interface OrdermissionRepository extends JpaRepository<Ordermission, Inte
 
   @Query(value = "Select * from ordermission where lower(motifs) = lower(:motif)", nativeQuery = true)
   Page<Ordermission> getOrdermissionSearchbyMotifs(String motif, Pageable page);
+
+  @Query(value = "select * from ordermission where numeroserie = :numero_serie ", nativeQuery = true)
+  Optional<Ordermission> getOrdermissionByNumeroSerie(@Param("numero_serie") String numero);
 
 }

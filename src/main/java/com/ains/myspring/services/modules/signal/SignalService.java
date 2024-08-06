@@ -3,7 +3,6 @@ package com.ains.myspring.services.modules.signal;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ains.myspring.models.modules.Anomaly;
@@ -50,12 +49,13 @@ public class SignalService {
     }
     District district = serviceDistrict.getById(iddistrict);
     Date date = new Date(System.currentTimeMillis());
-    Signal signal = new Signal(email, number, societeObject, description, date, district);
+    Signal signal = _contextSignal.save(new Signal(email, number, societeObject, description, date, district));
     SaveSignalCause(signal, idanomaly);
     SaveSignPhoto(signal, photo);
-    return _contextSignal.save(signal);
+    return signal;
   }
 
+  @Transactional
   public List<Signal_cause> SaveSignalCause(Signal signal, List<Integer> idanomaly) throws Exception {
     List<Signal_cause> signal_causes = new ArrayList<>();
     for (int i = 0; i < idanomaly.size(); i++) {
@@ -65,6 +65,7 @@ public class SignalService {
     return signal_causes;
   }
 
+  @Transactional
   public List<Signal_photo> SaveSignPhoto(Signal signal, List<MultipartFile> photo) {
     List<Signal_photo> photos = new ArrayList<>();
     if (photo == null) {

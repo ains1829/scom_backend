@@ -37,6 +37,14 @@ public class OrdermissionService {
     return _contextOrder.save(ordermission);
   }
 
+  public Ordermission getOrdermissionByNumeroSerie(String numero_serie) throws Exception {
+    Optional<Ordermission> mission = _contextOrder.getOrdermissionByNumeroSerie(numero_serie);
+    if (mission.isPresent()) {
+      return mission.get();
+    }
+    throw new Exception("Ordermission not found");
+  }
+
   public Ordermission getOrderMissionById(int idorderdemission) throws Exception {
     Optional<Ordermission> ordermission = _contextOrder.findById(idorderdemission);
     if (ordermission.isPresent()) {
