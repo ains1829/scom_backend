@@ -1,5 +1,7 @@
 package com.ains.myspring.repository.modules;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -14,4 +16,7 @@ public interface SocieteRepository extends JpaRepository<Societe, Integer> {
 
   @Query(value = "Select count(*) as n from societe where numerofiscal = :numerofiscal", nativeQuery = true)
   int FiscalIsExist(String numerofiscal);
+
+  @Query(value = "Select * from  societe idregion is null and iddistrict is null", nativeQuery = true)
+  Optional<Societe> getSocieteNotFound();
 }

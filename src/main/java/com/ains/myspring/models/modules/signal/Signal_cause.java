@@ -22,6 +22,11 @@ public class Signal_cause {
   public Signal_cause() {
   }
 
+  public Signal_cause(int idsignal, Anomaly anomaly) {
+    this.idsignal = idsignal;
+    this.anomaly = anomaly;
+  }
+
   public int getIdsignalcause() {
     return idsignalcause;
   }

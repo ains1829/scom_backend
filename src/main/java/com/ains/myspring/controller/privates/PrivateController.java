@@ -16,10 +16,12 @@ import com.ains.myspring.models.jsontoclass.JsonAdministration;
 import com.ains.myspring.models.jsontoclass.JsonSociete;
 import com.ains.myspring.models.jsontoclass.equipe.EquipeJson;
 import com.ains.myspring.models.modules.Societe;
+import com.ains.myspring.models.modules.lieu.District;
 import com.ains.myspring.services.admin.AccountService;
 import com.ains.myspring.services.admin.AdministrationService;
 import com.ains.myspring.services.modules.SocieteService;
 import com.ains.myspring.services.modules.equipe.EquipeService;
+import com.ains.myspring.services.modules.lieu.DistrictService;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RequestMapping("/scomadminstration")
@@ -33,6 +35,8 @@ public class PrivateController {
   private EquipeService _serviceEquipe;
   @Autowired
   private AdministrationService _serviceAdministration;
+  @Autowired
+  private DistrictService _serviceDistrict;
 
   @PreAuthorize("hasRole('DSI')")
   @PutMapping("/validateaccount")
@@ -61,8 +65,9 @@ public class PrivateController {
   @PostMapping("/newSociete")
   public ResponseEntity<?> NewSociete(@RequestBody JsonSociete societe) {
     try {
+      District district = _serviceDistrict.getById(societe.getIddistrict());
       Societe newSociete = new Societe(societe.getNamesociete(), societe.getDescription(), societe.getNif(),
-          societe.getStat(), societe.getIdregion(), societe.getIddistrict(), societe.getAddresse(),
+          societe.getStat(), district.getRegion(), district, societe.getAddresse(),
           societe.getResponsable(), societe.getTelephone(), societe.getNumerofiscal());
       return ResponseEntity.status(HttpStatus.OK).body(_serviceSociete.AddNewSociete(newSociete));
     } catch (Exception e) {

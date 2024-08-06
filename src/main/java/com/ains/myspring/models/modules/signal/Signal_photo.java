@@ -16,6 +16,11 @@ public class Signal_photo {
   public Signal_photo() {
   }
 
+  public Signal_photo(int idsignal, String url_photo) {
+    this.idsignal = idsignal;
+    this.url_photo = url_photo;
+  }
+
   public int getIdsignal_photo() {
     return idsignal_photo;
   }

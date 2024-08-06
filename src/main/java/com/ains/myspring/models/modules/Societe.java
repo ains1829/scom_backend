@@ -1,9 +1,14 @@
 package com.ains.myspring.models.modules;
 
+import com.ains.myspring.models.modules.lieu.District;
+import com.ains.myspring.models.modules.lieu.Region;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Societe {
@@ -14,8 +19,12 @@ public class Societe {
   String description;
   String nif;
   String stat;
-  int idregion;
-  int iddistrict;
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "idregion")
+  Region region;
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "iddistrict")
+  District district;
   String addresse;
   String responsable;
   String telephone;
@@ -24,14 +33,14 @@ public class Societe {
   public Societe() {
   }
 
-  public Societe(String namesociete, String description, String nif, String stat, int idregion, int iddistrict,
+  public Societe(String namesociete, String description, String nif, String stat, Region region, District district,
       String addresse, String responsable, String telephone, String numerofiscal) {
     this.namesociete = namesociete;
     this.description = description;
     this.nif = nif;
     this.stat = stat;
-    this.idregion = idregion;
-    this.iddistrict = iddistrict;
+    this.region = region;
+    this.district = district;
     this.addresse = addresse;
     this.responsable = responsable;
     this.telephone = telephone;
@@ -80,14 +89,6 @@ public class Societe {
     this.stat = stat;
   }
 
-  public int getIdregion() {
-    return idregion;
-  }
-
-  public void setIdregion(int idregion) {
-    this.idregion = idregion;
-  }
-
   public String getAddresse() {
     return addresse;
   }
@@ -120,14 +121,6 @@ public class Societe {
     this.numerofiscal = numerofiscal;
   }
 
-  public int getIddistrict() {
-    return iddistrict;
-  }
-
-  public void setIddistrict(int iddistrict) {
-    this.iddistrict = iddistrict;
-  }
-
   public boolean isSocieteactive() {
     return societeactive;
   }
@@ -136,4 +129,19 @@ public class Societe {
     this.societeactive = societeactive;
   }
 
+  public District getDistrict() {
+    return district;
+  }
+
+  public void setDistrict(District district) {
+    this.district = district;
+  }
+
+  public Region getRegion() {
+    return region;
+  }
+
+  public void setRegion(Region region) {
+    this.region = region;
+  }
 }

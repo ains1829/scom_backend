@@ -18,6 +18,14 @@ public class AnomalyService {
     return _contextanomaly.findAll();
   }
 
+  public Anomaly getById(int idanomaly) throws Exception {
+    Optional<Anomaly> anomaly = _contextanomaly.findById(idanomaly);
+    if (anomaly.isPresent()) {
+      return anomaly.get();
+    }
+    throw new Exception("Anomaly not found");
+  }
+
   public Anomaly CreateNewAnomaly(Anomaly anomaly) throws Exception {
     if (_contextanomaly.AnomlyIsExist(anomaly.getNameanomaly()) > 0) {
       throw new Exception("Anomaly is already exist");

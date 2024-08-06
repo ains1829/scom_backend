@@ -1,21 +1,21 @@
 package com.ains.myspring.services.modules.signal;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import com.ains.myspring.models.modules.Anomaly;
 import com.ains.myspring.models.modules.Societe;
 import com.ains.myspring.models.modules.lieu.District;
-import com.ains.myspring.models.modules.lieu.Region;
 import com.ains.myspring.models.modules.signal.Signal;
+import com.ains.myspring.models.modules.signal.Signal_cause;
+import com.ains.myspring.models.modules.signal.Signal_photo;
 import com.ains.myspring.repository.modules.signal.SignalRepository;
+import com.ains.myspring.services.modules.AnomalyService;
 import com.ains.myspring.services.modules.SocieteService;
 import com.ains.myspring.services.modules.lieu.DistrictService;
-import com.ains.myspring.services.modules.lieu.RegionService;
-
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,9 +31,11 @@ public class SignalService {
   private Signal_photoService serviceSignalPhoto;
   @Autowired
   private Signal_causeService serviceSignalCause;
+  @Autowired
+  private AnomalyService serviceAnomaly;
 
   @Transactional
-  public Signal Save(Signal signal, List<MultipartFile> photo, List<Integer> idanomaly, String email, String number,
+  public Signal Save(List<MultipartFile> photo, List<Integer> idanomaly, String email, String number,
       int iddistrict, int societe, String description)
       throws Exception {
     int idsociete = 0;
@@ -42,18 +44,36 @@ public class SignalService {
       throw new Exception("one contact required");
     }
     if (societe == 0) {
-      societeObject = null;
+      societeObject = serviceSociete.getSocieteNotFound();
     } else {
-      Optional<Societe> societe_class = serviceSociete.getSocieteById(idsociete);
-      if (societe_class.isPresent()) {
-        societeObject = societe_class.get();
-      } else {
-        throw new Exception("Societe not found");
-      }
+      societeObject = serviceSociete.getSocieteById(idsociete);
     }
     District district = serviceDistrict.getById(iddistrict);
     Date date = new Date(System.currentTimeMillis());
-    new Signal(email, number, societeObject, description, date, district);
+    Signal signal = new Signal(email, number, societeObject, description, date, district);
+    SaveSignalCause(signal, idanomaly);
+    SaveSignPhoto(signal, photo);
     return _contextSignal.save(signal);
+  }
+
+  public List<Signal_cause> SaveSignalCause(Signal signal, List<Integer> idanomaly) throws Exception {
+    List<Signal_cause> signal_causes = new ArrayList<>();
+    for (int i = 0; i < idanomaly.size(); i++) {
+      Anomaly anomaly = serviceAnomaly.getById(idanomaly.get(i));
+      signal_causes.add(serviceSignalCause.Save(new Signal_cause(signal.getIdsignal(), anomaly)));
+    }
+    return signal_causes;
+  }
+
+  public List<Signal_photo> SaveSignPhoto(Signal signal, List<MultipartFile> photo) {
+    List<Signal_photo> photos = new ArrayList<>();
+    if (photo == null) {
+      return null;
+    }
+    for (int i = 0; i < photo.size(); i++) {
+      String url_photo = photo.get(i).getOriginalFilename(); // url image in server should here
+      photos.add(serviceSignalPhoto.Save(new Signal_photo(signal.getIdsignal(), url_photo)));
+    }
+    return photos;
   }
 }

@@ -45,12 +45,12 @@ public class SocieteService {
     }
   }
 
-  public Optional<Societe> getSocieteById(int idsociete) throws Exception {
+  public Societe getSocieteById(int idsociete) throws Exception {
     Optional<Societe> getSociete = _contextsociete.findById(idsociete);
     if (getSociete.isEmpty()) {
       throw new Exception("Societe not found");
     }
-    return getSociete;
+    return getSociete.get();
   }
 
   public Societe UpdateSociete(Societe societe) throws Exception {
@@ -68,13 +68,21 @@ public class SocieteService {
   }
 
   public Societe DesactivateSociete(int idsociete) throws Exception {
-    Optional<Societe> getSociete;
+    Societe getSociete;
     try {
       getSociete = getSocieteById(idsociete);
-      getSociete.get().setSocieteactive(false);
-      return _contextsociete.save(getSociete.get());
+      getSociete.setSocieteactive(false);
+      return _contextsociete.save(getSociete);
     } catch (Exception e) {
       throw new Exception(e.getMessage());
     }
+  }
+
+  public Societe getSocieteNotFound() throws Exception {
+    Optional<Societe> societe = _contextsociete.getSocieteNotFound();
+    if (societe.isPresent()) {
+      return societe.get();
+    }
+    throw new Exception("Societe not found");
   }
 }
