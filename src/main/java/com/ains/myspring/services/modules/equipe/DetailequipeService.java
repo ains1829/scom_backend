@@ -1,5 +1,7 @@
 package com.ains.myspring.services.modules.equipe;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ains.myspring.models.modules.equipe.Detailequipe;
@@ -17,6 +19,10 @@ public class DetailequipeService {
     } else {
       return false;
     }
+  }
+
+  public List<Detailequipe> getDetailEquipe(int idequipe) {
+    return _context.getDetailEquipe(idequipe);
   }
 
   public boolean PersonIsExist(int idadministration) throws Exception {

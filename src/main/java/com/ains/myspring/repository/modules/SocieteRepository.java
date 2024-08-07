@@ -17,6 +17,6 @@ public interface SocieteRepository extends JpaRepository<Societe, Integer> {
   @Query(value = "Select count(*) as n from societe where numerofiscal = :numerofiscal", nativeQuery = true)
   int FiscalIsExist(String numerofiscal);
 
-  @Query(value = "Select * from  societe idregion is null and iddistrict is null", nativeQuery = true)
+  @Query(value = "Select * from  societe where idregion is null and iddistrict is null", nativeQuery = true)
   Optional<Societe> getSocieteNotFound();
 }

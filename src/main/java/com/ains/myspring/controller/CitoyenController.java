@@ -33,7 +33,8 @@ public class CitoyenController {
   @PostMapping("signalement")
   public ResponseEntity<?> Signal(@RequestPart(name = "photo", required = false) List<MultipartFile> photo,
       @RequestParam(name = "cause", required = true) List<Integer> idanomaly, String email, String numberphone,
-      int idsociete, String description, @RequestParam("district") int district) {
+      @RequestParam(name = "idsociete", defaultValue = "0") int idsociete, String description,
+      @RequestParam("district") int district) {
     try {
       return ResponseEntity.ok(new ReturnMap(200,
           serviceSignal.Save(photo, idanomaly, email, numberphone, district, idsociete, description)));
@@ -49,7 +50,7 @@ public class CitoyenController {
       Ordermission mission = serviceOrdermission.getOrdermissionByNumeroSerie(n_serie);
       Enquete enquete = serviceEnquete.getEnqueteByOrdermission(mission.getIdordermission());
       return ResponseEntity
-          .ok(new ReturnMap(200, serviceFeedback.Save(mission, enquete.getIdsociete(), feedback, photo)));
+          .ok(new ReturnMap(200, serviceFeedback.Save(mission, enquete.getSociete().getIdsociete(), feedback, photo)));
     } catch (Exception e) {
       return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
     }

@@ -1,5 +1,7 @@
 package com.ains.myspring.repository.modules.equipe;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -18,4 +20,7 @@ public interface DetailequipeRepository extends JpaRepository<Detailequipe, Inte
   @Transactional
   @Query(value = "update administration set haveaccount = false where idadministration = :idadministration and isactive = true  ", nativeQuery = true)
   void DesactiveCompteChefEquipe(int idadministration);
+
+  @Query(value = "select * from detailequipe where idequipe = :idequipe", nativeQuery = true)
+  List<Detailequipe> getDetailEquipe(int idequipe);
 }

@@ -233,6 +233,7 @@ public class MissionController {
   private String getEmailUserByToken() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String jwtToken = (String) authentication.getCredentials();
+    System.out.println("token  = " + jwtToken);
     String email_chef = jwt.getEmailByToken(jwtToken);
     return email_chef;
   }

@@ -28,7 +28,7 @@ public class AuthService {
       authenticationManager.authenticate(
           new UsernamePasswordAuthenticationToken(loginForm.getEmail(), loginForm.getPassword()));
       Optional<Account> account_active = _context_repository.getAccountActive(loginForm.getEmail());
-      if (account_active.isPresent()) {
+      if (account_active.isEmpty()) {
         throw new Exception("Wrong password");
       }
       Optional<Account> account = _context_repository.getAccountValidatebyemail(loginForm.getEmail(), true);

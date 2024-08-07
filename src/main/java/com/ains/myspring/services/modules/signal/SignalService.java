@@ -1,6 +1,7 @@
 package com.ains.myspring.services.modules.signal;
 
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,11 +34,10 @@ public class SignalService {
   @Autowired
   private AnomalyService serviceAnomaly;
 
-  @Transactional
+  @Transactional(rollbackFor = { Exception.class, SQLException.class })
   public Signal Save(List<MultipartFile> photo, List<Integer> idanomaly, String email, String number,
       int iddistrict, int societe, String description)
       throws Exception {
-    int idsociete = 0;
     Societe societeObject = null;
     if (number.equals("") && email.equals("")) {
       throw new Exception("one contact required");
@@ -45,7 +45,7 @@ public class SignalService {
     if (societe == 0) {
       societeObject = serviceSociete.getSocieteNotFound();
     } else {
-      societeObject = serviceSociete.getSocieteById(idsociete);
+      societeObject = serviceSociete.getSocieteById(societe);
     }
     District district = serviceDistrict.getById(iddistrict);
     Date date = new Date(System.currentTimeMillis());
