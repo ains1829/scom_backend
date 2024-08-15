@@ -1,12 +1,15 @@
 package com.ains.myspring.controller.privates.mission;
 
 import java.sql.Date;
+import java.util.HashMap;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,6 +46,7 @@ import com.ains.myspring.services.modules.mission.enquete.PvinfractionService;
 
 @RequestMapping("/mission")
 @RestController
+@CrossOrigin("*")
 public class MissionController {
   @Autowired
   private OrdermissionService _serviceOrdre;
@@ -86,13 +90,98 @@ public class MissionController {
     }
   }
 
+  @PreAuthorize("hasRole('SG')")
+  @GetMapping("/OrderMissionFinish")
+  public ResponseEntity<?> OrdermissionFinish(@RequestParam(name = "pagenumber", defaultValue = "0") int page) {
+    HashMap<String, Object> mapping = new HashMap<>();
+    Page<Ordermission> ordermission = _serviceOrdre.getOrdermissionMissionFinish(page);
+    mapping.put("hasnext", ordermission.hasNext());
+    mapping.put("hasprevious", ordermission.hasPrevious());
+    mapping.put("data", ordermission.getContent());
+    mapping.put("nombrepage", ordermission.getTotalPages());
+    mapping.put("page", page);
+    return ResponseEntity.ok(new ReturnMap(200, mapping));
+  }
+
+  @PreAuthorize("hasRole('SG')")
+  @GetMapping("/OrderMissionValider")
+  public ResponseEntity<?> OrdermissionValider(@RequestParam(name = "pagenumber", defaultValue = "0") int page) {
+    HashMap<String, Object> mapping = new HashMap<>();
+    Page<Ordermission> ordermission = _serviceOrdre.getOrderMissionFilterStatus(100, page);
+    mapping.put("hasnext", ordermission.hasNext());
+    mapping.put("hasprevious", ordermission.hasPrevious());
+    mapping.put("data", ordermission.getContent());
+    mapping.put("nombrepage", ordermission.getTotalPages());
+    mapping.put("page", page);
+    return ResponseEntity.ok(new ReturnMap(200, mapping));
+  }
+
+  @PreAuthorize("hasRole('SG')")
+  @GetMapping("/OrderMissionNonValider")
+  public ResponseEntity<?> OrdermissionNonValider(@RequestParam(name = "pagenumber", defaultValue = "0") int page) {
+    HashMap<String, Object> mapping = new HashMap<>();
+    Page<Ordermission> ordermission = _serviceOrdre.getOrderMissionFilterStatus(0, page);
+    mapping.put("hasnext", ordermission.hasNext());
+    mapping.put("hasprevious", ordermission.hasPrevious());
+    mapping.put("data", ordermission.getContent());
+    mapping.put("nombrepage", ordermission.getTotalPages());
+    mapping.put("page", page);
+    return ResponseEntity.ok(new ReturnMap(200, mapping));
+  }
+
+  @PreAuthorize("hasRole('SG')")
+  @GetMapping("/OrderMissionenAttente")
+  public ResponseEntity<?> OrdermissionenAttente(@RequestParam(name = "pagenumber", defaultValue = "0") int page) {
+    HashMap<String, Object> mapping = new HashMap<>();
+    Page<Ordermission> ordermission = _serviceOrdre.getOrderMissionFilterStatus(500, page);
+    mapping.put("hasnext", ordermission.hasNext());
+    mapping.put("hasprevious", ordermission.hasPrevious());
+    mapping.put("data", ordermission.getContent());
+    mapping.put("nombrepage", ordermission.getTotalPages());
+    mapping.put("page", page);
+    return ResponseEntity.ok(new ReturnMap(200, mapping));
+  }
+
+  @PreAuthorize("hasRole('SG')")
+  @GetMapping("/OrderMissionAll")
+  public ResponseEntity<?> OrdermissionAll(@RequestParam(name = "pagenumber", defaultValue = "0") int page) {
+    HashMap<String, Object> mapping = new HashMap<>();
+    Page<Ordermission> ordermission = _serviceOrdre.getOrdermissionAll(page);
+    mapping.put("hasnext", ordermission.hasNext());
+    mapping.put("hasprevious", ordermission.hasPrevious());
+    mapping.put("data", ordermission.getContent());
+    mapping.put("nombrepage", ordermission.getTotalPages());
+    mapping.put("page", page);
+    return ResponseEntity.ok(new ReturnMap(200, mapping));
+  }
+
+  @PreAuthorize("hasRole('DR') or hasRole('DT')")
+  @GetMapping("/OrderMissionAllbydrdt")
+  public ResponseEntity<?> OrdermissionAllByDrDt(@RequestParam(name = "pagenumber", defaultValue = "0") int page) {
+    try {
+      String email = getEmailUserByToken();
+      Optional<Administration> administration = _serviceAdministration.getAdministrationByEmail(email);
+      HashMap<String, Object> mapping = new HashMap<>();
+      Page<Ordermission> ordermission = _serviceOrdre
+          .getOrdermissionAllByDrDt(administration.get().getIdadministration(), page);
+      mapping.put("hasnext", ordermission.hasNext());
+      mapping.put("hasprevious", ordermission.hasPrevious());
+      mapping.put("data", ordermission.getContent());
+      mapping.put("nombrepage", ordermission.getTotalPages());
+      mapping.put("page", page);
+      return ResponseEntity.ok(new ReturnMap(200, mapping));
+    } catch (Exception e) {
+      return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
+    }
+  }
+
   @PreAuthorize("hasRole('DR')")
   @PostMapping("/demandeordre")
   public ResponseEntity<?> DemandeOrdreMission(@RequestBody MissionJson demande) {
     try {
       Optional<Administration> administration = _serviceAdministration.getAdministrationByEmail(getEmailUserByToken());
       int region = administration.get().getRegion().getIdregion();
-      Ordermission mission = _serviceOrdre.SaveAll(demande, region);
+      Ordermission mission = _serviceOrdre.SaveAll(demande, region, administration.get());
       return ResponseEntity.ok(new ReturnMap(200, mission).Mapping());
     } catch (Exception e) {
       return ResponseEntity.ok(new ReturnMap(500, e.getMessage()).Mapping());

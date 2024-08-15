@@ -163,12 +163,12 @@ public class GenerateOM {
         .getDetailEquipe(ordermission.getEquipe().getIdequipe());
     for (int i = 0; i < detailequipe.size(); i++) {
       XWPFTableRow row1 = table.createRow();
-      setTextAndFormat(row1.getCell(0), detailequipe.get(i).getAdministration().getNameadministration(), 11,
+      setTextAndFormat(row1.getCell(0), detailequipe.get(i).getNameadministration(), 11,
           false);
-      setTextAndFormat(row1.getCell(1), detailequipe.get(i).getAdministration().getProfil().getDescription(),
+      setTextAndFormat(row1.getCell(1), detailequipe.get(i).getProfil(),
           11,
           false);
-      setTextAndFormat(row1.getCell(2), detailequipe.get(i).getAdministration().getMatricule(), 11, false);
+      setTextAndFormat(row1.getCell(2), detailequipe.get(i).getMatricule(), 11, false);
     }
   }
 }

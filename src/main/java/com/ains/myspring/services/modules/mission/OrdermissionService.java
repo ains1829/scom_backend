@@ -11,8 +11,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ains.myspring.models.admin.Administration;
 import com.ains.myspring.models.jsontoclass.order.MissionJson;
+import com.ains.myspring.models.modules.Societe;
 import com.ains.myspring.models.modules.equipe.Equipe;
+import com.ains.myspring.models.modules.lieu.District;
 import com.ains.myspring.models.modules.lieu.Region;
 import com.ains.myspring.models.modules.mission.Autresuivi;
 import com.ains.myspring.models.modules.mission.Collecte;
@@ -21,6 +24,7 @@ import com.ains.myspring.models.modules.mission.Ordermission;
 import com.ains.myspring.repository.modules.mission.OrdermissionRepository;
 import com.ains.myspring.services.modules.SocieteService;
 import com.ains.myspring.services.modules.equipe.EquipeService;
+import com.ains.myspring.services.modules.lieu.DistrictService;
 import com.ains.myspring.services.modules.lieu.RegionService;
 import com.ains.myspring.services.modules.mission.doc.GenerateOM;
 
@@ -42,6 +46,8 @@ public class OrdermissionService {
   private SocieteService serviceSociete;
   @Autowired
   private GenerateOM serviceGenerateOM;
+  @Autowired
+  private DistrictService _serviceDistrict;
 
   public Ordermission UpdateOrdermission(Ordermission ordermission) {
     return _contextOrder.save(ordermission);
@@ -64,9 +70,10 @@ public class OrdermissionService {
   }
 
   @Transactional(rollbackFor = { Exception.class, SQLException.class })
-  public Ordermission SaveAll(MissionJson demaJson, int region) throws Exception {
-    Ordermission newordermission = Save(demaJson, region);
+  public Ordermission SaveAll(MissionJson demaJson, int region, Administration sender) throws Exception {
+    Ordermission newordermission = Save(demaJson, region, sender);
     if (demaJson.getIdtypeordermission() == 1) {
+      _serviceEnquete.CheckSocieteIsPending(demaJson.getSociete());
       _serviceEnquete.Save(new Enquete(
           newordermission.getIdordermission(), serviceSociete.getSocieteById(demaJson.getSociete()), 0));
     } else if (demaJson.getIdtypeordermission() == 2) {
@@ -78,13 +85,24 @@ public class OrdermissionService {
     return newordermission;
   }
 
-  public Ordermission Save(MissionJson demande, int region) throws Exception {
+  public Ordermission Save(MissionJson demande, int region, Administration sender) throws Exception {
     Equipe equipe = _serviceEquipe.getById(demande.getIdequipe(), region);
     Region _Objectregion = _regionService.getRegionById(region);
     String numero_serie = generateNumeroSerie(_Objectregion.getNumero());
     Date date_now = new Date(System.currentTimeMillis());
-    Ordermission ordre = new Ordermission(demande.getIdtypeordermission(), equipe, _Objectregion, demande.getMotifs(),
-        numero_serie, date_now, demande.getDatedescente());
+    Ordermission ordre = null;
+    District district = _serviceDistrict.getById(demande.getDistrict());
+    if (demande.getIdtypeordermission() == 1) {
+      Societe societe = serviceSociete.getSocieteById(demande.getSociete());
+      ordre = new Ordermission(demande.getIdtypeordermission(), equipe, _Objectregion, demande.getMotifs(),
+          numero_serie, date_now, demande.getDatedescente(), societe.getIdsociete(), societe.getNamesociete(),
+          societe.getAddresse(), district.getIddistrict(), district.getNameville());
+    } else {
+      ordre = new Ordermission(demande.getIdtypeordermission(), equipe, _Objectregion, demande.getMotifs(),
+          numero_serie, date_now, demande.getDatedescente(), null, null,
+          null, district.getIddistrict(), district.getNameville());
+    }
+    ordre.setSender(sender);
     return _contextOrder.save(ordre);
   }
 
@@ -105,7 +123,6 @@ public class OrdermissionService {
     }
     if (confirmed) {
       ordermission.get().setStatus_validation(100);
-      // generate documennt
       String urlfile = serviceGenerateOM.Ordermission(ordermission.get());
       ordermission.get().setFileordermission(urlfile);
       IfModerationValidate(ordermission.get());
@@ -116,7 +133,6 @@ public class OrdermissionService {
   }
 
   private void IfModerationValidate(Ordermission ordermission) throws Exception {
-    System.out.println("ito ny type : " + ordermission.getIdtypeordermission());
     if (ordermission.getIdtypeordermission() == 1) {
       Enquete enquete = _serviceEnquete.getEnqueteByOrdermission(ordermission.getIdordermission());
       enquete.setStatu(10);
@@ -154,6 +170,12 @@ public class OrdermissionService {
     int size = 20;
     Pageable page = PageRequest.of(pagenumber, size);
     return _contextOrder.getOrdermissionAll(page);
+  }
+
+  public Page<Ordermission> getOrdermissionAllByDrDt(int idadministration, int pagenumber) {
+    int size = 20;
+    Pageable page = PageRequest.of(pagenumber, size);
+    return _contextOrder.getOrdermissionAllByDr(idadministration, page);
   }
 
   public Page<Ordermission> getOrdermissionSearchbyMotifs(String searchmotif, int pagenumber) {

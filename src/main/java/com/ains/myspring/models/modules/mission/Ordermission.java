@@ -1,8 +1,12 @@
 package com.ains.myspring.models.modules.mission;
 
 import java.sql.Date;
+
+import com.ains.myspring.models.admin.Administration;
 import com.ains.myspring.models.modules.equipe.Equipe;
 import com.ains.myspring.models.modules.lieu.Region;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,12 +34,23 @@ public class Ordermission {
   boolean isbasculed;
   int status_validation;
   String fileordermission;
+  @ManyToOne
+  @JoinColumn(name = "sender")
+  Administration sender;
+  @Column(name = "idsociete", nullable = true)
+  Integer idsociete;
+  String nomsociete;
+  String addressesociete;
+  @Column(name = "iddistrict", nullable = true)
+  Integer iddistrict;
+  String nomdistrict;
 
   public Ordermission() {
   }
 
   public Ordermission(int idtypeordermission, Equipe equipe, Region region, String motifs, String numeroserie,
-      Date dateorder, Date datedescente) {
+      Date dateorder, Date datedescente, Integer idsociete, String nomsociete, String addressesociete,
+      Integer iddistrict, String nomdistrict) {
     this.idtypeordermission = idtypeordermission;
     this.equipe = equipe;
     this.region = region;
@@ -43,6 +58,12 @@ public class Ordermission {
     this.numeroserie = numeroserie;
     this.dateorder = dateorder;
     this.datedescente = datedescente;
+    this.idsociete = idsociete;
+    this.nomsociete = nomsociete;
+    this.addressesociete = addressesociete;
+    this.iddistrict = iddistrict;
+    this.nomdistrict = nomdistrict;
+
   }
 
   public int getIdordermission() {
@@ -131,6 +152,62 @@ public class Ordermission {
 
   public void setFileordermission(String fileordermission) {
     this.fileordermission = fileordermission;
+  }
+
+  public Region getRegion() {
+    return region;
+  }
+
+  public void setRegion(Region region) {
+    this.region = region;
+  }
+
+  public Administration getSender() {
+    return sender;
+  }
+
+  public void setSender(Administration sender) {
+    this.sender = sender;
+  }
+
+  public Integer getIddistrict() {
+    return iddistrict;
+  }
+
+  public void setIddistrict(Integer iddistrict) {
+    this.iddistrict = iddistrict;
+  }
+
+  public String getNomdistrict() {
+    return nomdistrict;
+  }
+
+  public void setNomdistrict(String nomDistrict) {
+    this.nomdistrict = nomDistrict;
+  }
+
+  public Integer getIdsociete() {
+    return idsociete;
+  }
+
+  public void setIdsociete(Integer idsociete) {
+    this.idsociete = idsociete;
+  }
+
+  public String getNomsociete() {
+    return nomsociete;
+  }
+
+  public void setNomsociete(String nomSociete) {
+    this.nomsociete = nomSociete;
+  }
+
+  public String getAddressesociete() {
+    return addressesociete;
+  }
+
+  public void setAddresseSociete(String addresseSociete) {
+    this.addressesociete = addresseSociete;
   }
 
 }

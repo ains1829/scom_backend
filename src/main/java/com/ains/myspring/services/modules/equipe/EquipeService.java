@@ -1,8 +1,15 @@
 package com.ains.myspring.services.modules.equipe;
 
+import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.ains.myspring.models.admin.Administration;
 import com.ains.myspring.models.jsontoclass.equipe.Jsonequipe;
 import com.ains.myspring.models.jsontoclass.equipe.Jsonmembre;
 import com.ains.myspring.models.modules.equipe.Detailequipe;
@@ -34,19 +41,27 @@ public class EquipeService {
     return true;
   }
 
+  @Transactional(rollbackFor = { Exception.class, SQLException.class })
   public Equipe CreateEquipe(Jsonequipe equipe, Jsonmembre membre) throws Exception {
     try {
       CheckMembreEquipe(equipe, membre);
-      Equipe newEquipe = _contextEquipe.save(
-          new Equipe(equipe.getNameequipe(), _serviceAdministration.getAdministrationById(equipe.getIdadministration()),
-              equipe.getIdregion()));
-      Detailequipe chefequipe = new Detailequipe(newEquipe.getIdequipe(), newEquipe.getChefequipe(), 100);
+      Equipe newEquipe = new Equipe(equipe.getNameequipe(),
+          _serviceAdministration.getAdministrationById(equipe.getIdadministration()),
+          equipe.getIdregion());
+      Set<Detailequipe> detailequipes = new HashSet<>();
+      Detailequipe chefequipe = new Detailequipe(newEquipe, newEquipe.getChefequipe().getIdadministration(), 100,
+          newEquipe.getChefequipe().getNameadministration(), newEquipe.getChefequipe().getMatricule(),
+          newEquipe.getChefequipe().getEmail(), newEquipe.getChefequipe().getProfil().getDescription());
       _serviceEquipe.SaveDetail(chefequipe);
+      detailequipes.add(chefequipe);
       for (int i = 0; i < membre.getIdadministration().size(); i++) {
-        _serviceEquipe.SaveDetail(new Detailequipe(newEquipe.getIdequipe(),
-            _serviceAdministration.getAdministrationById(membre.getIdadministration().get(i)), 0));
+        Administration admin_staff = _serviceAdministration.getAdministrationById(membre.getIdadministration().get(i));
+        detailequipes.add(
+            new Detailequipe(newEquipe, admin_staff.getIdadministration(), 0, admin_staff.getNameadministration(),
+                admin_staff.getMatricule(), admin_staff.getEmail(), admin_staff.getProfil().getDescription()));
       }
-      return newEquipe;
+      newEquipe.setDetailequipes(detailequipes);
+      return _contextEquipe.save(newEquipe);
     } catch (Exception e) {
       throw new Exception(e.getMessage());
     }

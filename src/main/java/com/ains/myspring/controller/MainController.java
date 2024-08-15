@@ -51,6 +51,7 @@ public class MainController {
     try {
       return ResponseEntity.ok(new ReturnMap(200, _ServieAuth.login(user)).Mapping());
     } catch (Exception e) {
+      System.out.println(e.getMessage());
       return ResponseEntity.ok(new ReturnMap(401, e.getMessage()).Mapping());
     }
   }

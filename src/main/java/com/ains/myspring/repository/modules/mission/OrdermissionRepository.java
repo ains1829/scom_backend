@@ -16,7 +16,7 @@ public interface OrdermissionRepository extends JpaRepository<Ordermission, Inte
   @Query(value = "Select * from ordermission where dateorderend is not null order by dateorder desc", nativeQuery = true)
   Page<Ordermission> getOrdermissionMissionFinish(Pageable page);
 
-  @Query(value = "Select * from ordermission where dateorderend is null order by dateorder desc", nativeQuery = true)
+  @Query(value = "Select * from ordermission where status_validation = 100 dateorderend is null order by dateorder desc", nativeQuery = true)
   Page<Ordermission> getOrdermissionMissionNotFinish(Pageable page);
 
   @Query(value = "Select * from ordermission order by dateorder desc", nativeQuery = true)
@@ -27,5 +27,8 @@ public interface OrdermissionRepository extends JpaRepository<Ordermission, Inte
 
   @Query(value = "select * from ordermission where numeroserie = :numero_serie ", nativeQuery = true)
   Optional<Ordermission> getOrdermissionByNumeroSerie(@Param("numero_serie") String numero);
+
+  @Query(value = "Select * from ordermission where sender = :idadmin order by dateorder desc", nativeQuery = true)
+  Page<Ordermission> getOrdermissionAllByDr(@Param("idadmin") int id, Pageable page);
 
 }

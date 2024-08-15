@@ -16,6 +16,14 @@ public class EnqueteService {
     return _contextEnquete.save(enquete);
   }
 
+  public boolean CheckSocieteIsPending(int idsociete) throws Exception {
+    Optional<Enquete> enquete = _contextEnquete.CheckIfSocieteIsPending(idsociete);
+    if (enquete != null) {
+      throw new Exception("Enquete for this societe is pending");
+    }
+    return false;
+  }
+
   public Enquete FindById(int idenquete) throws Exception {
     Optional<Enquete> enquete = _contextEnquete.findById(idenquete);
     if (enquete.isPresent()) {

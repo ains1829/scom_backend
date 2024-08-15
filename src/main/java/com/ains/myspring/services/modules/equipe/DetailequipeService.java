@@ -34,7 +34,7 @@ public class DetailequipeService {
   }
 
   public Detailequipe SaveDetail(Detailequipe detailequipe) throws Exception {
-    if (!CheckMembreHaveEquipe(detailequipe.getAdministration().getIdadministration())) {
+    if (!CheckMembreHaveEquipe(detailequipe.getIdadministration())) {
       return _context.save(detailequipe);
     }
     return null;

@@ -1,12 +1,19 @@
 package com.ains.myspring.models.modules.equipe;
 
+import java.util.Set;
+
 import com.ains.myspring.models.admin.Administration;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;  
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Equipe {
@@ -19,6 +26,9 @@ public class Equipe {
   Administration chefequipe;
   boolean isactive = true;
   int idregion;
+  @OneToMany(mappedBy = "equipe", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @JsonManagedReference
+  Set<Detailequipe> detailequipes;
 
   public Equipe() {
   }
@@ -67,6 +77,14 @@ public class Equipe {
 
   public void setChefequipe(Administration chefequipe) {
     this.chefequipe = chefequipe;
+  }
+
+  public Set<Detailequipe> getDetailequipes() {
+    return detailequipes;
+  }
+
+  public void setDetailequipes(Set<Detailequipe> detailequipes) {
+    this.detailequipes = detailequipes;
   }
 
 }

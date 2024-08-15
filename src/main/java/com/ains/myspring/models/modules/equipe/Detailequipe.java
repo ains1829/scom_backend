@@ -1,6 +1,7 @@
 package com.ains.myspring.models.modules.equipe;
 
 import com.ains.myspring.models.admin.Administration;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,20 +15,29 @@ public class Detailequipe {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   int iddetailequipe;
-  int idequipe;
   @ManyToOne
-  @JoinColumn(name = "idadministration")
-  Administration administration;
-
+  @JoinColumn(name = "idequipe")
+  @JsonBackReference
+  Equipe equipe;
+  int idadministration;
   int statustaff;
+  String nameadministration;
+  String matricule;
+  String email;
+  String profil;
 
   public Detailequipe() {
   }
 
-  public Detailequipe(int idequipe, Administration administration, int statustaff) {
-    this.idequipe = idequipe;
-    this.administration = administration;
+  public Detailequipe(Equipe equipe, int idadministration, int statustaff, String nameadministration, String matricule,
+      String email, String profil) {
+    this.equipe = equipe;
+    this.idadministration = idadministration;
     this.statustaff = statustaff;
+    this.nameadministration = nameadministration;
+    this.matricule = matricule;
+    this.email = email;
+    this.profil = profil;
   }
 
   public int getIddetailequipe() {
@@ -38,12 +48,12 @@ public class Detailequipe {
     this.iddetailequipe = iddetailequipe;
   }
 
-  public int getIdequipe() {
-    return idequipe;
+  public Equipe getEquipe() {
+    return equipe;
   }
 
-  public void setIdequipe(int idequipe) {
-    this.idequipe = idequipe;
+  public void setEquipe(Equipe equipe) {
+    this.equipe = equipe;
   }
 
   public int getStatustaff() {
@@ -54,11 +64,43 @@ public class Detailequipe {
     this.statustaff = statustaff;
   }
 
-  public Administration getAdministration() {
-    return administration;
+  public int getIdadministration() {
+    return idadministration;
   }
 
-  public void setAdministration(Administration administration) {
-    this.administration = administration;
+  public void setIdadministration(int idadministration) {
+    this.idadministration = idadministration;
+  }
+
+  public String getNameadministration() {
+    return nameadministration;
+  }
+
+  public void setNameadministration(String nameadministration) {
+    this.nameadministration = nameadministration;
+  }
+
+  public String getMatricule() {
+    return matricule;
+  }
+
+  public void setMatricule(String matricule) {
+    this.matricule = matricule;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public String getProfil() {
+    return profil;
+  }
+
+  public void setProfil(String profil) {
+    this.profil = profil;
   }
 }
