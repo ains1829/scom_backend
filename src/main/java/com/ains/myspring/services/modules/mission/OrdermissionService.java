@@ -91,13 +91,13 @@ public class OrdermissionService {
     String numero_serie = generateNumeroSerie(_Objectregion.getNumero());
     Date date_now = new Date(System.currentTimeMillis());
     Ordermission ordre = null;
-    District district = _serviceDistrict.getById(demande.getDistrict());
     if (demande.getIdtypeordermission() == 1) {
       Societe societe = serviceSociete.getSocieteById(demande.getSociete());
       ordre = new Ordermission(demande.getIdtypeordermission(), equipe, _Objectregion, demande.getMotifs(),
           numero_serie, date_now, demande.getDatedescente(), societe.getIdsociete(), societe.getNamesociete(),
-          societe.getAddresse(), district.getIddistrict(), district.getNameville());
+          societe.getAddresse(), societe.getDistrict().getIddistrict(), societe.getDistrict().getNameville());
     } else {
+      District district = _serviceDistrict.getById(demande.getDistrict());
       ordre = new Ordermission(demande.getIdtypeordermission(), equipe, _Objectregion, demande.getMotifs(),
           numero_serie, date_now, demande.getDatedescente(), null, null,
           null, district.getIddistrict(), district.getNameville());

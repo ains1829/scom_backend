@@ -1,5 +1,6 @@
 package com.ains.myspring.repository.modules;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,4 +20,7 @@ public interface SocieteRepository extends JpaRepository<Societe, Integer> {
 
   @Query(value = "Select * from  societe where idregion is null and iddistrict is null", nativeQuery = true)
   Optional<Societe> getSocieteNotFound();
+
+  @Query(value = "Select * from societe where idregion =:region", nativeQuery = true)
+  List<Societe> getSocieteByRegion(int region);
 }

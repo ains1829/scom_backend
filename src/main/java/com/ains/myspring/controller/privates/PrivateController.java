@@ -1,9 +1,12 @@
 package com.ains.myspring.controller.privates;
 
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import com.ains.myspring.controller.Token;
+import com.ains.myspring.controller.other.ReturnMap;
+import com.ains.myspring.models.admin.Administration;
 import com.ains.myspring.models.jsontoclass.JsonAdministration;
 import com.ains.myspring.models.jsontoclass.JsonSociete;
 import com.ains.myspring.models.jsontoclass.equipe.EquipeJson;
@@ -26,6 +32,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @RequestMapping("/scomadminstration")
 @RestController
+@CrossOrigin("*")
 public class PrivateController {
   @Autowired
   private AccountService _serviceAccount;
@@ -37,6 +44,8 @@ public class PrivateController {
   private AdministrationService _serviceAdministration;
   @Autowired
   private DistrictService _serviceDistrict;
+  @Autowired
+  private Token token_email;
 
   @PreAuthorize("hasRole('DSI')")
   @PutMapping("/validateaccount")
@@ -83,6 +92,45 @@ public class PrivateController {
           .body(_serviceEquipe.CreateEquipe(jsonEquipe.getEquipe(), jsonEquipe.getMembre()));
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+  }
+
+  @PreAuthorize("hasRole('DR') or hasRole('DT')")
+  @GetMapping("/equipebyregion")
+  public ResponseEntity<?> Equipebyregion() {
+    String email = token_email.getEmailUserByToken();
+    Optional<Administration> administration = _serviceAdministration.getAdministrationByEmail(email);
+    try {
+      return ResponseEntity
+          .ok(new ReturnMap(200, _serviceEquipe.getEquipeByRegion(administration.get().getRegion().getIdregion())));
+    } catch (Exception e) {
+      return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
+    }
+  }
+
+  @PreAuthorize("hasRole('DR') or hasRole('DT')")
+  @GetMapping("/getdistrictbyregion")
+  public ResponseEntity<?> getDistrictbyregion() {
+    String email = token_email.getEmailUserByToken();
+    Optional<Administration> administration = _serviceAdministration.getAdministrationByEmail(email);
+    try {
+      return ResponseEntity
+          .ok(new ReturnMap(200, _serviceDistrict.getDistrictByregion(administration.get().getRegion().getIdregion())));
+    } catch (Exception e) {
+      return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
+    }
+  }
+
+  @PreAuthorize("hasRole('DR') or hasRole('DT')")
+  @GetMapping("/getSocietebyregion")
+  public ResponseEntity<?> getSocietebyregion() {
+    String email = token_email.getEmailUserByToken();
+    Optional<Administration> administration = _serviceAdministration.getAdministrationByEmail(email);
+    try {
+      return ResponseEntity
+          .ok(new ReturnMap(200, _serviceSociete.getSocietebyregion(administration.get().getRegion().getIdregion())));
+    } catch (Exception e) {
+      return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
     }
   }
 

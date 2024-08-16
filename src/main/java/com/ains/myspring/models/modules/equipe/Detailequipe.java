@@ -25,12 +25,13 @@ public class Detailequipe {
   String matricule;
   String email;
   String profil;
+  String photo;
 
   public Detailequipe() {
   }
 
   public Detailequipe(Equipe equipe, int idadministration, int statustaff, String nameadministration, String matricule,
-      String email, String profil) {
+      String email, String profil, String photo) {
     this.equipe = equipe;
     this.idadministration = idadministration;
     this.statustaff = statustaff;
@@ -38,6 +39,7 @@ public class Detailequipe {
     this.matricule = matricule;
     this.email = email;
     this.profil = profil;
+    this.photo = photo;
   }
 
   public int getIddetailequipe() {
@@ -102,5 +104,13 @@ public class Detailequipe {
 
   public void setProfil(String profil) {
     this.profil = profil;
+  }
+
+  public String getPhoto() {
+    return photo;
+  }
+
+  public void setPhoto(String photo) {
+    this.photo = photo;
   }
 }

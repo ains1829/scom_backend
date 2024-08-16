@@ -1,5 +1,6 @@
 package com.ains.myspring.services.modules;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -84,5 +85,9 @@ public class SocieteService {
       return societe.get();
     }
     throw new Exception("Societe not found");
+  }
+
+  public List<Societe> getSocietebyregion(int region) {
+    return _contextsociete.getSocieteByRegion(region);
   }
 }

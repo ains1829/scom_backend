@@ -2,6 +2,7 @@ package com.ains.myspring.services.modules.equipe;
 
 import java.sql.SQLException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -51,14 +52,16 @@ public class EquipeService {
       Set<Detailequipe> detailequipes = new HashSet<>();
       Detailequipe chefequipe = new Detailequipe(newEquipe, newEquipe.getChefequipe().getIdadministration(), 100,
           newEquipe.getChefequipe().getNameadministration(), newEquipe.getChefequipe().getMatricule(),
-          newEquipe.getChefequipe().getEmail(), newEquipe.getChefequipe().getProfil().getDescription());
+          newEquipe.getChefequipe().getEmail(), newEquipe.getChefequipe().getProfil().getDescription(),
+          newEquipe.getChefequipe().getPhoto());
       _serviceEquipe.SaveDetail(chefequipe);
       detailequipes.add(chefequipe);
       for (int i = 0; i < membre.getIdadministration().size(); i++) {
         Administration admin_staff = _serviceAdministration.getAdministrationById(membre.getIdadministration().get(i));
         detailequipes.add(
             new Detailequipe(newEquipe, admin_staff.getIdadministration(), 0, admin_staff.getNameadministration(),
-                admin_staff.getMatricule(), admin_staff.getEmail(), admin_staff.getProfil().getDescription()));
+                admin_staff.getMatricule(), admin_staff.getEmail(), admin_staff.getProfil().getDescription(),
+                admin_staff.getPhoto()));
       }
       newEquipe.setDetailequipes(detailequipes);
       return _contextEquipe.save(newEquipe);
@@ -92,5 +95,9 @@ public class EquipeService {
       return equipe.get();
     }
     throw new Exception("Equipe not found");
+  }
+
+  public List<Equipe> getEquipeByRegion(int region) {
+    return _contextEquipe.getEquipeByRegion(region);
   }
 }

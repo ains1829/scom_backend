@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import com.ains.myspring.controller.Token;
 import com.ains.myspring.controller.other.ReturnMap;
 import com.ains.myspring.models.admin.Administration;
 import com.ains.myspring.models.jsontoclass.order.ListCollecteprix;
@@ -55,8 +54,6 @@ public class MissionController {
   @Autowired
   private EnqueteService _serviveEnquete;
   @Autowired
-  private JwtService jwt;
-  @Autowired
   private AdministrationService _serviceAdministration;
   @Autowired
   private EquipeService _serviceEquipe;
@@ -72,6 +69,8 @@ public class MissionController {
   private CollecteService _serviceCollecte;
   @Autowired
   private AutresuiviService _serviceAutresuivi;
+  @Autowired
+  private Token tokenemail;
 
   @PreAuthorize("hasRole('SG')")
   @PostMapping("/validation_ordre_mission")
@@ -159,7 +158,7 @@ public class MissionController {
   @GetMapping("/OrderMissionAllbydrdt")
   public ResponseEntity<?> OrdermissionAllByDrDt(@RequestParam(name = "pagenumber", defaultValue = "0") int page) {
     try {
-      String email = getEmailUserByToken();
+      String email = tokenemail.getEmailUserByToken();
       Optional<Administration> administration = _serviceAdministration.getAdministrationByEmail(email);
       HashMap<String, Object> mapping = new HashMap<>();
       Page<Ordermission> ordermission = _serviceOrdre
@@ -175,15 +174,17 @@ public class MissionController {
     }
   }
 
-  @PreAuthorize("hasRole('DR')")
+  @PreAuthorize("hasRole('DR') or hasRole('DT')")
   @PostMapping("/demandeordre")
   public ResponseEntity<?> DemandeOrdreMission(@RequestBody MissionJson demande) {
     try {
-      Optional<Administration> administration = _serviceAdministration.getAdministrationByEmail(getEmailUserByToken());
+      Optional<Administration> administration = _serviceAdministration
+          .getAdministrationByEmail(tokenemail.getEmailUserByToken());
       int region = administration.get().getRegion().getIdregion();
       Ordermission mission = _serviceOrdre.SaveAll(demande, region, administration.get());
       return ResponseEntity.ok(new ReturnMap(200, mission).Mapping());
     } catch (Exception e) {
+      e.printStackTrace();
       return ResponseEntity.ok(new ReturnMap(500, e.getMessage()).Mapping());
     }
   }
@@ -193,7 +194,8 @@ public class MissionController {
   public ResponseEntity<?> FicheTechniques(@RequestParam("enquete") int idenquete,
       @RequestPart("file_fiche") MultipartFile file_fiche) {
     try {
-      Optional<Administration> administration = _serviceAdministration.getAdministrationByEmail(getEmailUserByToken());
+      Optional<Administration> administration = _serviceAdministration
+          .getAdministrationByEmail(tokenemail.getEmailUserByToken());
       Equipe equipe = _serviceEquipe.getEquipeByChef(administration.get().getIdadministration());
       _serviveEnquete.FindById(idenquete);
       String url_file = "Wait serveur file"; // wait server file
@@ -225,7 +227,8 @@ public class MissionController {
   public ResponseEntity<?> PvauditionController(@RequestParam("n_reference") String ref,
       @RequestParam("enquete") int idenquete, @RequestPart("file_fiche") MultipartFile file_fiche) {
     try {
-      Optional<Administration> administration = _serviceAdministration.getAdministrationByEmail(getEmailUserByToken());
+      Optional<Administration> administration = _serviceAdministration
+          .getAdministrationByEmail(tokenemail.getEmailUserByToken());
       Equipe equipe = _serviceEquipe.getEquipeByChef(administration.get().getIdadministration());
       _serviceConvocation.RefConvocationExist(ref);
       _serviveEnquete.FindById(idenquete);
@@ -245,7 +248,8 @@ public class MissionController {
   public ResponseEntity<?> PvInfractionController(@RequestParam("enquete") int idenquete,
       @RequestPart("file_fiche") MultipartFile file_fiche) {
     try {
-      Optional<Administration> administration = _serviceAdministration.getAdministrationByEmail(getEmailUserByToken());
+      Optional<Administration> administration = _serviceAdministration
+          .getAdministrationByEmail(tokenemail.getEmailUserByToken());
       Equipe equipe = _serviceEquipe.getEquipeByChef(administration.get().getIdadministration());
       _serviveEnquete.FindById(idenquete);
       String url_file = "Wait serveur file"; // wait server file
@@ -317,13 +321,5 @@ public class MissionController {
     } catch (Exception e) {
       return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
     }
-  }
-
-  private String getEmailUserByToken() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    String jwtToken = (String) authentication.getCredentials();
-    System.out.println("token  = " + jwtToken);
-    String email_chef = jwt.getEmailByToken(jwtToken);
-    return email_chef;
   }
 }

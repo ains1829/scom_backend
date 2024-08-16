@@ -1,5 +1,6 @@
 package com.ains.myspring.services.modules.lieu;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,5 +20,9 @@ public class DistrictService {
       return district.get();
     }
     throw new Exception("District not found");
+  }
+
+  public List<District> getDistrictByregion(int region) {
+    return _contextDistrict.getDistrictByregion(region);
   }
 }
