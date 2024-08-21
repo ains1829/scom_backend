@@ -1,11 +1,14 @@
 package com.ains.myspring.models.modules.mission;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
 public class Autresuivi {
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   int idautresuivi;
   int idordermission;
   String urlrapport;

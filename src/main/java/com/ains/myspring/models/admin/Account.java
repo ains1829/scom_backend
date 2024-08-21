@@ -117,8 +117,9 @@ public class Account implements UserDetails {
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     Set<GrantedAuthority> authorities = new HashSet<>();
-    authorities.add(new SimpleGrantedAuthority("ROLE_" + profil.getNameprofil()));
-    if (chefequipe) {
+    if (!chefequipe) {
+      authorities.add(new SimpleGrantedAuthority("ROLE_" + profil.getNameprofil()));
+    } else {
       authorities.add(new SimpleGrantedAuthority("ROLE_CHEF_EQUIPE"));
     }
     return authorities;

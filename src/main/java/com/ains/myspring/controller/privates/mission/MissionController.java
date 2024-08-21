@@ -30,7 +30,6 @@ import com.ains.myspring.models.modules.mission.enquete.Convocation;
 import com.ains.myspring.models.modules.mission.enquete.Fichetechnique;
 import com.ains.myspring.models.modules.mission.enquete.Pvaudition;
 import com.ains.myspring.models.modules.mission.enquete.Pvinfraction;
-import com.ains.myspring.security.config.JwtService;
 import com.ains.myspring.services.admin.AdministrationService;
 import com.ains.myspring.services.modules.equipe.EquipeService;
 import com.ains.myspring.services.modules.mission.AutresuiviService;
@@ -73,7 +72,17 @@ public class MissionController {
   private Token tokenemail;
 
   @PreAuthorize("hasRole('SG')")
-  @PostMapping("/validation_ordre_mission")
+  @PostMapping("/basculed_ordre_mission")
+  public ResponseEntity<?> BasculedOrdremission(@RequestParam("idorderdemission") int id) {
+    try {
+      return ResponseEntity.ok(new ReturnMap(200, _serviceOrdre.Basculed(id)));
+    } catch (Exception e) {
+      return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
+    }
+  }
+
+  @PreAuthorize("hasRole('SG')")
+  @GetMapping("/validation_ordre_mission")
   public ResponseEntity<?> ModerationOrdremission(@RequestParam("idorderdemission") int id,
       @RequestParam("confirmation") int confirmation) {
     try {
@@ -190,6 +199,36 @@ public class MissionController {
   }
 
   @PreAuthorize("hasRole('CHEF_EQUIPE')")
+  @GetMapping("/enqeuetebyordermission")
+  public ResponseEntity<?> getEnquete(@RequestParam("idordermission") int idorderdemission) {
+    try {
+      return ResponseEntity.ok(new ReturnMap(200, _serviveEnquete.getEnqueteByOrdermission(idorderdemission)));
+    } catch (Exception e) {
+      return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
+    }
+  }
+
+  @PreAuthorize("hasRole('CHEF_EQUIPE')")
+  @GetMapping("/suivi_mission")
+  public ResponseEntity<?> Suivi_mission(@RequestParam(name = "page", defaultValue = "0") int pagenumber) {
+    Optional<Administration> administration = _serviceAdministration
+        .getAdministrationByEmail(tokenemail.getEmailUserByToken());
+    try {
+      Equipe equipe = _serviceEquipe.getEquipeByChef(administration.get().getIdadministration());
+      HashMap<String, Object> mapping = new HashMap<>();
+      Page<Ordermission> ordermission = _serviceOrdre.getOrdermissionByEquipe(pagenumber, equipe.getIdequipe());
+      mapping.put("hasnext", ordermission.hasNext());
+      mapping.put("hasprevious", ordermission.hasPrevious());
+      mapping.put("data", ordermission.getContent());
+      mapping.put("nombrepage", ordermission.getTotalPages());
+      mapping.put("page", pagenumber);
+      return ResponseEntity.ok(new ReturnMap(200, mapping));
+    } catch (Exception e) {
+      return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
+    }
+  }
+
+  @PreAuthorize("hasRole('CHEF_EQUIPE')")
   @PostMapping("/fichetechnique")
   public ResponseEntity<?> FicheTechniques(@RequestParam("enquete") int idenquete,
       @RequestPart("file_fiche") MultipartFile file_fiche) {
@@ -232,7 +271,7 @@ public class MissionController {
       Equipe equipe = _serviceEquipe.getEquipeByChef(administration.get().getIdadministration());
       _serviceConvocation.RefConvocationExist(ref);
       _serviveEnquete.FindById(idenquete);
-      String url_file = "Wait serveur file"; // wait server file
+      String url_file = "Wait serveur file";
       Date now = new Date(System.currentTimeMillis());
       _serviveEnquete.ChangeStatus(idenquete, 100);
       return ResponseEntity
@@ -252,7 +291,7 @@ public class MissionController {
           .getAdministrationByEmail(tokenemail.getEmailUserByToken());
       Equipe equipe = _serviceEquipe.getEquipeByChef(administration.get().getIdadministration());
       _serviveEnquete.FindById(idenquete);
-      String url_file = "Wait serveur file"; // wait server file
+      String url_file = "Wait serveur file";
       Date now = new Date(System.currentTimeMillis());
       _serviveEnquete.ChangeStatus(idenquete, 500);
       return ResponseEntity
@@ -268,7 +307,7 @@ public class MissionController {
   public ResponseEntity<?> EnqueteMissionFinished(@RequestParam("enquete") int idenquete) {
     try {
       Enquete enquete = _serviveEnquete.ChangeStatusMissionFinished(idenquete);
-      Ordermission ordermission = _serviceOrdre.getOrderMissionById(enquete.getIdordermission());
+      Ordermission ordermission = _serviceOrdre.getOrderMissionById(enquete.getOrdermission().getIdordermission());
       ordermission.setDateorderend(new Date(System.currentTimeMillis()));
       _serviceOrdre.UpdateOrdermission(ordermission);
       return ResponseEntity.ok(new ReturnMap(200, "Mission terminer"));

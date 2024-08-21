@@ -74,8 +74,7 @@ public class OrdermissionService {
     Ordermission newordermission = Save(demaJson, region, sender);
     if (demaJson.getIdtypeordermission() == 1) {
       _serviceEnquete.CheckSocieteIsPending(demaJson.getSociete());
-      _serviceEnquete.Save(new Enquete(
-          newordermission.getIdordermission(), serviceSociete.getSocieteById(demaJson.getSociete()), 0));
+      _serviceEnquete.Save(new Enquete(newordermission, serviceSociete.getSocieteById(demaJson.getSociete()), 0));
     } else if (demaJson.getIdtypeordermission() == 2) {
       _serviceCollecte.Save(new Collecte(newordermission.getIdordermission(), demaJson.getDistrict(), 0,
           new Date(System.currentTimeMillis())));
@@ -182,6 +181,12 @@ public class OrdermissionService {
     int size = 20;
     Pageable page = PageRequest.of(pagenumber, size);
     return _contextOrder.getOrdermissionSearchbyMotifs(searchmotif, page);
+  }
+
+  public Page<Ordermission> getOrdermissionByEquipe(int pagenumber, int equipe) {
+    int size = 20;
+    Pageable page = PageRequest.of(pagenumber, size);
+    return _contextOrder.getOrdermissionByEquipe(equipe, page);
   }
 
   public String generateNumeroSerie(int regionCode) {

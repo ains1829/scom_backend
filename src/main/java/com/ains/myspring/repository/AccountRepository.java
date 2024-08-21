@@ -16,4 +16,8 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 
   @Query(value = "Select * from account where email =:email and isactive", nativeQuery = true)
   Optional<Account> getAccountActive(@Param("email") String email);
+
+  @Query(value = "select count(*) as n  from equipe where idadministration = :idadmin and isactive", nativeQuery = true)
+  int AccountIsChef(int idadmin);
+
 }

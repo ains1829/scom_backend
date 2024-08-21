@@ -42,6 +42,9 @@ public class AccountService {
           createuser.getEmail(),
           passwordEncoder.encode(createuser.getPassword()),
           administrationUser.get().getProfil());
+      if (_contextaccount.AccountIsChef(administrationUser.get().getIdadministration()) == 1) {
+        new_account.setChefequipe(true);
+      }
       return _contextaccount.save(new_account);
 
     } else {

@@ -35,7 +35,11 @@ public class AuthService {
       Optional<Account> account = _context_repository.getAccountValidatebyemail(loginForm.getEmail(), true);
       if (account.isPresent()) {
         List<String> role = new ArrayList<>();
-        role.add(account.get().getProfil().getNameprofil());
+        if (account.get().isChefequipe()) {
+          role.add("CH");
+        } else {
+          role.add(account.get().getProfil().getNameprofil());
+        }
         String token = _ServiceJWT.createToken(loginForm.getEmail(), role);
         HashMap<String, Object> map = new HashMap<>();
         map.put("token", token);

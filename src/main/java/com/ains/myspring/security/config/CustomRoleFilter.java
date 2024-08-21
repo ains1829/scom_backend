@@ -27,9 +27,7 @@ public class CustomRoleFilter extends OncePerRequestFilter {
       throws ServletException, IOException {
     String token = jwtTokenProvider.resolveToken(request);
     if (token != null && jwtTokenProvider.validateToken(token)) {
-      System.out.println("Extracete : " + token);
       String username = jwtTokenProvider.getEmailByToken(token);
-      System.out.println("username : " + username);
       UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
       UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, token,
           userDetails.getAuthorities());
