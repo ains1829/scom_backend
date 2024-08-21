@@ -24,12 +24,7 @@ import com.ains.myspring.models.jsontoclass.order.MissionJson;
 import com.ains.myspring.models.modules.equipe.Equipe;
 import com.ains.myspring.models.modules.mission.Autresuivi;
 import com.ains.myspring.models.modules.mission.Collecte;
-import com.ains.myspring.models.modules.mission.Enquete;
 import com.ains.myspring.models.modules.mission.Ordermission;
-import com.ains.myspring.models.modules.mission.enquete.Convocation;
-import com.ains.myspring.models.modules.mission.enquete.Fichetechnique;
-import com.ains.myspring.models.modules.mission.enquete.Pvaudition;
-import com.ains.myspring.models.modules.mission.enquete.Pvinfraction;
 import com.ains.myspring.services.admin.AdministrationService;
 import com.ains.myspring.services.modules.equipe.EquipeService;
 import com.ains.myspring.services.modules.mission.AutresuiviService;
@@ -37,10 +32,7 @@ import com.ains.myspring.services.modules.mission.CollecteService;
 import com.ains.myspring.services.modules.mission.EnqueteService;
 import com.ains.myspring.services.modules.mission.OrdermissionService;
 import com.ains.myspring.services.modules.mission.collecte.DetailcollecteService;
-import com.ains.myspring.services.modules.mission.enquete.ConvocationService;
-import com.ains.myspring.services.modules.mission.enquete.FichetechniqueService;
-import com.ains.myspring.services.modules.mission.enquete.PvauditionService;
-import com.ains.myspring.services.modules.mission.enquete.PvinfractionService;
+
 
 @RequestMapping("/mission")
 @RestController
@@ -49,19 +41,11 @@ public class MissionController {
   @Autowired
   private OrdermissionService _serviceOrdre;
   @Autowired
-  private FichetechniqueService _serviceTechnique;
-  @Autowired
   private EnqueteService _serviveEnquete;
   @Autowired
   private AdministrationService _serviceAdministration;
   @Autowired
   private EquipeService _serviceEquipe;
-  @Autowired
-  private ConvocationService _serviceConvocation;
-  @Autowired
-  private PvauditionService _servicePvaudition;
-  @Autowired
-  private PvinfractionService _servicePvinfraction;
   @Autowired
   private DetailcollecteService _serviceDetailcollecte;
   @Autowired
@@ -230,17 +214,10 @@ public class MissionController {
 
   @PreAuthorize("hasRole('CHEF_EQUIPE')")
   @PostMapping("/fichetechnique")
-  public ResponseEntity<?> FicheTechniques(@RequestParam("enquete") int idenquete,
+  public ResponseEntity<?> FicheTechniques(@RequestParam("idordermission") int idordermission,
       @RequestPart("file_fiche") MultipartFile file_fiche) {
     try {
-      Optional<Administration> administration = _serviceAdministration
-          .getAdministrationByEmail(tokenemail.getEmailUserByToken());
-      Equipe equipe = _serviceEquipe.getEquipeByChef(administration.get().getIdadministration());
-      _serviveEnquete.FindById(idenquete);
-      String url_file = "Wait serveur file"; // wait server file
-      Date now = new Date(System.currentTimeMillis());
-      return ResponseEntity.ok(new ReturnMap(200,
-          _serviceTechnique.Save(new Fichetechnique(idenquete, equipe.getIdequipe(), url_file, now))));
+      return ResponseEntity.ok(new ReturnMap(200, _serviveEnquete.FicheTechnique(idordermission, file_fiche)));
     } catch (Exception e) {
       return ResponseEntity.ok(new ReturnMap(500, e.getMessage()).Mapping());
     }
@@ -248,14 +225,10 @@ public class MissionController {
 
   @PreAuthorize("hasRole('CHEF_EQUIPE')")
   @PostMapping("/convocation")
-  public ResponseEntity<?> ConvocationController(@RequestParam("enquete") int idenquete,
+  public ResponseEntity<?> ConvocationController(@RequestParam("idordermission") int idordermission,
       @RequestPart("file_fiche") MultipartFile file_fiche) {
     try {
-      _serviveEnquete.FindById(idenquete);
-      String url_file = "Wait serveur file"; // wait server file
-      Date now = new Date(System.currentTimeMillis());
-      return ResponseEntity
-          .ok(new ReturnMap(200, _serviceConvocation.Save(new Convocation(idenquete, url_file, now))));
+      return ResponseEntity.ok(new ReturnMap(200, _serviveEnquete.Convocation(idordermission, file_fiche)));
     } catch (Exception e) {
       return ResponseEntity.ok(new ReturnMap(500, e.getMessage()).Mapping());
     }
@@ -263,20 +236,10 @@ public class MissionController {
 
   @PreAuthorize("hasRole('CHEF_EQUIPE')")
   @PostMapping("/pvaudition")
-  public ResponseEntity<?> PvauditionController(@RequestParam("n_reference") String ref,
-      @RequestParam("enquete") int idenquete, @RequestPart("file_fiche") MultipartFile file_fiche) {
+  public ResponseEntity<?> PvauditionController(@RequestParam("idordermission") int idordermission,
+      @RequestPart("file_fiche") MultipartFile file_fiche) {
     try {
-      Optional<Administration> administration = _serviceAdministration
-          .getAdministrationByEmail(tokenemail.getEmailUserByToken());
-      Equipe equipe = _serviceEquipe.getEquipeByChef(administration.get().getIdadministration());
-      _serviceConvocation.RefConvocationExist(ref);
-      _serviveEnquete.FindById(idenquete);
-      String url_file = "Wait serveur file";
-      Date now = new Date(System.currentTimeMillis());
-      _serviveEnquete.ChangeStatus(idenquete, 100);
-      return ResponseEntity
-          .ok(new ReturnMap(200,
-              _servicePvaudition.Save(new Pvaudition(idenquete, equipe.getIdequipe(), url_file, now))));
+      return ResponseEntity.ok(new ReturnMap(200, _serviveEnquete.Pvaudition(idordermission, file_fiche)));
     } catch (Exception e) {
       return ResponseEntity.ok(new ReturnMap(500, e.getMessage()).Mapping());
     }
@@ -284,19 +247,10 @@ public class MissionController {
 
   @PreAuthorize("hasRole('CHEF_EQUIPE')")
   @PostMapping("/pvinfraction")
-  public ResponseEntity<?> PvInfractionController(@RequestParam("enquete") int idenquete,
+  public ResponseEntity<?> PvInfractionController(@RequestParam("idordermission") int idordermission,
       @RequestPart("file_fiche") MultipartFile file_fiche) {
     try {
-      Optional<Administration> administration = _serviceAdministration
-          .getAdministrationByEmail(tokenemail.getEmailUserByToken());
-      Equipe equipe = _serviceEquipe.getEquipeByChef(administration.get().getIdadministration());
-      _serviveEnquete.FindById(idenquete);
-      String url_file = "Wait serveur file";
-      Date now = new Date(System.currentTimeMillis());
-      _serviveEnquete.ChangeStatus(idenquete, 500);
-      return ResponseEntity
-          .ok(new ReturnMap(200,
-              _servicePvinfraction.Save(new Pvinfraction(idenquete, equipe.getIdequipe(), url_file, now))));
+      return ResponseEntity.ok(new ReturnMap(200, _serviveEnquete.Pvinfraction(idordermission, file_fiche)));
     } catch (Exception e) {
       return ResponseEntity.ok(new ReturnMap(500, e.getMessage()).Mapping());
     }
@@ -304,13 +258,9 @@ public class MissionController {
 
   @PreAuthorize("hasRole('CHEF_EQUIPE')")
   @PostMapping("/enquete_missionFinished")
-  public ResponseEntity<?> EnqueteMissionFinished(@RequestParam("enquete") int idenquete) {
+  public ResponseEntity<?> EnqueteMissionFinished(@RequestParam("idordermission") int idorderdemission) {
     try {
-      Enquete enquete = _serviveEnquete.ChangeStatusMissionFinished(idenquete);
-      Ordermission ordermission = _serviceOrdre.getOrderMissionById(enquete.getOrdermission().getIdordermission());
-      ordermission.setDateorderend(new Date(System.currentTimeMillis()));
-      _serviceOrdre.UpdateOrdermission(ordermission);
-      return ResponseEntity.ok(new ReturnMap(200, "Mission terminer"));
+      return ResponseEntity.ok(new ReturnMap(200, _serviceOrdre.MissionFinished(idorderdemission)));
     } catch (Exception e) {
       return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
     }

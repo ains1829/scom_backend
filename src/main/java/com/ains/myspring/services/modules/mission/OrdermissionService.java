@@ -70,6 +70,15 @@ public class OrdermissionService {
   }
 
   @Transactional(rollbackFor = { Exception.class, SQLException.class })
+  public Ordermission MissionFinished(int idorderdemission) throws Exception {
+    Enquete enquete = _serviceEnquete.getEnqueteByOrdermission(idorderdemission);
+    _serviceEnquete.ChangeStatusMissionFinished(enquete);
+    Ordermission ordermission = getOrderMissionById(enquete.getOrdermission().getIdordermission());
+    ordermission.setDateorderend(new Date(System.currentTimeMillis()));
+    return UpdateOrdermission(ordermission);
+  }
+
+  @Transactional(rollbackFor = { Exception.class, SQLException.class })
   public Ordermission SaveAll(MissionJson demaJson, int region, Administration sender) throws Exception {
     Ordermission newordermission = Save(demaJson, region, sender);
     if (demaJson.getIdtypeordermission() == 1) {
