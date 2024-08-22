@@ -2,6 +2,7 @@ package com.ains.myspring.controller.privates.mission;
 
 import java.sql.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ains.myspring.controller.Token;
 import com.ains.myspring.controller.other.ReturnMap;
 import com.ains.myspring.models.admin.Administration;
+import com.ains.myspring.models.jsontoclass.order.CollecteJson;
 import com.ains.myspring.models.jsontoclass.order.ListCollecteprix;
 import com.ains.myspring.models.jsontoclass.order.MissionJson;
 import com.ains.myspring.models.modules.equipe.Equipe;
@@ -32,7 +34,6 @@ import com.ains.myspring.services.modules.mission.CollecteService;
 import com.ains.myspring.services.modules.mission.EnqueteService;
 import com.ains.myspring.services.modules.mission.OrdermissionService;
 import com.ains.myspring.services.modules.mission.collecte.DetailcollecteService;
-
 
 @RequestMapping("/mission")
 @RestController
@@ -183,6 +184,16 @@ public class MissionController {
   }
 
   @PreAuthorize("hasRole('CHEF_EQUIPE')")
+  @GetMapping("/collectebyordermission")
+  public ResponseEntity<?> getOrdermission(@RequestParam("idordermission") int idordermission) {
+    try {
+      return ResponseEntity.ok(new ReturnMap(200, _serviceCollecte.getCollecteByOrdermission(idordermission)));
+    } catch (Exception e) {
+      return ResponseEntity.ok(new ReturnMap(200, e.getMessage()));
+    }
+  }
+
+  @PreAuthorize("hasRole('CHEF_EQUIPE')")
   @GetMapping("/enqeuetebyordermission")
   public ResponseEntity<?> getEnquete(@RequestParam("idordermission") int idorderdemission) {
     try {
@@ -268,14 +279,10 @@ public class MissionController {
 
   @PreAuthorize("hasRole('CHEF_EQUIPE')")
   @PostMapping("/collecte_missionFinished")
-  public ResponseEntity<?> CollecteMissionFinished(@RequestBody ListCollecteprix liste) {
+  public ResponseEntity<?> CollecteMissionFinished(@RequestParam("id") int idorderdemission,
+      @RequestBody List<CollecteJson> liste) {
     try {
-      _serviceDetailcollecte.SaveDetail(liste);
-      Collecte collecte = _serviceCollecte.getCollecteByid(liste.getIdcollecte());
-      Ordermission ordermission = _serviceOrdre.getOrderMissionById(collecte.getIdordermission());
-      ordermission.setDateorderend(new Date(System.currentTimeMillis()));
-      _serviceOrdre.UpdateOrdermission(ordermission);
-      return ResponseEntity.ok(new ReturnMap(200, "Suivi economique terminer"));
+      return ResponseEntity.ok(new ReturnMap(200, _serviceOrdre.CollecteFinished(idorderdemission, liste)));
     } catch (Exception e) {
       return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
     }

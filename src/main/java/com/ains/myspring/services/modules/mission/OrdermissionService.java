@@ -3,6 +3,7 @@ package com.ains.myspring.services.modules.mission;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ains.myspring.models.admin.Administration;
+import com.ains.myspring.models.jsontoclass.order.CollecteJson;
 import com.ains.myspring.models.jsontoclass.order.MissionJson;
 import com.ains.myspring.models.modules.Societe;
 import com.ains.myspring.models.modules.equipe.Equipe;
@@ -26,6 +28,7 @@ import com.ains.myspring.services.modules.SocieteService;
 import com.ains.myspring.services.modules.equipe.EquipeService;
 import com.ains.myspring.services.modules.lieu.DistrictService;
 import com.ains.myspring.services.modules.lieu.RegionService;
+import com.ains.myspring.services.modules.mission.collecte.DetailcollecteService;
 import com.ains.myspring.services.modules.mission.doc.GenerateOM;
 
 @Service
@@ -48,6 +51,8 @@ public class OrdermissionService {
   private GenerateOM serviceGenerateOM;
   @Autowired
   private DistrictService _serviceDistrict;
+  @Autowired
+  private DetailcollecteService _servicedetailcollecte;
 
   public Ordermission UpdateOrdermission(Ordermission ordermission) {
     return _contextOrder.save(ordermission);
@@ -70,6 +75,17 @@ public class OrdermissionService {
   }
 
   @Transactional(rollbackFor = { Exception.class, SQLException.class })
+  public Ordermission CollecteFinished(int idorderdemission, List<CollecteJson> collecte_detail) throws Exception {
+    Collecte collecte = _serviceCollecte.getCollecteByOrdermission(idorderdemission);
+    collecte.setStatu(200);
+    Collecte new_collecte = _serviceCollecte.Save(collecte);
+    _servicedetailcollecte.SaveDetail(new_collecte, collecte_detail);
+    Ordermission ordermission = getOrderMissionById(idorderdemission);
+    ordermission.setDateorderend(new Date(System.currentTimeMillis()));
+    return UpdateOrdermission(ordermission);
+  }
+
+  @Transactional(rollbackFor = { Exception.class, SQLException.class })
   public Ordermission MissionFinished(int idorderdemission) throws Exception {
     Enquete enquete = _serviceEnquete.getEnqueteByOrdermission(idorderdemission);
     _serviceEnquete.ChangeStatusMissionFinished(enquete);
@@ -85,7 +101,7 @@ public class OrdermissionService {
       _serviceEnquete.CheckSocieteIsPending(demaJson.getSociete());
       _serviceEnquete.Save(new Enquete(newordermission, serviceSociete.getSocieteById(demaJson.getSociete()), 0));
     } else if (demaJson.getIdtypeordermission() == 2) {
-      _serviceCollecte.Save(new Collecte(newordermission.getIdordermission(), demaJson.getDistrict(), 0,
+      _serviceCollecte.Save(new Collecte(newordermission, demaJson.getDistrict(), 0,
           new Date(System.currentTimeMillis())));
     } else {
       _serviceAutresuivi.Save(new Autresuivi(newordermission.getIdordermission(), "", 0, demaJson.getDistrict()));

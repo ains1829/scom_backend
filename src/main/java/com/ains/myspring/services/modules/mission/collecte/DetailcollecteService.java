@@ -1,5 +1,6 @@
 package com.ains.myspring.services.modules.mission.collecte;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -8,7 +9,9 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.ains.myspring.models.jsontoclass.order.CollecteJson;
 import com.ains.myspring.models.jsontoclass.order.ListCollecteprix;
 import com.ains.myspring.models.modules.mission.Collecte;
 import com.ains.myspring.models.modules.mission.collecte.Detailcollecte;
@@ -39,18 +42,15 @@ public class DetailcollecteService {
     _contextdetailcollecte.delete(detailcollecte);
   }
 
-  public List<Detailcollecte> SaveDetail(ListCollecteprix collecte_data) throws Exception {
-    Collecte collecte = _serviceCollecte.getCollecteByid(collecte_data.getIdcollecte());
-    collecte.setStatu(100);
-    _serviceCollecte.Save(collecte);
+  @Transactional(rollbackFor = { Exception.class, SQLException.class })
+  public List<Detailcollecte> SaveDetail(Collecte collecte, List<CollecteJson> collecte_data) throws Exception {
     List<Detailcollecte> saveDetail = new ArrayList<>();
-    if (hasDuplicates(collecte_data.getIdproduct())) {
-      throw new Exception("Duplicate data");
-    }
-    for (int i = 0; i < collecte_data.getIdproduct().size(); i++) {
-      saveDetail.add(_contextdetailcollecte
-          .save(new Detailcollecte(collecte_data.getIdcollecte(), collecte_data.getIdproduct().get(i),
-              collecte_data.getPrix().get(i))));
+    for (int i = 0; i < collecte_data.size(); i++) {
+      CollecteJson item = (CollecteJson) collecte_data.get(i);
+      for (int j = 0; j < item.getPrix().size(); j++) {
+        double price = Double.valueOf(item.getPrix().get(j));
+        saveDetail.add(_contextdetailcollecte.save(new Detailcollecte(collecte.getIdcollecte(), item.getId(), price)));
+      }
     }
     return saveDetail;
 
