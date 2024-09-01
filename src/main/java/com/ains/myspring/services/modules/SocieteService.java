@@ -3,6 +3,9 @@ package com.ains.myspring.services.modules;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.ains.myspring.models.modules.Societe;
 import com.ains.myspring.repository.modules.SocieteRepository;
@@ -89,5 +92,11 @@ public class SocieteService {
 
   public List<Societe> getSocietebyregion(int region) {
     return _contextsociete.getSocieteByRegion(region);
+  }
+
+  public Page<Societe> getSocietebyregion(int region, int pagenumber) {
+    int size = 20;
+    Pageable page = PageRequest.of(pagenumber, size);
+    return _contextsociete.getSocieteByregion(region, page);
   }
 }

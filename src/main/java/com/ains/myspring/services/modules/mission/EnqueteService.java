@@ -19,7 +19,7 @@ public class EnqueteService {
 
   public boolean CheckSocieteIsPending(int idsociete) throws Exception {
     Optional<Enquete> enquete = _contextEnquete.CheckIfSocieteIsPending(idsociete);
-    if (enquete != null) {
+    if (enquete.isPresent()) {
       throw new Exception("Enquete for this societe is pending");
     }
     return false;

@@ -1,7 +1,9 @@
 package com.ains.myspring.controller.privates;
 
+import java.util.HashMap;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -132,6 +134,44 @@ public class PrivateController {
     } catch (Exception e) {
       return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
     }
+  }
+
+  @PreAuthorize("hasRole('DR') or hasRole('DT')")
+  @GetMapping("/getSocietebyregionpagination")
+  public ResponseEntity<?> getSocietebyregionpagination(
+      @RequestParam(name = "page", defaultValue = "0") int pagenumber) {
+    String email = token_email.getEmailUserByToken();
+    Optional<Administration> administration = _serviceAdministration.getAdministrationByEmail(email);
+    Page<Societe> societe = _serviceSociete.getSocietebyregion(administration.get().getRegion().getIdregion(),
+        pagenumber);
+    HashMap<String, Object> mapping = new HashMap<>();
+    mapping.put("hasnext", societe.hasNext());
+    mapping.put("hasprevious", societe.hasPrevious());
+    mapping.put("data", societe.getContent());
+    mapping.put("nombrepage", societe.getTotalPages());
+    mapping.put("page", pagenumber);
+    try {
+      return ResponseEntity
+          .ok(new ReturnMap(200, mapping));
+    } catch (Exception e) {
+      return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
+    }
+  }
+
+  @PreAuthorize("hasRole('DR') or hasRole('DT')")
+  @GetMapping("/getmissionnairebyregion")
+  public ResponseEntity<?> getMissionnaireByregion(@RequestParam(defaultValue = "0") int pagenumber) {
+    String email = token_email.getEmailUserByToken();
+    Optional<Administration> administration = _serviceAdministration.getAdministrationByEmail(email);
+    HashMap<String, Object> mapping = new HashMap<>();
+    Page<Administration> missionnaire = _serviceAdministration.getMissionnaireByregion(pagenumber,
+        administration.get().getRegion().getIdregion());
+    mapping.put("hastnext", missionnaire.hasNext());
+    mapping.put("hastprevious", missionnaire.hasPrevious());
+    mapping.put("data", missionnaire.getContent());
+    mapping.put("nombrepage", missionnaire.getTotalPages());
+    mapping.put("page", pagenumber);
+    return ResponseEntity.ok(new ReturnMap(200, mapping));
   }
 
 }

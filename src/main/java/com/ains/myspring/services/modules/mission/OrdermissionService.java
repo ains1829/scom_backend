@@ -115,6 +115,10 @@ public class OrdermissionService {
     String numero_serie = generateNumeroSerie(_Objectregion.getNumero());
     Date date_now = new Date(System.currentTimeMillis());
     Ordermission ordre = null;
+    int status_ordermission = 0;
+    if (sender.getProfil().getIdprofil() == 8) {
+      status_ordermission = 10;
+    }
     if (demande.getIdtypeordermission() == 1) {
       Societe societe = serviceSociete.getSocieteById(demande.getSociete());
       ordre = new Ordermission(demande.getIdtypeordermission(), equipe, _Objectregion, demande.getMotifs(),
@@ -126,6 +130,7 @@ public class OrdermissionService {
           numero_serie, date_now, demande.getDatedescente(), null, null,
           null, district.getIddistrict(), district.getNameville());
     }
+    ordre.setStatus_validation(status_ordermission);
     ordre.setSender(sender);
     return _contextOrder.save(ordre);
   }
@@ -153,6 +158,15 @@ public class OrdermissionService {
     } else {
       ordermission.get().setStatus_validation(500);
     }
+    return _contextOrder.save(ordermission.get());
+  }
+
+  public Ordermission ValidationDgdmDt(int idordermission) throws Exception {
+    Optional<Ordermission> ordermission = _contextOrder.findById(idordermission);
+    if (ordermission.isEmpty()) {
+      throw new Exception("Order mission not found");
+    }
+    ordermission.get().setStatus_validation(0);
     return _contextOrder.save(ordermission.get());
   }
 
@@ -196,10 +210,10 @@ public class OrdermissionService {
     return _contextOrder.getOrdermissionAll(page);
   }
 
-  public Page<Ordermission> getOrdermissionAllByDrDt(int idadministration, int pagenumber) {
+  public Page<Ordermission> getOrdermissionAllByDrDt(int idregion, int pagenumber) {
     int size = 20;
     Pageable page = PageRequest.of(pagenumber, size);
-    return _contextOrder.getOrdermissionAllByDr(idadministration, page);
+    return _contextOrder.getOrdermissionAllByDrDt(idregion, page);
   }
 
   public Page<Ordermission> getOrdermissionSearchbyMotifs(String searchmotif, int pagenumber) {

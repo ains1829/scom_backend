@@ -13,7 +13,7 @@ public interface OrdermissionRepository extends JpaRepository<Ordermission, Inte
   @Query(value = "Select * from ordermission where status_validation = :status order by dateorder desc", nativeQuery = true)
   Page<Ordermission> getOrdermissionFilterstatus(int status, Pageable page);
 
-  @Query(value = "Select * from ordermission where dateorderend is not null order by dateorder desc", nativeQuery = true)
+  @Query(value = "Select * from ordermission where dateorderend is not null and status_validation = 100 order by dateorder desc", nativeQuery = true)
   Page<Ordermission> getOrdermissionMissionFinish(Pageable page);
 
   @Query(value = "Select * from ordermission where status_validation = 100 dateorderend is null order by dateorder desc", nativeQuery = true)
@@ -28,10 +28,10 @@ public interface OrdermissionRepository extends JpaRepository<Ordermission, Inte
   @Query(value = "select * from ordermission where numeroserie = :numero_serie ", nativeQuery = true)
   Optional<Ordermission> getOrdermissionByNumeroSerie(@Param("numero_serie") String numero);
 
-  @Query(value = "Select * from ordermission where sender = :idadmin order by dateorder desc", nativeQuery = true)
-  Page<Ordermission> getOrdermissionAllByDr(@Param("idadmin") int id, Pageable page);
+  @Query(value = "Select * from ordermission where idregion = :region order by dateorder desc", nativeQuery = true)
+  Page<Ordermission> getOrdermissionAllByDrDt(@Param("region") int id, Pageable page);
 
-  @Query(value = "Select * from ordermission where idequipe = :equipe order by dateorder desc", nativeQuery = true)
+  @Query(value = "Select * from ordermission where idequipe = :equipe and status_validation = 100 order by dateorder desc", nativeQuery = true)
   Page<Ordermission> getOrdermissionByEquipe(int equipe, Pageable pageable);
 
 }

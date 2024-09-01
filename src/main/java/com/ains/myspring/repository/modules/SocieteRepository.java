@@ -3,6 +3,8 @@ package com.ains.myspring.repository.modules;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -23,4 +25,7 @@ public interface SocieteRepository extends JpaRepository<Societe, Integer> {
 
   @Query(value = "Select * from societe where idregion =:region", nativeQuery = true)
   List<Societe> getSocieteByRegion(int region);
+
+  @Query(value = "Select * from societe where idregion =:region and societeactive=true", nativeQuery = true)
+  Page<Societe> getSocieteByregion(int region, Pageable page);
 }
