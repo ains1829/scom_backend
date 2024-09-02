@@ -80,9 +80,9 @@ public class PrivateController {
       Societe newSociete = new Societe(societe.getNamesociete(), societe.getDescription(), societe.getNif(),
           societe.getStat(), district.getRegion(), district, societe.getAddresse(),
           societe.getResponsable(), societe.getTelephone(), societe.getNumerofiscal());
-      return ResponseEntity.status(HttpStatus.OK).body(_serviceSociete.AddNewSociete(newSociete));
+      return ResponseEntity.ok(new ReturnMap(200, _serviceSociete.AddNewSociete(newSociete)));
     } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+      return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
     }
   }
 
@@ -136,14 +136,39 @@ public class PrivateController {
     }
   }
 
+  @PreAuthorize("hasRole('DG') or hasRole('SG') or hasRole('DSI')")
+  @GetMapping("/getSocieteglobalpagination")
+  public ResponseEntity<?> getSocieteglobalpagination(
+      @RequestParam(name = "page", defaultValue = "0") int pagenumber, @RequestParam(name = "search") String text,
+      @RequestParam("idregion") int region) {
+    Page<Societe> societe = null;
+    if (region == 0) {
+      societe = _serviceSociete.getSocieteglobal(pagenumber, text);
+    } else {
+      societe = _serviceSociete.getSocietebyregion(region, pagenumber, text);
+    }
+    HashMap<String, Object> mapping = new HashMap<>();
+    mapping.put("hasnext", societe.hasNext());
+    mapping.put("hasprevious", societe.hasPrevious());
+    mapping.put("data", societe.getContent());
+    mapping.put("nombrepage", societe.getTotalPages());
+    mapping.put("page", pagenumber);
+    try {
+      return ResponseEntity
+          .ok(new ReturnMap(200, mapping));
+    } catch (Exception e) {
+      return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
+    }
+  }
+
   @PreAuthorize("hasRole('DR') or hasRole('DT')")
   @GetMapping("/getSocietebyregionpagination")
   public ResponseEntity<?> getSocietebyregionpagination(
-      @RequestParam(name = "page", defaultValue = "0") int pagenumber) {
+      @RequestParam(name = "page", defaultValue = "0") int pagenumber, @RequestParam(name = "search") String text) {
     String email = token_email.getEmailUserByToken();
     Optional<Administration> administration = _serviceAdministration.getAdministrationByEmail(email);
     Page<Societe> societe = _serviceSociete.getSocietebyregion(administration.get().getRegion().getIdregion(),
-        pagenumber);
+        pagenumber, text);
     HashMap<String, Object> mapping = new HashMap<>();
     mapping.put("hasnext", societe.hasNext());
     mapping.put("hasprevious", societe.hasPrevious());

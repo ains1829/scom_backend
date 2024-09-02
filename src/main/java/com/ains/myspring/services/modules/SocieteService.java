@@ -37,16 +37,10 @@ public class SocieteService {
   }
 
   public Societe AddNewSociete(Societe societe) throws Exception {
-    try {
-      if (!FiscalIsExist(societe.getNumerofiscal()) && !StatIsExist(societe.getStat())
-          && !NifIsExist(societe.getNif())) {
-        return _contextsociete.save(societe);
-      } else {
-        throw new Exception("Add societe failed");
-      }
-    } catch (Exception e) {
-      throw new Exception(e.getMessage());
-    }
+    FiscalIsExist(societe.getNumerofiscal());
+    StatIsExist(societe.getStat());
+    NifIsExist(societe.getNif());
+    return _contextsociete.save(societe);
   }
 
   public Societe getSocieteById(int idsociete) throws Exception {
@@ -94,9 +88,15 @@ public class SocieteService {
     return _contextsociete.getSocieteByRegion(region);
   }
 
-  public Page<Societe> getSocietebyregion(int region, int pagenumber) {
-    int size = 20;
+  public Page<Societe> getSocietebyregion(int region, int pagenumber, String text) {
+    int size = 15;
     Pageable page = PageRequest.of(pagenumber, size);
-    return _contextsociete.getSocieteByregion(region, page);
+    return _contextsociete.getSocieteByregion(region, text, page);
+  }
+
+  public Page<Societe> getSocieteglobal(int pagenumber, String text) {
+    int size = 15;
+    Pageable page = PageRequest.of(pagenumber, size);
+    return _contextsociete.getSocieteglobal(text, page);
   }
 }
