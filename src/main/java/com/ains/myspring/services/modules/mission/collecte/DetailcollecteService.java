@@ -6,24 +6,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.ains.myspring.models.jsontoclass.order.CollecteJson;
-import com.ains.myspring.models.jsontoclass.order.ListCollecteprix;
 import com.ains.myspring.models.modules.mission.Collecte;
 import com.ains.myspring.models.modules.mission.collecte.Detailcollecte;
 import com.ains.myspring.repository.modules.mission.collecte.DetailcollecteRepository;
-import com.ains.myspring.services.modules.mission.CollecteService;
 
 @Service
 public class DetailcollecteService {
   @Autowired
   private DetailcollecteRepository _contextdetailcollecte;
-  @Autowired
-  private CollecteService _serviceCollecte;
 
   public Detailcollecte Save(Detailcollecte d_collecte) {
     return _contextdetailcollecte.save(d_collecte);
