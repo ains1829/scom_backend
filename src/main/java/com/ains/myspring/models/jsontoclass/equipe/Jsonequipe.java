@@ -1,9 +1,11 @@
 package com.ains.myspring.models.jsontoclass.equipe;
 
+import java.util.List;
+
 public class Jsonequipe {
   String nameequipe;
   int idadministration;
-  int idregion;
+  List<Integer> membres;
 
   public String getNameequipe() {
     return nameequipe;
@@ -21,11 +23,11 @@ public class Jsonequipe {
     this.idadministration = idadministration;
   }
 
-  public int getIdregion() {
-    return idregion;
+  public List<Integer> getMembres() {
+    return membres;
   }
 
-  public void setIdregion(int idregion) {
-    this.idregion = idregion;
+  public void setMembres(List<Integer> membres) {
+    this.membres = membres;
   }
 }

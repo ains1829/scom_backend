@@ -31,6 +31,9 @@ public interface OrdermissionRepository extends JpaRepository<Ordermission, Inte
   @Query(value = "Select * from ordermission where idregion = :region order by dateorder desc", nativeQuery = true)
   Page<Ordermission> getOrdermissionAllByDrDt(@Param("region") int id, Pageable page);
 
+  @Query(value = "Select * from ordermission where idregion = :region and status_validation = 100 order by dateorder desc", nativeQuery = true)
+  Page<Ordermission> getMissionAllByDrDt(@Param("region") int id, Pageable page);
+
   @Query(value = "Select * from ordermission where idequipe = :equipe and status_validation = 100 order by dateorder desc", nativeQuery = true)
   Page<Ordermission> getOrdermissionByEquipe(int equipe, Pageable pageable);
 

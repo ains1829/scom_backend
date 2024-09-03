@@ -219,7 +219,7 @@ public class MissionController {
     try {
       HashMap<String, Object> mapping = new HashMap<>();
       Page<Ordermission> ordermission = _serviceOrdre
-          .getOrdermissionAllByDrDt(administration.get().getRegion().getIdregion(), pagenumber);
+          .getMissionAllByDrDt(administration.get().getRegion().getIdregion(), pagenumber);
       mapping.put("hasnext", ordermission.hasNext());
       mapping.put("hasprevious", ordermission.hasPrevious());
       mapping.put("data", ordermission.getContent());

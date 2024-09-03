@@ -33,13 +33,6 @@ public class DetailequipeService {
     }
   }
 
-  public Detailequipe SaveDetail(Detailequipe detailequipe) throws Exception {
-    if (!CheckMembreHaveEquipe(detailequipe.getIdadministration())) {
-      return _context.save(detailequipe);
-    }
-    return null;
-  }
-
   public void DesactivateAccountChef(int administration) {
     _context.DesactiveCompteChefEquipe(administration);
   }

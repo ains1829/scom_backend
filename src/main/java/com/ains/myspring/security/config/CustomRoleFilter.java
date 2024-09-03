@@ -18,7 +18,6 @@ public class CustomRoleFilter extends OncePerRequestFilter {
 
   @Autowired
   private JwtService jwtTokenProvider;
-
   @Autowired
   private CustomUserDetailsService customUserDetailsService;
 

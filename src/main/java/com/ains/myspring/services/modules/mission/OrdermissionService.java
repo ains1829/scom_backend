@@ -81,6 +81,10 @@ public class OrdermissionService {
     Collecte new_collecte = _serviceCollecte.Save(collecte);
     _servicedetailcollecte.SaveDetail(new_collecte, collecte_detail);
     Ordermission ordermission = getOrderMissionById(idorderdemission);
+    Equipe equipe = ordermission.getEquipe();
+    equipe.setMission_fini(equipe.getMission_fini() + 1);
+    equipe.setMission_encours(equipe.getMission_encours() - 1);
+    _serviceEquipe.Save(equipe);
     ordermission.setDateorderend(new Date(System.currentTimeMillis()));
     return UpdateOrdermission(ordermission);
   }
@@ -88,8 +92,12 @@ public class OrdermissionService {
   @Transactional(rollbackFor = { Exception.class, SQLException.class })
   public Ordermission MissionFinished(int idorderdemission) throws Exception {
     Enquete enquete = _serviceEnquete.getEnqueteByOrdermission(idorderdemission);
-    _serviceEnquete.ChangeStatusMissionFinished(enquete);
     Ordermission ordermission = getOrderMissionById(enquete.getOrdermission().getIdordermission());
+    Equipe equipe = ordermission.getEquipe();
+    equipe.setMission_fini(equipe.getMission_fini() + 1);
+    equipe.setMission_encours(equipe.getMission_encours() - 1);
+    _serviceEquipe.Save(equipe);
+    _serviceEnquete.ChangeStatusMissionFinished(enquete);
     ordermission.setDateorderend(new Date(System.currentTimeMillis()));
     return UpdateOrdermission(ordermission);
   }
@@ -184,6 +192,10 @@ public class OrdermissionService {
       autresuivi.setStatu(10);
       _serviceAutresuivi.Save(autresuivi);
     }
+    Equipe equipe = ordermission.getEquipe();
+    equipe.setNombre_mission(equipe.getNombre_mission() + 1);
+    equipe.setMission_encours(equipe.getMission_encours() + 1);
+    _serviceEquipe.Save(equipe);
   }
 
   public Page<Ordermission> getOrderMissionFilterStatus(int status, int pagenumber) {
@@ -214,6 +226,12 @@ public class OrdermissionService {
     int size = 20;
     Pageable page = PageRequest.of(pagenumber, size);
     return _contextOrder.getOrdermissionAllByDrDt(idregion, page);
+  }
+
+  public Page<Ordermission> getMissionAllByDrDt(int idregion, int pagenumber) {
+    int size = 20;
+    Pageable page = PageRequest.of(pagenumber, size);
+    return _contextOrder.getMissionAllByDrDt(idregion, page);
   }
 
   public Page<Ordermission> getOrdermissionSearchbyMotifs(String searchmotif, int pagenumber) {

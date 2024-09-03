@@ -65,10 +65,10 @@ public class AdministrationService {
     return _contextAdminitration.getMissionnaire(pageable);
   }
 
-  public Page<Administration> getMissionnaireByregion(int page, int region) {
-    int size = 20;
+  public Page<Administration> getMissionnaireByregion(int page, int region, String text) {
+    int size = 5;
     Pageable pageable = PageRequest.of(page, size);
-    return _contextAdminitration.getMissionnaireByRegion(region, pageable);
+    return _contextAdminitration.getMissionnaireByRegion(region, pageable, text);
   }
 
   public Administration AdministrationDisabled(int idadministration) throws Exception {
@@ -76,5 +76,9 @@ public class AdministrationService {
     administration.setIsactive(false);
     // appel account_service desactivated account if have;
     return _contextAdminitration.save(administration);
+  }
+
+  public List<Administration> getAdministrationNoEquipe(int region) {
+    return _contextAdminitration.getAdministrationNoEquipe(region);
   }
 }

@@ -22,7 +22,7 @@ import com.ains.myspring.controller.other.ReturnMap;
 import com.ains.myspring.models.admin.Administration;
 import com.ains.myspring.models.jsontoclass.JsonAdministration;
 import com.ains.myspring.models.jsontoclass.JsonSociete;
-import com.ains.myspring.models.jsontoclass.equipe.EquipeJson;
+import com.ains.myspring.models.jsontoclass.equipe.Jsonequipe;
 import com.ains.myspring.models.modules.Societe;
 import com.ains.myspring.models.modules.lieu.District;
 import com.ains.myspring.services.admin.AccountService;
@@ -86,14 +86,41 @@ public class PrivateController {
     }
   }
 
-  @PreAuthorize("hasRole('DR')")
+  @PreAuthorize("hasRole('DR') or hasRole('DT')")
   @PostMapping("/createEquipe")
-  public ResponseEntity<?> NewEquipe(@RequestBody EquipeJson jsonEquipe) {
+  public ResponseEntity<?> NewEquipe(@RequestBody Jsonequipe newequipe) {
+    String email = token_email.getEmailUserByToken();
+    Optional<Administration> administration = _serviceAdministration.getAdministrationByEmail(email);
     try {
-      return ResponseEntity.status(HttpStatus.OK)
-          .body(_serviceEquipe.CreateEquipe(jsonEquipe.getEquipe(), jsonEquipe.getMembre()));
+      return ResponseEntity.ok(new ReturnMap(200,
+          _serviceEquipe.CreateEquipe(administration.get().getRegion().getIdregion(), newequipe)));
     } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+      return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
+    }
+  }
+
+  @PreAuthorize("hasRole('DR') or hasRole('DT')")
+  @GetMapping("/supprime_equipe")
+  public ResponseEntity<?> DesactivateEquipe(@RequestParam("idequipe") int idequipe) {
+    try {
+      _serviceEquipe.DesactivateEquipe(idequipe);
+      return ResponseEntity.ok(new ReturnMap(200, "OK"));
+    } catch (Exception e) {
+      return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
+    }
+  }
+
+  @PreAuthorize("hasRole('DR') or hasRole('DT')")
+  @GetMapping("/administration_no_H_equipe")
+  public ResponseEntity<?> AdministrationNoEquipe() {
+    String email = token_email.getEmailUserByToken();
+    Optional<Administration> administration = _serviceAdministration.getAdministrationByEmail(email);
+    try {
+      return ResponseEntity
+          .ok(new ReturnMap(200,
+              _serviceAdministration.getAdministrationNoEquipe(administration.get().getRegion().getIdregion())));
+    } catch (Exception e) {
+      return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
     }
   }
 
@@ -185,14 +212,15 @@ public class PrivateController {
 
   @PreAuthorize("hasRole('DR') or hasRole('DT')")
   @GetMapping("/getmissionnairebyregion")
-  public ResponseEntity<?> getMissionnaireByregion(@RequestParam(defaultValue = "0") int pagenumber) {
+  public ResponseEntity<?> getMissionnaireByregion(@RequestParam(name = "page", defaultValue = "0") int pagenumber,
+      @RequestParam(name = "text") String text) {
     String email = token_email.getEmailUserByToken();
     Optional<Administration> administration = _serviceAdministration.getAdministrationByEmail(email);
     HashMap<String, Object> mapping = new HashMap<>();
     Page<Administration> missionnaire = _serviceAdministration.getMissionnaireByregion(pagenumber,
-        administration.get().getRegion().getIdregion());
-    mapping.put("hastnext", missionnaire.hasNext());
-    mapping.put("hastprevious", missionnaire.hasPrevious());
+        administration.get().getRegion().getIdregion(), text);
+    mapping.put("hasnext", missionnaire.hasNext());
+    mapping.put("hasprevious", missionnaire.hasPrevious());
     mapping.put("data", missionnaire.getContent());
     mapping.put("nombrepage", missionnaire.getTotalPages());
     mapping.put("page", pagenumber);

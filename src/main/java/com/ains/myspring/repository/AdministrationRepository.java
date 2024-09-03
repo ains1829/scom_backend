@@ -16,9 +16,12 @@ public interface AdministrationRepository extends JpaRepository<Administration, 
   @Query(value = "select * from administration where idprofil != 6 and idprofil !=7 and isactive = true order by idprofil asc", nativeQuery = true)
   List<Administration> getAdministrator();
 
-  @Query(value = "select * from administration where idprofil = 6 or idprofil =7 and isactive = true", nativeQuery = true)
+  @Query(value = "select * from administration where (idprofil = 6 or idprofil =7) and isactive = true", nativeQuery = true)
   Page<Administration> getMissionnaire(Pageable page);
 
-  @Query(value = "select * from administration where idprofil = 6 or idprofil =7 and isactive = true and idregion = :region", nativeQuery = true)
-  Page<Administration> getMissionnaireByRegion(int region, Pageable page);
+  @Query(value = "select * from administration where (idprofil = 6 or idprofil =7) and isactive = true and idregion = :region and (nameadministration ilike '%'||:text||'%' or matricule ilike '%'||:text||'%')", nativeQuery = true)
+  Page<Administration> getMissionnaireByRegion(int region, Pageable page, String text);
+
+  @Query(value = "select administration.* from administration left join (select detailequipe.idadministration  from DETAILEQUIPE join EQUIPE on (EQUIPE.idequipe = DETAILEQUIPE.idequipe) where EQUIPE.isactive = true and equipe.idregion = :region) as v_test on (v_test.idadministration = administration.idadministration) where administration.idregion = :region and v_test.idadministration is null and administration.idprofil != 1 and administration.idprofil != 2 and administration.idprofil != 3", nativeQuery = true)
+  List<Administration> getAdministrationNoEquipe(int region);
 }

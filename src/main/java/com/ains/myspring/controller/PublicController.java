@@ -93,30 +93,6 @@ public class PublicController {
     return _serviceAdministration.getListAdministrator();
   }
 
-  @GetMapping("/missionnaire")
-  public HashMap<String, Object> getMissionnaire(@RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "0") int region,
-      HttpServletRequest request) {
-    HashMap<String, Object> mapping = new HashMap<>();
-    if (region == 0) {
-      Page<Administration> missionnaire = _serviceAdministration.getMissionnaire(page);
-      mapping.put("hastnext", missionnaire.hasNext());
-      mapping.put("hastprevious", missionnaire.hasPrevious());
-      mapping.put("data", missionnaire.getContent());
-      mapping.put("nombrepage", missionnaire.getTotalPages());
-      mapping.put("page", page);
-      return mapping;
-    } else {
-      Page<Administration> missionnaire = _serviceAdministration.getMissionnaireByregion(page, region);
-      mapping.put("hastnext", missionnaire.hasNext());
-      mapping.put("hastprevious", missionnaire.hasPrevious());
-      mapping.put("data", missionnaire.getContent());
-      mapping.put("nombrepage", missionnaire.getTotalPages());
-      mapping.put("page", page);
-      return mapping;
-    }
-  }
-
   @GetMapping("/ref_societe")
   public ResponseEntity<?> getSocieteReponse(@RequestParam("idsociete") int societe) {
     return ResponseEntity.ok(new ReturnMap(200, _statmissionservice.getRefSociete(societe)));

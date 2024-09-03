@@ -18,4 +18,7 @@ public interface EquipeRepository extends JpaRepository<Equipe, Integer> {
 
   @Query(value = "Select * from equipe where idregion =:region and isactive", nativeQuery = true)
   List<Equipe> getEquipeByRegion(int region);
+
+  @Query(value = "select count(*) as n  from equipe join ordermission on (equipe.idequipe = ordermission.idequipe) where equipe.idequipe = :idequipe and status_validation != 100 ", nativeQuery = true)
+  int EquipeinPeddingMission(int idequipe);
 }
