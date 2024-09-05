@@ -9,6 +9,7 @@ import com.ains.myspring.models.notentity.EnqueteStat;
 import com.ains.myspring.models.notentity.MissionStat;
 import com.ains.myspring.models.notentity.MissionType;
 import com.ains.myspring.models.notentity.Om;
+import com.ains.myspring.models.notentity.RegionStatistic;
 import com.ains.myspring.models.notentity.SocieteOm;
 import com.ains.myspring.repository.notentity.EnqueteStatRepository;
 import com.ains.myspring.repository.notentity.MissionStatRepository;
@@ -22,6 +23,10 @@ public class StatMissionservice {
   private MissionTyperepository _contextmissiontype;
   @Autowired
   private EnqueteStatRepository _contextEnquetestat;
+
+  public List<RegionStatistic> getMissionglobalbytypemission(int typemission, int annee) {
+    return _contextmissiontype.getMissionGlobalbyTypeMission(typemission, annee);
+  }
 
   public List<SocieteOm> getRefSociete(int societe) {
     return _contextEnquetestat.getRefSociete(societe);

@@ -92,5 +92,4 @@ public class PpnController {
     return _servicePpn.getDetailProvince(administration.get().getRegion().getProvince().getIdprovince(), product, mois,
         annee);
   }
-
 }

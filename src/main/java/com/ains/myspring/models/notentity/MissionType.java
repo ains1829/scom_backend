@@ -3,6 +3,33 @@ package com.ains.myspring.models.notentity;
 public class MissionType {
   int idtypeordermission;
   int nombre_mission;
+  int mission_finished;
+  int mission_pending;
+  double progressing;
+
+  public int getMission_finished() {
+    return mission_finished;
+  }
+
+  public void setMission_finished(int mission_finished) {
+    this.mission_finished = mission_finished;
+  }
+
+  public int getMission_pending() {
+    return mission_pending;
+  }
+
+  public void setMission_pending(int mission_pending) {
+    this.mission_pending = mission_pending;
+  }
+
+  public double getProgressing() {
+    return progressing;
+  }
+
+  public void setProgressing(double progressing) {
+    this.progressing = progressing;
+  }
 
   public int getIdtypeordermission() {
     return idtypeordermission;

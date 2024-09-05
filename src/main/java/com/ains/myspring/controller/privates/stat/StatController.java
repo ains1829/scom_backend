@@ -44,7 +44,19 @@ public class StatController {
     }
   }
 
-  @PreAuthorize("hasRole('SG') or hasRole('DG')")
+  @PreAuthorize("hasRole('SG') or hasRole('DG') or hasRole('DSI')")
+  @GetMapping("/missionbyregionbytypemission")
+  public ResponseEntity<?> getMissionbytypebyaneebyregion(@RequestParam(name = "typemission") int idtypeordermission,
+      @RequestParam(name = "annee") int annee) {
+    try {
+      return ResponseEntity
+          .ok(new ReturnMap(200, _serviceStat.getMissionglobalbytypemission(idtypeordermission, annee)));
+    } catch (Exception e) {
+      return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
+    }
+  }
+
+  @PreAuthorize("hasRole('SG') or hasRole('DG') or hasRole('DSI')")
   @GetMapping("/enquetestatglobalbyregion")
   public ResponseEntity<?> getEnqueteglobalbyregion(@RequestParam(name = "date") int annee) {
     try {
@@ -53,12 +65,11 @@ public class StatController {
       }
       return ResponseEntity.ok(new ReturnMap(200, _serviceStat.getEnqueteglobalbyregion(annee)));
     } catch (Exception e) {
-      e.printStackTrace();
       return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
     }
   }
 
-  @PreAuthorize("hasRole('SG') or hasRole('DG')")
+  @PreAuthorize("hasRole('SG') or hasRole('DG') or hasRole('DSI')")
   @GetMapping("/enquetestatglobal")
   public ResponseEntity<?> getEnqueteglobalReponse(@RequestParam(name = "date") int annee) {
     try {
@@ -72,7 +83,7 @@ public class StatController {
     }
   }
 
-  @PreAuthorize("hasRole('SG') or hasRole('DG')")
+  @PreAuthorize("hasRole('SG') or hasRole('DG') or hasRole('DSI')")
   @GetMapping("/missionstatglobal")
   public ResponseEntity<?> getStatGlobalReponse(@RequestParam(name = "date") int annee) {
     try {
@@ -86,7 +97,7 @@ public class StatController {
     }
   }
 
-  @PreAuthorize("hasRole('SG') or hasRole('DG')")
+  @PreAuthorize("hasRole('SG') or hasRole('DG') or hasRole('DSI')")
   @GetMapping("/missiontypeglobal")
   public ResponseEntity<?> getMissionTypeGlobalReponse(@RequestParam(name = "date") int annee) {
     try {
