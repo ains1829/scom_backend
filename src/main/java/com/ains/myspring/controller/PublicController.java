@@ -28,7 +28,6 @@ import com.ains.myspring.services.modules.UniteService;
 import com.ains.myspring.services.modules.lieu.DistrictService;
 import com.ains.myspring.services.modules.lieu.RegionService;
 import com.ains.myspring.services.noentity.StatMissionservice;
-import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/data")
@@ -91,6 +90,18 @@ public class PublicController {
   @GetMapping("/list-administrator")
   public List<Administration> getAdministration() {
     return _serviceAdministration.getListAdministrator();
+  }
+
+  @GetMapping("/list-directeur")
+  public HashMap<String, Object> Directeur(@RequestParam(name = "page", defaultValue = "0") int page) {
+    HashMap<String, Object> mapping = new HashMap<>();
+    Page<Administration> directeur = _serviceAdministration.getListDirecteurRT(page);
+    mapping.put("hasnext", directeur.hasNext());
+    mapping.put("hasprevious", directeur.hasPrevious());
+    mapping.put("data", directeur.getContent());
+    mapping.put("nombrepage", directeur.getTotalPages());
+    mapping.put("page", page);
+    return mapping;
   }
 
   @GetMapping("/ref_societe")

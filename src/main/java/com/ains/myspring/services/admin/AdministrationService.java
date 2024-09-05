@@ -56,7 +56,13 @@ public class AdministrationService {
   }
 
   public List<Administration> getListAdministrator() {
-    return _contextAdminitration.getAdministrator();
+    return _contextAdminitration.getAdministration();
+  }
+
+  public Page<Administration> getListDirecteurRT(int page) {
+    int size = 12;
+    Pageable pageable = PageRequest.of(page, size);
+    return _contextAdminitration.getDirecteurRT(pageable);
   }
 
   public Page<Administration> getMissionnaire(int page) {
