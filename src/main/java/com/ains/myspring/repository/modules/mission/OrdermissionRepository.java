@@ -10,8 +10,8 @@ import org.springframework.data.repository.query.Param;
 import com.ains.myspring.models.modules.mission.Ordermission;
 
 public interface OrdermissionRepository extends JpaRepository<Ordermission, Integer> {
-  @Query(value = "Select * from ordermission where status_validation = :status order by dateorder desc", nativeQuery = true)
-  Page<Ordermission> getOrdermissionFilterstatus(int status, Pageable page);
+  @Query(value = "Select * from ordermission where status_validation = :status and (motifs ilike '%'||:text||'%' or nomsociete ilike '%'||:text||'%' or numeroserie ilike '%'||:text||'%') order by dateorder desc", nativeQuery = true)
+  Page<Ordermission> getOrdermissionFilterstatus(String text, int status, Pageable page);
 
   @Query(value = "Select * from ordermission where dateorderend is not null and status_validation = 100 order by dateorder desc", nativeQuery = true)
   Page<Ordermission> getOrdermissionMissionFinish(Pageable page);
@@ -19,8 +19,8 @@ public interface OrdermissionRepository extends JpaRepository<Ordermission, Inte
   @Query(value = "Select * from ordermission where status_validation = 100 dateorderend is null order by dateorder desc", nativeQuery = true)
   Page<Ordermission> getOrdermissionMissionNotFinish(Pageable page);
 
-  @Query(value = "Select * from ordermission order by dateorder desc", nativeQuery = true)
-  Page<Ordermission> getOrdermissionAll(Pageable page);
+  @Query(value = "Select * from ordermission where motifs ilike '%'||:text||'%' or nomsociete ilike '%'||:text||'%' or numeroserie ilike '%'||:text||'%' order by dateorder desc", nativeQuery = true)
+  Page<Ordermission> getOrdermissionAll(String text, Pageable page);
 
   @Query(value = "Select * from ordermission where lower(motifs) = lower(:motif)", nativeQuery = true)
   Page<Ordermission> getOrdermissionSearchbyMotifs(String motif, Pageable page);

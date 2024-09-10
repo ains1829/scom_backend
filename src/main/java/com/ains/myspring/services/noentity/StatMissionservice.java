@@ -3,7 +3,6 @@ package com.ains.myspring.services.noentity;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.ains.myspring.models.notentity.Enqueregion;
 import com.ains.myspring.models.notentity.EnqueteStat;
 import com.ains.myspring.models.notentity.MissionStat;
@@ -23,6 +22,10 @@ public class StatMissionservice {
   private MissionTyperepository _contextmissiontype;
   @Autowired
   private EnqueteStatRepository _contextEnquetestat;
+
+  public List<MissionType> getMissionProgressionByregion(int region, int annee) {
+    return _contextmissiontype.getMissionGlobalTypebyregion(region, annee);
+  }
 
   public List<RegionStatistic> getMissionglobalbytypemission(int typemission, int annee) {
     return _contextmissiontype.getMissionGlobalbyTypeMission(typemission, annee);

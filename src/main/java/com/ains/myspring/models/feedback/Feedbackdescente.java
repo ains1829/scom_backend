@@ -1,7 +1,6 @@
 package com.ains.myspring.models.feedback;
 
 import java.sql.Date;
-import com.ains.myspring.models.modules.Societe;
 import com.ains.myspring.models.modules.mission.Ordermission;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,20 +17,18 @@ public class Feedbackdescente {
   @ManyToOne
   @JoinColumn(name = "idordermission")
   Ordermission ordermission;
-  @ManyToOne
-  @JoinColumn(name = "idsociete")
-  Societe societe;
   String feedback;
   Date date_feedback;
+  String contact;
 
   public Feedbackdescente() {
   }
 
-  public Feedbackdescente(Ordermission ordermission, Societe societe, String feedback, Date date_feedback) {
+  public Feedbackdescente(Ordermission ordermission, String feedback, Date date_feedback, String contact) {
     this.ordermission = ordermission;
-    this.societe = societe;
     this.feedback = feedback;
     this.date_feedback = date_feedback;
+    this.contact = contact;
   }
 
   public int getIdfeedbackdescente() {
@@ -50,14 +47,6 @@ public class Feedbackdescente {
     this.ordermission = ordermission;
   }
 
-  public Societe getSociete() {
-    return societe;
-  }
-
-  public void setSociete(Societe societe) {
-    this.societe = societe;
-  }
-
   public String getFeedback() {
     return feedback;
   }
@@ -73,4 +62,13 @@ public class Feedbackdescente {
   public void setDate_feedback(Date date_feedback) {
     this.date_feedback = date_feedback;
   }
+
+  public String getContact() {
+    return contact;
+  }
+
+  public void setContact(String contact) {
+    this.contact = contact;
+  }
+
 }

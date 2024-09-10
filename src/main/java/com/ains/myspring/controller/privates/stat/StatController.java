@@ -44,6 +44,20 @@ public class StatController {
     }
   }
 
+  @PreAuthorize("hasRole('DR') or hasRole('DT')")
+  @GetMapping("/missionprogressingbyregion")
+  public ResponseEntity<?> getMissionprogressinganeebyregion(@RequestParam(name = "annee") int annee) {
+    try {
+      Optional<Administration> administration = _serviceAdministration
+          .getAdministrationByEmail(tokenemail.getEmailUserByToken());
+      return ResponseEntity
+          .ok(new ReturnMap(200,
+              _serviceStat.getMissionProgressionByregion(administration.get().getRegion().getIdregion(), annee)));
+    } catch (Exception e) {
+      return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
+    }
+  }
+
   @PreAuthorize("hasRole('SG') or hasRole('DG') or hasRole('DSI')")
   @GetMapping("/missionbyregionbytypemission")
   public ResponseEntity<?> getMissionbytypebyaneebyregion(@RequestParam(name = "typemission") int idtypeordermission,

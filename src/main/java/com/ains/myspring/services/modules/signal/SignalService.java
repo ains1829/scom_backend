@@ -6,16 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ains.myspring.models.modules.Anomaly;
 import com.ains.myspring.models.modules.Societe;
-import com.ains.myspring.models.modules.lieu.District;
 import com.ains.myspring.models.modules.signal.Signal;
-import com.ains.myspring.models.modules.signal.Signal_cause;
 import com.ains.myspring.models.modules.signal.Signal_photo;
 import com.ains.myspring.repository.modules.signal.SignalRepository;
 import com.ains.myspring.services.modules.AnomalyService;
 import com.ains.myspring.services.modules.SocieteService;
-import com.ains.myspring.services.modules.lieu.DistrictService;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,19 +20,15 @@ public class SignalService {
   @Autowired
   private SignalRepository _contextSignal;
   @Autowired
-  private DistrictService serviceDistrict;
-  @Autowired
   private SocieteService serviceSociete;
   @Autowired
   private Signal_photoService serviceSignalPhoto;
   @Autowired
-  private Signal_causeService serviceSignalCause;
-  @Autowired
   private AnomalyService serviceAnomaly;
 
   @Transactional(rollbackFor = { Exception.class, SQLException.class })
-  public Signal Save(List<MultipartFile> photo, List<Integer> idanomaly, String email, String number,
-      int iddistrict, int societe, String description)
+  public Signal Save(List<MultipartFile> photo, int idanomaly, String email, String number,
+      int societe, String description, int region, String addresse, String namesociete)
       throws Exception {
     Societe societeObject = null;
     if (number.equals("") && email.equals("")) {
@@ -46,23 +38,17 @@ public class SignalService {
       societeObject = serviceSociete.getSocieteNotFound();
     } else {
       societeObject = serviceSociete.getSocieteById(societe);
+      region = societeObject.getRegion().getIdregion();
+      addresse = societeObject.getAddresse();
+      namesociete = societeObject.getNamesociete();
     }
-    District district = serviceDistrict.getById(iddistrict);
     Date date = new Date(System.currentTimeMillis());
-    Signal signal = _contextSignal.save(new Signal(email, number, societeObject, description, date, district));
-    SaveSignalCause(signal, idanomaly);
+    Signal signal = _contextSignal.save(
+        new Signal(email, number, societeObject, description, date, idanomaly, region, addresse, namesociete,
+            serviceAnomaly.getById(idanomaly).getNameanomaly())
+      );
     SaveSignPhoto(signal, photo);
     return signal;
-  }
-
-  @Transactional
-  public List<Signal_cause> SaveSignalCause(Signal signal, List<Integer> idanomaly) throws Exception {
-    List<Signal_cause> signal_causes = new ArrayList<>();
-    for (int i = 0; i < idanomaly.size(); i++) {
-      Anomaly anomaly = serviceAnomaly.getById(idanomaly.get(i));
-      signal_causes.add(serviceSignalCause.Save(new Signal_cause(signal.getIdsignal(), anomaly)));
-    }
-    return signal_causes;
   }
 
   @Transactional

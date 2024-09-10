@@ -1,6 +1,5 @@
 package com.ains.myspring.controller.privates.mission;
 
-import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -23,11 +22,11 @@ import com.ains.myspring.models.admin.Administration;
 import com.ains.myspring.models.jsontoclass.order.CollecteJson;
 import com.ains.myspring.models.jsontoclass.order.MissionJson;
 import com.ains.myspring.models.modules.equipe.Equipe;
-import com.ains.myspring.models.modules.mission.Autresuivi;
 import com.ains.myspring.models.modules.mission.Collecte;
 import com.ains.myspring.models.modules.mission.Ordermission;
 import com.ains.myspring.services.admin.AdministrationService;
 import com.ains.myspring.services.modules.equipe.EquipeService;
+import com.ains.myspring.services.modules.feedback.FeedbackdescenteService;
 import com.ains.myspring.services.modules.mission.AutresuiviService;
 import com.ains.myspring.services.modules.mission.CollecteService;
 import com.ains.myspring.services.modules.mission.EnqueteService;
@@ -51,6 +50,14 @@ public class MissionController {
   private AutresuiviService _serviceAutresuivi;
   @Autowired
   private Token tokenemail;
+  @Autowired
+  private FeedbackdescenteService _serviceFeedback;
+
+  @PreAuthorize("hasRole('SG') or hasRole('DG') or hasRole('DR') or hasRole('DT')")
+  @GetMapping("/feedback_content")
+  public ResponseEntity<?> getFeedbackbyidordermission(@RequestParam("idordermission") int idorderdemission) {
+    return ResponseEntity.ok(new ReturnMap(200, _serviceFeedback.ContentFeedback(idorderdemission)));
+  }
 
   @PreAuthorize("hasRole('SG')")
   @PostMapping("/basculed_ordre_mission")
@@ -84,7 +91,7 @@ public class MissionController {
   public ResponseEntity<?> ModerationOrdremissionDG(@RequestParam("idorderdemission") int id) {
     try {
       _serviceOrdre.ValidationDgdmDt(id);
-      return ResponseEntity.ok(new ReturnMap(200, "Refuser"));
+      return ResponseEntity.ok(new ReturnMap(200, "valider"));
 
     } catch (Exception e) {
       return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
@@ -105,49 +112,18 @@ public class MissionController {
   }
 
   @PreAuthorize("hasRole('SG') or hasRole('DG')")
-  @GetMapping("/OrderMissionValider")
-  public ResponseEntity<?> OrdermissionValider(@RequestParam(name = "pagenumber", defaultValue = "0") int page) {
-    HashMap<String, Object> mapping = new HashMap<>();
-    Page<Ordermission> ordermission = _serviceOrdre.getOrderMissionFilterStatus(100, page);
-    mapping.put("hasnext", ordermission.hasNext());
-    mapping.put("hasprevious", ordermission.hasPrevious());
-    mapping.put("data", ordermission.getContent());
-    mapping.put("nombrepage", ordermission.getTotalPages());
-    mapping.put("page", page);
-    return ResponseEntity.ok(new ReturnMap(200, mapping));
-  }
-
-  @PreAuthorize("hasRole('SG') or hasRole('DG')")
-  @GetMapping("/OrderMissionNonValider")
-  public ResponseEntity<?> OrdermissionNonValider(@RequestParam(name = "pagenumber", defaultValue = "0") int page) {
-    HashMap<String, Object> mapping = new HashMap<>();
-    Page<Ordermission> ordermission = _serviceOrdre.getOrderMissionFilterStatus(0, page);
-    mapping.put("hasnext", ordermission.hasNext());
-    mapping.put("hasprevious", ordermission.hasPrevious());
-    mapping.put("data", ordermission.getContent());
-    mapping.put("nombrepage", ordermission.getTotalPages());
-    mapping.put("page", page);
-    return ResponseEntity.ok(new ReturnMap(200, mapping));
-  }
-
-  @PreAuthorize("hasRole('SG') or hasRole('DG')")
-  @GetMapping("/OrderMissionenAttente")
-  public ResponseEntity<?> OrdermissionenAttente(@RequestParam(name = "pagenumber", defaultValue = "0") int page) {
-    HashMap<String, Object> mapping = new HashMap<>();
-    Page<Ordermission> ordermission = _serviceOrdre.getOrderMissionFilterStatus(500, page);
-    mapping.put("hasnext", ordermission.hasNext());
-    mapping.put("hasprevious", ordermission.hasPrevious());
-    mapping.put("data", ordermission.getContent());
-    mapping.put("nombrepage", ordermission.getTotalPages());
-    mapping.put("page", page);
-    return ResponseEntity.ok(new ReturnMap(200, mapping));
-  }
-
-  @PreAuthorize("hasRole('SG') or hasRole('DG')")
   @GetMapping("/OrderMissionAll")
-  public ResponseEntity<?> OrdermissionAll(@RequestParam(name = "pagenumber", defaultValue = "0") int page) {
+  public ResponseEntity<?> OrdermissionAll(@RequestParam(name = "pagenumber", defaultValue = "0") int page,
+      @RequestParam("filter") int filter, @RequestParam(name = "text") String search) {
     HashMap<String, Object> mapping = new HashMap<>();
-    Page<Ordermission> ordermission = _serviceOrdre.getOrdermissionAll(page);
+    Page<Ordermission> ordermission = null;
+    if (filter == 0) {
+      ordermission = _serviceOrdre.getOrdermissionAll(search, page);
+    } else if (filter == 1) {
+      ordermission = _serviceOrdre.getOrderMissionFilterStatus(search, 100, page);
+    } else {
+      ordermission = _serviceOrdre.getOrderMissionFilterStatus(search, 0, page);
+    }
     mapping.put("hasnext", ordermission.hasNext());
     mapping.put("hasprevious", ordermission.hasPrevious());
     mapping.put("data", ordermission.getContent());
@@ -206,6 +182,16 @@ public class MissionController {
   public ResponseEntity<?> getEnquete(@RequestParam("idordermission") int idorderdemission) {
     try {
       return ResponseEntity.ok(new ReturnMap(200, _serviveEnquete.getEnqueteByOrdermission(idorderdemission)));
+    } catch (Exception e) {
+      return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
+    }
+  }
+
+  @PreAuthorize("hasRole('CHEF_EQUIPE') or hasRole('DR') or hasRole('DT')")
+  @GetMapping("/autresuivibyordermission")
+  public ResponseEntity<?> getAutresuivi(@RequestParam("idordermission") int idorderdemission) {
+    try {
+      return ResponseEntity.ok(new ReturnMap(200, _serviceAutresuivi.getAutresuiviByIdodremission(idorderdemission)));
     } catch (Exception e) {
       return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
     }
@@ -331,17 +317,10 @@ public class MissionController {
 
   @PreAuthorize("hasRole('CHEF_EQUIPE')")
   @PostMapping("/autresuivi_finished")
-  public ResponseEntity<?> AutreMissionFinished(@RequestParam("idautresuivi") int id,
+  public ResponseEntity<?> AutreMissionFinished(@RequestParam("idordermission") int id,
       @RequestPart("rapport") MultipartFile file) {
     try {
-      String url_rapport = "";
-      Autresuivi suivi = _serviceAutresuivi.getById(id);
-      suivi.setUrlrapport(url_rapport);
-      _serviceAutresuivi.Save(suivi);
-      Ordermission ordermission = _serviceOrdre.getOrderMissionById(suivi.getIdordermission());
-      ordermission.setDateorderend(new Date(System.currentTimeMillis()));
-      _serviceOrdre.UpdateOrdermission(ordermission);
-      return ResponseEntity.ok(new ReturnMap(200, "Autre suivi terminer"));
+      return ResponseEntity.ok(new ReturnMap(200, _serviceOrdre.AutresuiviFinished(id, file)));
     } catch (Exception e) {
       return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
     }

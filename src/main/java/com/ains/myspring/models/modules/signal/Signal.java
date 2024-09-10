@@ -22,18 +22,24 @@ public class Signal {
   Societe societe;
   String description;
   Date datesignal;
-  @ManyToOne
-  @JoinColumn(name = "iddistrict")
-  District district;
+  int idanomaly;
+  int idregion;
+  String addressesociete;
+  String namesociete;
+  String nameanomaly;
 
   public Signal(String email_sending, String numberphone, Societe societe, String description, Date datesignal,
-      District district) {
+      int idanomaly, int idregion, String addressesociete, String namesociete, String nameanomaly) {
     this.email_sending = email_sending;
     this.numberphone = numberphone;
     this.societe = societe;
     this.description = description;
     this.datesignal = datesignal;
-    this.district = district;
+    this.idanomaly = idanomaly;
+    this.idregion = idregion;
+    this.addressesociete = addressesociete;
+    this.namesociete = namesociete;
+    this.nameanomaly = nameanomaly;
   }
 
   public Signal() {
@@ -87,12 +93,43 @@ public class Signal {
     this.datesignal = datesignal;
   }
 
-  public District getDistrict() {
-    return district;
+  public int getIdanomaly() {
+    return idanomaly;
   }
 
-  public void setDistrict(District district) {
-    this.district = district;
+  public void setIdanomaly(int idanomaly) {
+    this.idanomaly = idanomaly;
   }
 
+  public int getIdregion() {
+    return idregion;
+  }
+
+  public void setIdregion(int idregion) {
+    this.idregion = idregion;
+  }
+
+  public String getAddressesociete() {
+    return addressesociete;
+  }
+
+  public void setAddressesociete(String addressesociete) {
+    this.addressesociete = addressesociete;
+  }
+
+  public String getNamesociete() {
+    return namesociete;
+  }
+
+  public void setNamesociete(String namesociete) {
+    this.namesociete = namesociete;
+  }
+
+  public String getNameanomaly() {
+    return nameanomaly;
+  }
+
+  public void setNameanomaly(String nameanomaly) {
+    this.nameanomaly = nameanomaly;
+  }
 }

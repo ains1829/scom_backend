@@ -1,11 +1,9 @@
 package com.ains.myspring.services.noentity;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.ains.myspring.models.notentity.PpnRegion;
 import com.ains.myspring.models.notentity.Ppnprice;
 import com.ains.myspring.repository.notentity.PpnRepository;

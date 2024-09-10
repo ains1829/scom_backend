@@ -27,7 +27,6 @@ import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -69,11 +68,11 @@ public class GenerateOM {
       suivi = serviceAutresuivi.getAutresuiviByIdodremission(ordermission.getIdordermission());
     }
     String qrCodePath = "src/main/resources/static/doc/example-1.png";
-    String dest = "src/main/resources/static/modified_template.docx";
+    String dest = "src/main/resources/static/" + ordermission.getNumeroserie() + ".docx";
     Date now = new Date(System.currentTimeMillis());
     SimpleDateFormat yearMonthFormat = new SimpleDateFormat("MM/yyyy");
     String yearMonth = yearMonthFormat.format(now);
-    String qrCodeText = "https://chatgpt.com/";
+    String qrCodeText = "http://localhost:5173/feedback/" + ordermission.getNumeroserie();
     try {
       generateQRCodeImage(qrCodeText, 100, 100, qrCodePath);
     } catch (WriterException | IOException e) {
@@ -131,11 +130,10 @@ public class GenerateOM {
       try (FileOutputStream fos = new FileOutputStream(dest)) {
         document.write(fos);
       }
-      System.out.println("Le document a été modifié avec succès.");
     } catch (IOException e) {
       e.printStackTrace();
     }
-    return "";
+    return ordermission.getNumeroserie() + ".docx";
   }
 
   private void generateQRCodeImage(String text, int width, int height, String filePath)

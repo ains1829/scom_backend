@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ains.myspring.models.admin.Administration;
 import com.ains.myspring.models.jsontoclass.order.CollecteJson;
@@ -30,6 +31,7 @@ import com.ains.myspring.services.modules.lieu.DistrictService;
 import com.ains.myspring.services.modules.lieu.RegionService;
 import com.ains.myspring.services.modules.mission.collecte.DetailcollecteService;
 import com.ains.myspring.services.modules.mission.doc.GenerateOM;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 @Service
 public class OrdermissionService {
@@ -103,6 +105,18 @@ public class OrdermissionService {
   }
 
   @Transactional(rollbackFor = { Exception.class, SQLException.class })
+  public Ordermission AutresuiviFinished(int idorderdemission, MultipartFile file) throws Exception {
+    String url_rapport = file.getOriginalFilename();
+    Ordermission ordermission = getOrderMissionById(idorderdemission);
+    Autresuivi suivi = _serviceAutresuivi.getAutresuiviByIdodremission(ordermission.getIdordermission());
+    suivi.setUrlrapport(url_rapport);
+    suivi.setStatu(200);
+    _serviceAutresuivi.Save(suivi);
+    ordermission.setDateorderend(new Date(System.currentTimeMillis()));
+    return UpdateOrdermission(ordermission);
+  }
+
+  @Transactional(rollbackFor = { Exception.class, SQLException.class })
   public Ordermission SaveAll(MissionJson demaJson, int region, Administration sender) throws Exception {
     Ordermission newordermission = Save(demaJson, region, sender);
     if (demaJson.getIdtypeordermission() == 1) {
@@ -112,7 +126,7 @@ public class OrdermissionService {
       _serviceCollecte.Save(new Collecte(newordermission, demaJson.getDistrict(), 0,
           new Date(System.currentTimeMillis())));
     } else {
-      _serviceAutresuivi.Save(new Autresuivi(newordermission.getIdordermission(), "", 0, demaJson.getDistrict()));
+      _serviceAutresuivi.Save(new Autresuivi(newordermission, "", 0, demaJson.getDistrict()));
     }
     return newordermission;
   }
@@ -198,10 +212,10 @@ public class OrdermissionService {
     _serviceEquipe.Save(equipe);
   }
 
-  public Page<Ordermission> getOrderMissionFilterStatus(int status, int pagenumber) {
+  public Page<Ordermission> getOrderMissionFilterStatus(String text, int status, int pagenumber) {
     int size = 20;
     Pageable page = PageRequest.of(pagenumber, size);
-    return _contextOrder.getOrdermissionFilterstatus(status, page);
+    return _contextOrder.getOrdermissionFilterstatus(text, status, page);
   }
 
   public Page<Ordermission> getOrdermissionMissionFinish(int pagenumber) {
@@ -216,10 +230,10 @@ public class OrdermissionService {
     return _contextOrder.getOrdermissionMissionNotFinish(page);
   }
 
-  public Page<Ordermission> getOrdermissionAll(int pagenumber) {
+  public Page<Ordermission> getOrdermissionAll(String text, int pagenumber) {
     int size = 20;
     Pageable page = PageRequest.of(pagenumber, size);
-    return _contextOrder.getOrdermissionAll(page);
+    return _contextOrder.getOrdermissionAll(text, page);
   }
 
   public Page<Ordermission> getOrdermissionAllByDrDt(int idregion, int pagenumber) {

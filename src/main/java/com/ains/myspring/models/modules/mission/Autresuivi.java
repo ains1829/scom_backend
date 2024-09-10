@@ -4,13 +4,17 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Autresuivi {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   int idautresuivi;
-  int idordermission;
+  @ManyToOne
+  @JoinColumn(name = "idordermission")
+  Ordermission ordermission;
   String urlrapport;
   int statu;
   int iddistrict;
@@ -18,8 +22,8 @@ public class Autresuivi {
   public Autresuivi() {
   }
 
-  public Autresuivi(int idordermission, String urlrapport, int statu, int iddistrict) {
-    this.idordermission = idordermission;
+  public Autresuivi(Ordermission ordermission, String urlrapport, int statu, int iddistrict) {
+    this.ordermission = ordermission;
     this.urlrapport = urlrapport;
     this.statu = statu;
     this.iddistrict = iddistrict;
@@ -31,14 +35,6 @@ public class Autresuivi {
 
   public void setIdautresuivi(int idautresuivi) {
     this.idautresuivi = idautresuivi;
-  }
-
-  public int getIdordermission() {
-    return idordermission;
-  }
-
-  public void setIdordermission(int idordermission) {
-    this.idordermission = idordermission;
   }
 
   public String getUrlrapport() {
@@ -64,4 +60,13 @@ public class Autresuivi {
   public void setIddistrict(int iddistrict) {
     this.iddistrict = iddistrict;
   }
+
+  public Ordermission getOrdermission() {
+    return ordermission;
+  }
+
+  public void setOrdermission(Ordermission ordermission) {
+    this.ordermission = ordermission;
+  }
+
 }
