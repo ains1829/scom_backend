@@ -24,9 +24,10 @@ public class FeedbackdescenteService {
 
   @Transactional(rollbackFor = { Exception.class, SQLException.class })
   public Feedbackdescente Save(Ordermission mission, String feedback,
-      List<MultipartFile> photo, String contact) throws Exception {
+      List<MultipartFile> photo, String contact, String email) throws Exception {
     Date date = new Date(System.currentTimeMillis());
-    Feedbackdescente descente_feedback = _contextFeedback.save(new Feedbackdescente(mission, feedback, date, contact));
+    Feedbackdescente descente_feedback = _contextFeedback
+        .save(new Feedbackdescente(mission, feedback, date, contact, email));
     if (photo != null) {
       SavePhoto(descente_feedback.getIdfeedbackdescente(), photo);
     }

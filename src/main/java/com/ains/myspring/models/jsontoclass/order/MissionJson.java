@@ -9,6 +9,8 @@ public class MissionJson {
   Date datedescente;
   int societe;
   int district;
+  String context;
+  String lieu_controle;
 
   public int getIdtypeordermission() {
     return idtypeordermission;
@@ -57,4 +59,21 @@ public class MissionJson {
   public void setDistrict(int district) {
     this.district = district;
   }
+
+  public String getContext() {
+    return context;
+  }
+
+  public void setContext(String context) {
+    this.context = context;
+  }
+
+  public String getLieu_controle() {
+    return lieu_controle;
+  }
+
+  public void setLieu_controle(String lieu_controle) {
+    this.lieu_controle = lieu_controle;
+  }
+
 }

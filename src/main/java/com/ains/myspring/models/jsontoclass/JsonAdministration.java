@@ -1,7 +1,5 @@
 package com.ains.myspring.models.jsontoclass;
 
-import java.sql.Date;
-
 import jakarta.servlet.http.HttpServletRequest;
 
 public class JsonAdministration {
@@ -9,7 +7,6 @@ public class JsonAdministration {
   String matricule;
   String email;
   String telephone;
-  Date birthday;
   int gender;
   int idregion;
   int idprofil;
@@ -22,7 +19,6 @@ public class JsonAdministration {
     setNameadministration(request.getParameter("nameadministration"));
     setEmail(request.getParameter("email"));
     setAddresse(request.getParameter("addresse"));
-    setBirthday(Date.valueOf(request.getParameter("date")));
     setMatricule(request.getParameter("matricule"));
     setIdprofil(Integer.valueOf(request.getParameter("profil")));
     setIdregion(Integer.valueOf(request.getParameter("region")));
@@ -60,14 +56,6 @@ public class JsonAdministration {
 
   public void setTelephone(String telephone) {
     this.telephone = telephone;
-  }
-
-  public Date getBirthday() {
-    return birthday;
-  }
-
-  public void setBirthday(Date date) {
-    this.birthday = date;
   }
 
   public int getGender() {

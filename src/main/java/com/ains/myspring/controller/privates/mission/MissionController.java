@@ -31,6 +31,7 @@ import com.ains.myspring.services.modules.mission.AutresuiviService;
 import com.ains.myspring.services.modules.mission.CollecteService;
 import com.ains.myspring.services.modules.mission.EnqueteService;
 import com.ains.myspring.services.modules.mission.OrdermissionService;
+import com.ains.myspring.services.modules.mission.collecte.DetailcollecteService;
 
 @RequestMapping("/mission")
 @RestController
@@ -52,6 +53,14 @@ public class MissionController {
   private Token tokenemail;
   @Autowired
   private FeedbackdescenteService _serviceFeedback;
+  @Autowired
+  private DetailcollecteService _serviceDetailcollecte;
+
+  @PreAuthorize("hasRole('DR') or hasRole('DT') or hasRole('CHEF_EQUIPE') or hasRole('SG') or hasRole('DSI') or hasRole('DG')")
+  @GetMapping("/detail_collecte")
+  public ResponseEntity<?> getDetailCollecte(@RequestParam("idcollecte") int idcollecte) {
+    return ResponseEntity.ok(new ReturnMap(200, _serviceDetailcollecte.getDetailcollectesbyIdCollecte(idcollecte)));
+  }
 
   @PreAuthorize("hasRole('SG') or hasRole('DG') or hasRole('DR') or hasRole('DT')")
   @GetMapping("/feedback_content")
@@ -88,10 +97,16 @@ public class MissionController {
 
   @PreAuthorize("hasRole('DG')")
   @GetMapping("/validation_demande_dt")
-  public ResponseEntity<?> ModerationOrdremissionDG(@RequestParam("idorderdemission") int id) {
+  public ResponseEntity<?> ModerationOrdremissionDG(@RequestParam("idorderdemission") int id,
+      @RequestParam("confirmation") int confirmation) {
     try {
-      _serviceOrdre.ValidationDgdmDt(id);
-      return ResponseEntity.ok(new ReturnMap(200, "valider"));
+      if (confirmation == 0) {
+        _serviceOrdre.ValidationDgdmDt(id, false);
+        return ResponseEntity.ok(new ReturnMap(200, "valider"));
+      } else {
+        _serviceOrdre.ValidationDgdmDt(id, true);
+        return ResponseEntity.ok(new ReturnMap(200, "Refuser"));
+      }
 
     } catch (Exception e) {
       return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
@@ -120,9 +135,11 @@ public class MissionController {
     if (filter == 0) {
       ordermission = _serviceOrdre.getOrdermissionAll(search, page);
     } else if (filter == 1) {
-      ordermission = _serviceOrdre.getOrderMissionFilterStatus(search, 100, page);
+      ordermission = _serviceOrdre.getOrderMissionValiderOrSupprimerStatus(100, search, page);
+    } else if (filter == 3) {
+      ordermission = _serviceOrdre.getOrderMissionValiderOrSupprimerStatus(500, search, page);
     } else {
-      ordermission = _serviceOrdre.getOrderMissionFilterStatus(search, 0, page);
+      ordermission = _serviceOrdre.getOrdermissionNovaliderstatus(search, page);
     }
     mapping.put("hasnext", ordermission.hasNext());
     mapping.put("hasprevious", ordermission.hasPrevious());
@@ -134,13 +151,24 @@ public class MissionController {
 
   @PreAuthorize("hasRole('DR') or hasRole('DT')")
   @GetMapping("/OrderMissionAllbydrdt")
-  public ResponseEntity<?> OrdermissionAllByDrDt(@RequestParam(name = "pagenumber", defaultValue = "0") int page) {
+  public ResponseEntity<?> OrdermissionAllByDrDt(@RequestParam(name = "pagenumber", defaultValue = "0") int page,
+      @RequestParam("filter") int filter, @RequestParam(name = "text") String search) {
     try {
       String email = tokenemail.getEmailUserByToken();
       Optional<Administration> administration = _serviceAdministration.getAdministrationByEmail(email);
+      int idregion = administration.get().getRegion().getIdregion();
       HashMap<String, Object> mapping = new HashMap<>();
-      Page<Ordermission> ordermission = _serviceOrdre
-          .getOrdermissionAllByDrDt(administration.get().getRegion().getIdregion(), page);
+      Page<Ordermission> ordermission = null;
+      if (filter == 0) {
+        ordermission = _serviceOrdre
+            .getOrdermissionAllByDrDt(search, idregion, page);
+      } else if (filter == 1) {
+        ordermission = _serviceOrdre.getOrderMissionValiderOrSupprimerfordrdt(100, idregion, search, page);
+      } else if (filter == 3) {
+        ordermission = _serviceOrdre.getOrderMissionValiderOrSupprimerfordrdt(500, idregion, search, page);
+      } else {
+        ordermission = _serviceOrdre.getOrderMissionNoValiderfordrdt(idregion, search, page);
+      }
       mapping.put("hasnext", ordermission.hasNext());
       mapping.put("hasprevious", ordermission.hasPrevious());
       mapping.put("data", ordermission.getContent());
@@ -199,13 +227,23 @@ public class MissionController {
 
   @PreAuthorize("hasRole('DR') or hasRole('DT')")
   @GetMapping("/suivi_mission_sender")
-  public ResponseEntity<?> Suivi_missionDrDt(@RequestParam(name = "page", defaultValue = "0") int pagenumber) {
+  public ResponseEntity<?> Suivi_missionDrDt(@RequestParam(name = "page", defaultValue = "0") int pagenumber,
+      @RequestParam("annee") int annee, @RequestParam("filter") int filter) {
     Optional<Administration> administration = _serviceAdministration
         .getAdministrationByEmail(tokenemail.getEmailUserByToken());
     try {
       HashMap<String, Object> mapping = new HashMap<>();
-      Page<Ordermission> ordermission = _serviceOrdre
-          .getMissionAllByDrDt(administration.get().getRegion().getIdregion(), pagenumber);
+      Page<Ordermission> ordermission = null;
+      if (filter == 0) {
+        ordermission = _serviceOrdre.getMissionAllByDrDt(administration.get().getRegion().getIdregion(), annee,
+            pagenumber);
+      } else if (filter == 1) {
+        ordermission = _serviceOrdre.getMissionFinishByDrDt(administration.get().getRegion().getIdregion(), annee,
+            pagenumber);
+      } else {
+        ordermission = _serviceOrdre.getMissionNotFinishByDrDt(administration.get().getRegion().getIdregion(), annee,
+            pagenumber);
+      }
       mapping.put("hasnext", ordermission.hasNext());
       mapping.put("hasprevious", ordermission.hasPrevious());
       mapping.put("data", ordermission.getContent());
@@ -217,15 +255,30 @@ public class MissionController {
     }
   }
 
+  @PreAuthorize("hasRole('DR') or hasRole('DT')")
+  @GetMapping("/calendar")
+  public ResponseEntity<?> Calendar_Dt(@RequestParam("annee") int annee) {
+    Optional<Administration> administration = _serviceAdministration
+        .getAdministrationByEmail(tokenemail.getEmailUserByToken());
+    try {
+      List<Ordermission> getCalendar = _serviceOrdre
+          .getOrdermissionCalendar(administration.get().getRegion().getIdregion(), annee);
+      return ResponseEntity.ok(new ReturnMap(200, getCalendar));
+    } catch (Exception e) {
+      return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
+    }
+  }
+
   @PreAuthorize("hasRole('CHEF_EQUIPE')")
   @GetMapping("/suivi_mission")
-  public ResponseEntity<?> Suivi_mission(@RequestParam(name = "page", defaultValue = "0") int pagenumber) {
+  public ResponseEntity<?> Suivi_mission(@RequestParam(name = "page", defaultValue = "0") int pagenumber,
+      @RequestParam(name = "filter") int filter) {
     Optional<Administration> administration = _serviceAdministration
         .getAdministrationByEmail(tokenemail.getEmailUserByToken());
     try {
       Equipe equipe = _serviceEquipe.getEquipeByChef(administration.get().getIdadministration());
       HashMap<String, Object> mapping = new HashMap<>();
-      Page<Ordermission> ordermission = _serviceOrdre.getOrdermissionByEquipe(pagenumber, equipe.getIdequipe());
+      Page<Ordermission> ordermission = _serviceOrdre.getOrdermissionByEquipe(filter, pagenumber, equipe.getIdequipe());
       mapping.put("hasnext", ordermission.hasNext());
       mapping.put("hasprevious", ordermission.hasPrevious());
       mapping.put("data", ordermission.getContent());

@@ -1,14 +1,15 @@
 package com.ains.myspring.models.modules.signal;
 
 import java.sql.Date;
+import java.util.List;
 import com.ains.myspring.models.modules.Societe;
-import com.ains.myspring.models.modules.lieu.District;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Transient;
 
 @Entity
 public class Signal {
@@ -27,6 +28,8 @@ public class Signal {
   String addressesociete;
   String namesociete;
   String nameanomaly;
+  @Transient
+  List<Signal_photo> photo;
 
   public Signal(String email_sending, String numberphone, Societe societe, String description, Date datesignal,
       int idanomaly, int idregion, String addressesociete, String namesociete, String nameanomaly) {
@@ -131,5 +134,13 @@ public class Signal {
 
   public void setNameanomaly(String nameanomaly) {
     this.nameanomaly = nameanomaly;
+  }
+
+  public List<Signal_photo> getPhoto() {
+    return photo;
+  }
+
+  public void setPhoto(List<Signal_photo> photo) {
+    this.photo = photo;
   }
 }

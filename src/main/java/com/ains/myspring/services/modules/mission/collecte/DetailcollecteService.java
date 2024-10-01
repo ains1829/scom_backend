@@ -13,11 +13,18 @@ import com.ains.myspring.models.jsontoclass.order.CollecteJson;
 import com.ains.myspring.models.modules.mission.Collecte;
 import com.ains.myspring.models.modules.mission.collecte.Detailcollecte;
 import com.ains.myspring.repository.modules.mission.collecte.DetailcollecteRepository;
+import com.ains.myspring.services.modules.ProductService;
 
 @Service
 public class DetailcollecteService {
   @Autowired
   private DetailcollecteRepository _contextdetailcollecte;
+  @Autowired
+  private ProductService _serviceProduct;
+
+  public List<Detailcollecte> getDetailcollectesbyIdCollecte(int idcollecte) {
+    return _contextdetailcollecte.getDetailcollectesBycollecte(idcollecte);
+  }
 
   public Detailcollecte Save(Detailcollecte d_collecte) {
     return _contextdetailcollecte.save(d_collecte);
@@ -43,7 +50,9 @@ public class DetailcollecteService {
       CollecteJson item = (CollecteJson) collecte_data.get(i);
       for (int j = 0; j < item.getPrix().size(); j++) {
         double price = Double.valueOf(item.getPrix().get(j));
-        saveDetail.add(_contextdetailcollecte.save(new Detailcollecte(collecte.getIdcollecte(), item.getId(), price)));
+        saveDetail.add(
+            _contextdetailcollecte.save(new Detailcollecte(collecte.getIdcollecte(), _serviceProduct.getProductbyId(
+                item.getId()), price, item.getObservations().get(j))));
       }
     }
     return saveDetail;

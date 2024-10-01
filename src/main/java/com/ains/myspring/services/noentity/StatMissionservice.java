@@ -39,6 +39,10 @@ public class StatMissionservice {
     return _contextmissionStat.getOM();
   }
 
+  public Om getOmByregion(int region) {
+    return _contextmissionStat.getObByregion(region);
+  }
+
   public List<Enqueregion> getEnqueteglobalbyregion(int annee) {
     return _contextEnquetestat.getEnquetebyRegion(annee);
   }
@@ -60,6 +64,6 @@ public class StatMissionservice {
   }
 
   public List<MissionType> getMissionTypesbyEquipe(int equipe) {
-    return _contextmissiontype.getMissionTypebyEquipe(equipe);
+    return _contextmissiontype.getMissionGlobalbyEquipe(equipe);
   }
 }

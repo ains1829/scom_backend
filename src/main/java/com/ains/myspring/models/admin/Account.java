@@ -28,6 +28,7 @@ public class Account implements UserDetails {
   @ManyToOne
   @JoinColumn(name = "idprofil")
   Profil profil;
+  Date datedemande;
   Date datevalidate;
   boolean chefequipe;
   boolean isactive = true;
@@ -35,11 +36,12 @@ public class Account implements UserDetails {
   public Account() {
   }
 
-  public Account(Administration administration, String email, String password, Profil profil) {
+  public Account(Administration administration, String email, String password, Profil profil, Date date_demande) {
     this.administration = administration;
     this.email = email;
     this.password = password;
     this.profil = profil;
+    this.datedemande = date_demande;
   }
 
   public int getIdaccount() {
@@ -112,6 +114,14 @@ public class Account implements UserDetails {
 
   public void setIsactive(boolean isactive) {
     this.isactive = isactive;
+  }
+
+  public Date getDatedemande() {
+    return datedemande;
+  }
+
+  public void setDatedemande(Date datedemande) {
+    this.datedemande = datedemande;
   }
 
   @Override

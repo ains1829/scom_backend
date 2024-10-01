@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.ains.myspring.models.admin.Administration;
 import com.ains.myspring.models.jsontoclass.order.CollecteJson;
 import com.ains.myspring.models.jsontoclass.order.MissionJson;
@@ -25,13 +24,14 @@ import com.ains.myspring.models.modules.mission.Collecte;
 import com.ains.myspring.models.modules.mission.Enquete;
 import com.ains.myspring.models.modules.mission.Ordermission;
 import com.ains.myspring.repository.modules.mission.OrdermissionRepository;
+import com.ains.myspring.services.admin.AdministrationService;
+import com.ains.myspring.services.function.mail.SendingMail;
 import com.ains.myspring.services.modules.SocieteService;
 import com.ains.myspring.services.modules.equipe.EquipeService;
 import com.ains.myspring.services.modules.lieu.DistrictService;
 import com.ains.myspring.services.modules.lieu.RegionService;
 import com.ains.myspring.services.modules.mission.collecte.DetailcollecteService;
 import com.ains.myspring.services.modules.mission.doc.GenerateOM;
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 @Service
 public class OrdermissionService {
@@ -55,6 +55,10 @@ public class OrdermissionService {
   private DistrictService _serviceDistrict;
   @Autowired
   private DetailcollecteService _servicedetailcollecte;
+  @Autowired
+  private SendingMail _serviceMail;
+  @Autowired
+  private AdministrationService _serviceAdministration;
 
   public Ordermission UpdateOrdermission(Ordermission ordermission) {
     return _contextOrder.save(ordermission);
@@ -88,6 +92,7 @@ public class OrdermissionService {
     equipe.setMission_encours(equipe.getMission_encours() - 1);
     _serviceEquipe.Save(equipe);
     ordermission.setDateorderend(new Date(System.currentTimeMillis()));
+    _serviceMail.NotifAboutmission(ordermission.getSender().getEmail(), ordermission, true);
     return UpdateOrdermission(ordermission);
   }
 
@@ -101,6 +106,7 @@ public class OrdermissionService {
     _serviceEquipe.Save(equipe);
     _serviceEnquete.ChangeStatusMissionFinished(enquete);
     ordermission.setDateorderend(new Date(System.currentTimeMillis()));
+    _serviceMail.NotifAboutmission(ordermission.getSender().getEmail(), ordermission, true);
     return UpdateOrdermission(ordermission);
   }
 
@@ -112,7 +118,12 @@ public class OrdermissionService {
     suivi.setUrlrapport(url_rapport);
     suivi.setStatu(200);
     _serviceAutresuivi.Save(suivi);
+    Equipe equipe = ordermission.getEquipe();
+    equipe.setMission_fini(equipe.getMission_fini() + 1);
+    equipe.setMission_encours(equipe.getMission_encours() - 1);
+    _serviceEquipe.Save(equipe);
     ordermission.setDateorderend(new Date(System.currentTimeMillis()));
+    _serviceMail.NotifAboutmission(ordermission.getSender().getEmail(), ordermission, true);
     return UpdateOrdermission(ordermission);
   }
 
@@ -128,11 +139,21 @@ public class OrdermissionService {
     } else {
       _serviceAutresuivi.Save(new Autresuivi(newordermission, "", 0, demaJson.getDistrict()));
     }
+    String email = "";
+    if (newordermission.getStatus_validation() == 10) {
+      email = _serviceAdministration.getDg().getEmail();
+    } else {
+      email = _serviceAdministration.getSg().getEmail();
+    }
+    _serviceMail.NotifDemande(email, newordermission, false);
     return newordermission;
   }
 
   public Ordermission Save(MissionJson demande, int region, Administration sender) throws Exception {
     Equipe equipe = _serviceEquipe.getById(demande.getIdequipe(), region);
+    if (equipe.getMission_encours() > 3) {
+      throw new Exception("Cette equipe a encore des mission en cours");
+    }
     Region _Objectregion = _regionService.getRegionById(region);
     String numero_serie = generateNumeroSerie(_Objectregion.getNumero());
     Date date_now = new Date(System.currentTimeMillis());
@@ -145,12 +166,13 @@ public class OrdermissionService {
       Societe societe = serviceSociete.getSocieteById(demande.getSociete());
       ordre = new Ordermission(demande.getIdtypeordermission(), equipe, _Objectregion, demande.getMotifs(),
           numero_serie, date_now, demande.getDatedescente(), societe.getIdsociete(), societe.getNamesociete(),
-          societe.getAddresse(), societe.getDistrict().getIddistrict(), societe.getDistrict().getNameville());
+          societe.getAddresse(), societe.getDistrict().getIddistrict(), societe.getDistrict().getNameville(),
+          demande.getContext(), demande.getLieu_controle());
     } else {
       District district = _serviceDistrict.getById(demande.getDistrict());
       ordre = new Ordermission(demande.getIdtypeordermission(), equipe, _Objectregion, demande.getMotifs(),
           numero_serie, date_now, demande.getDatedescente(), null, null,
-          null, district.getIddistrict(), district.getNameville());
+          null, district.getIddistrict(), district.getNameville(), demande.getContext(), demande.getLieu_controle());
     }
     ordre.setStatus_validation(status_ordermission);
     ordre.setSender(sender);
@@ -177,18 +199,30 @@ public class OrdermissionService {
       String urlfile = serviceGenerateOM.Ordermission(ordermission.get());
       ordermission.get().setFileordermission(urlfile);
       IfModerationValidate(ordermission.get());
+
+      // _serviceMail.NotifAboutmission(ordermission.get().getEquipe().getChefequipe().getEmail(),
+      // ordermission.get(),
+      // false);
     } else {
       ordermission.get().setStatus_validation(500);
     }
+    ordermission.get().setDate_validation_om(new Date(System.currentTimeMillis()));
     return _contextOrder.save(ordermission.get());
   }
 
-  public Ordermission ValidationDgdmDt(int idordermission) throws Exception {
+  public Ordermission ValidationDgdmDt(int idordermission, boolean confirmed) throws Exception {
     Optional<Ordermission> ordermission = _contextOrder.findById(idordermission);
     if (ordermission.isEmpty()) {
       throw new Exception("Order mission not found");
     }
-    ordermission.get().setStatus_validation(0);
+    if (confirmed) {
+      ordermission.get().setStatus_validation(0);
+      _serviceMail.NotifDemande(_serviceAdministration.getSg().getEmail(),
+          ordermission.get(), true);
+    } else {
+      ordermission.get().setStatus_validation(500);
+    }
+    ordermission.get().setDate_validation_om(new Date(System.currentTimeMillis()));
     return _contextOrder.save(ordermission.get());
   }
 
@@ -212,10 +246,29 @@ public class OrdermissionService {
     _serviceEquipe.Save(equipe);
   }
 
-  public Page<Ordermission> getOrderMissionFilterStatus(String text, int status, int pagenumber) {
+  public Page<Ordermission> getOrderMissionValiderOrSupprimerStatus(int status, String text, int pagenumber) {
     int size = 20;
     Pageable page = PageRequest.of(pagenumber, size);
-    return _contextOrder.getOrdermissionFilterstatus(text, status, page);
+    return _contextOrder.getOrdermissionValiderOrSupprimerstatus(status, text, page);
+  }
+
+  public Page<Ordermission> getOrdermissionNovaliderstatus(String text, int pagenumber) {
+    int size = 20;
+    Pageable page = PageRequest.of(pagenumber, size);
+    return _contextOrder.getOrdermissionNovaliderstatus(text, page);
+  }
+
+  public Page<Ordermission> getOrderMissionValiderOrSupprimerfordrdt(int statu, int idregion, String text,
+      int pagenumber) {
+    int size = 20;
+    Pageable page = PageRequest.of(pagenumber, size);
+    return _contextOrder.getOrdermissionValiderOrSupprimerForDrDt(statu, idregion, text, page);
+  }
+
+  public Page<Ordermission> getOrderMissionNoValiderfordrdt(int idregion, String text, int pagenumber) {
+    int size = 20;
+    Pageable page = PageRequest.of(pagenumber, size);
+    return _contextOrder.getOrdermissionNovaliderForDrDt(idregion, text, page);
   }
 
   public Page<Ordermission> getOrdermissionMissionFinish(int pagenumber) {
@@ -236,16 +289,32 @@ public class OrdermissionService {
     return _contextOrder.getOrdermissionAll(text, page);
   }
 
-  public Page<Ordermission> getOrdermissionAllByDrDt(int idregion, int pagenumber) {
+  public Page<Ordermission> getOrdermissionAllByDrDt(String text, int idregion, int pagenumber) {
     int size = 20;
     Pageable page = PageRequest.of(pagenumber, size);
-    return _contextOrder.getOrdermissionAllByDrDt(idregion, page);
+    return _contextOrder.getOrdermissionAllByDrDt(text, idregion, page);
   }
 
-  public Page<Ordermission> getMissionAllByDrDt(int idregion, int pagenumber) {
+  public Page<Ordermission> getMissionAllByDrDt(int idregion, int year, int pagenumber) {
     int size = 20;
     Pageable page = PageRequest.of(pagenumber, size);
-    return _contextOrder.getMissionAllByDrDt(idregion, page);
+    return _contextOrder.getMissionAllByDrDt(idregion, year, page);
+  }
+
+  public Page<Ordermission> getMissionFinishByDrDt(int idregion, int year, int pagenumber) {
+    int size = 20;
+    Pageable page = PageRequest.of(pagenumber, size);
+    return _contextOrder.getMissionFinishByDrDt(idregion, year, page);
+  }
+
+  public Page<Ordermission> getMissionNotFinishByDrDt(int idregion, int year, int pagenumber) {
+    int size = 20;
+    Pageable page = PageRequest.of(pagenumber, size);
+    return _contextOrder.getMissionNotFinishByDrDt(idregion, year, page);
+  }
+
+  public List<Ordermission> getOrdermissionCalendar(int idregion, int year) {
+    return _contextOrder.getMissionAllCalendarByDrDt(idregion, year);
   }
 
   public Page<Ordermission> getOrdermissionSearchbyMotifs(String searchmotif, int pagenumber) {
@@ -254,10 +323,15 @@ public class OrdermissionService {
     return _contextOrder.getOrdermissionSearchbyMotifs(searchmotif, page);
   }
 
-  public Page<Ordermission> getOrdermissionByEquipe(int pagenumber, int equipe) {
+  public Page<Ordermission> getOrdermissionByEquipe(int filter, int pagenumber, int equipe) {
     int size = 20;
     Pageable page = PageRequest.of(pagenumber, size);
-    return _contextOrder.getOrdermissionByEquipe(equipe, page);
+    if (filter == 0) {
+      return _contextOrder.getOrdermissionAllByEquipe(equipe, page);
+    } else if (filter == 1) {
+      return _contextOrder.getOrdermissionFinishByEquipe(equipe, page);
+    }
+    return _contextOrder.getOrdermissionNotFinishByEquipe(equipe, page);
   }
 
   public String generateNumeroSerie(int regionCode) {

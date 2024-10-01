@@ -12,6 +12,24 @@ public class JsonSociete {
   String telephone;
   String numerofiscal;
 
+  public JsonSociete() {
+
+  }
+
+  public JsonSociete(String namesociete, String description, String nif, String stat, int idregion, int iddistrict,
+      String addresse, String responsable, String telephone, String numerofiscal) {
+    this.namesociete = namesociete;
+    this.description = description;
+    this.nif = nif;
+    this.stat = stat;
+    this.idregion = idregion;
+    this.iddistrict = iddistrict;
+    this.addresse = addresse;
+    this.responsable = responsable;
+    this.telephone = telephone;
+    this.numerofiscal = numerofiscal;
+  }
+
   public String getNamesociete() {
     return namesociete;
   }

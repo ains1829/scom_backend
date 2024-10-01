@@ -1,16 +1,8 @@
 package com.ains.myspring.services.modules.mission.doc;
 
 import com.ains.myspring.models.modules.equipe.Detailequipe;
-import com.ains.myspring.models.modules.lieu.District;
-import com.ains.myspring.models.modules.mission.Autresuivi;
-import com.ains.myspring.models.modules.mission.Collecte;
-import com.ains.myspring.models.modules.mission.Enquete;
 import com.ains.myspring.models.modules.mission.Ordermission;
 import com.ains.myspring.services.modules.equipe.DetailequipeService;
-import com.ains.myspring.services.modules.lieu.DistrictService;
-import com.ains.myspring.services.modules.mission.AutresuiviService;
-import com.ains.myspring.services.modules.mission.CollecteService;
-import com.ains.myspring.services.modules.mission.EnqueteService;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
@@ -27,6 +19,8 @@ import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -38,48 +32,41 @@ import java.util.List;
 import java.util.Map;
 import java.nio.file.Path;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.docx4j.Docx4J;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 
 @Service
 public class GenerateOM {
   @Autowired
-  private EnqueteService serviceEnquete;
-  @Autowired
-  private CollecteService serviceCollecte;
-  @Autowired
-  private AutresuiviService serviceAutresuivi;
-  @Autowired
-  private DistrictService serviceDistrict;
-  @Autowired
   private DetailequipeService servicedetailequipe;
 
   public String Ordermission(Ordermission ordermission) throws Exception {
-    String src = "src/main/resources/static/doc/";
-    Enquete enquete = null;
-    Collecte collecte = null;
-    Autresuivi suivi = null;
-    if (ordermission.getIdtypeordermission() == 1) {
-      src += "Modele.docx";
-      enquete = serviceEnquete.getEnqueteByOrdermission(ordermission.getIdordermission());
-    } else if (ordermission.getIdtypeordermission() == 2) {
-      src += "ModeleCollecte.docx";
-      collecte = serviceCollecte.getCollecteByOrdermission(ordermission.getIdordermission());
-    } else {
-      src += "Autresuivi.docx";
-      suivi = serviceAutresuivi.getAutresuiviByIdodremission(ordermission.getIdordermission());
-    }
+    String src = "src/main/resources/static/doc/Modelfinal.docx";
+    String rendre = "";
+    String object = "";
     String qrCodePath = "src/main/resources/static/doc/example-1.png";
     String dest = "src/main/resources/static/" + ordermission.getNumeroserie() + ".docx";
     Date now = new Date(System.currentTimeMillis());
     SimpleDateFormat yearMonthFormat = new SimpleDateFormat("MM/yyyy");
     String yearMonth = yearMonthFormat.format(now);
     String qrCodeText = "http://localhost:5173/feedback/" + ordermission.getNumeroserie();
+    if (ordermission.getIdtypeordermission() == 1) {
+      rendre = ordermission.getNomsociete() + "  (" + ordermission.getLieu_controle() + ")";
+      object = "DESCENTE";
+    } else if (ordermission.getIdtypeordermission() == 2) {
+      object = "COLLECTE ECONOMIQUE";
+      rendre = ordermission.getLieu_controle();
+    } else {
+      object = "AUTRE SUIVI";
+      rendre = ordermission.getLieu_controle();
+    }
     try {
       generateQRCodeImage(qrCodeText, 100, 100, qrCodePath);
     } catch (WriterException | IOException e) {
       e.printStackTrace();
     }
-    try (FileInputStream fis = new FileInputStream(src);
-        XWPFDocument document = new XWPFDocument(fis)) {
+    FileInputStream fis = new FileInputStream(src);
+    try (XWPFDocument document = new XWPFDocument(fis)) {
       for (XWPFParagraph paragraph : document.getParagraphs()) {
         for (XWPFRun run : paragraph.getRuns()) {
           String text = run.getText(0);
@@ -88,20 +75,24 @@ public class GenerateOM {
                 .replace("{debutmission}", "" + ordermission.getDatedescente());
             run.setText(text, 0);
           }
-          if (text != null && text.contains("{societe}")) {
-            text = text.replace("{societe}", "" + enquete.getSociete().getNamesociete());
+          if (text != null && text.contains("{object}")) {
+            text = text.replace("{object}", object);
+            run.setText(text, 0);
+          }
+          if (text != null && text.contains("{lieu}")) {
+            text = text.replace("{lieu}", rendre);
+            run.setText(text, 0);
+          }
+          if (text != null && text.contains("{motif}")) {
+            text = text.replace("{motif}", ordermission.getMotifs());
             run.setText(text, 0);
           }
           if (text != null && text.contains("{region}")) {
-            District district = null;
-            if (collecte != null) {
-              district = serviceDistrict.getById(collecte.getIddistrict());
-            }
-            if (suivi != null) {
-              district = serviceDistrict.getById(suivi.getIddistrict());
-            }
-            String lieu = district.getRegion().getNameregion() + " (" + district.getNameville() + ")";
-            text = text.replace("{region}", lieu);
+            text = text.replace("{region}", ordermission.getRegion().getNameregion());
+            run.setText(text, 0);
+          }
+          if (text != null && text.contains("{district}")) {
+            text = text.replace("{district}", ordermission.getNomdistrict());
             run.setText(text, 0);
           }
           if (text != null && text.contains("{QR}")) {
@@ -115,7 +106,6 @@ public class GenerateOM {
             }
           }
           if (text != null && text.contains("{Tableau}")) {
-            run.setFontFamily("Arial");
             run.setText("", 0);
             XWPFTable table = document.insertNewTbl(paragraph.getCTP().newCursor());
             XWPFTableRow headerRow = table.getRow(0);
@@ -126,14 +116,17 @@ public class GenerateOM {
             break;
           }
         }
+        paragraph.setPageBreak(false);
       }
-      try (FileOutputStream fos = new FileOutputStream(dest)) {
-        document.write(fos);
-      }
-    } catch (IOException e) {
-      e.printStackTrace();
+      FileOutputStream fos = new FileOutputStream(dest);
+      document.write(fos);
     }
-    return ordermission.getNumeroserie() + ".docx";
+    File docxFile = new File(dest);
+    WordprocessingMLPackage word = WordprocessingMLPackage.load(docxFile);
+    File pdFile = new File(ordermission.getNumeroserie() + ".pdf");
+    FileOutputStream pdFileOutputStream = new FileOutputStream(pdFile);
+    Docx4J.toPDF(word, pdFileOutputStream);
+    return ordermission.getNumeroserie() + ".pdf";
   }
 
   private void generateQRCodeImage(String text, int width, int height, String filePath)

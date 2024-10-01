@@ -29,7 +29,7 @@ public class Enquete {
   Date datepvaudition;
   String url_pvinfraction;
   Date dateinfraction;
-
+  
   public Enquete() {
   }
 

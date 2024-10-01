@@ -20,15 +20,18 @@ public class Feedbackdescente {
   String feedback;
   Date date_feedback;
   String contact;
+  String email;
 
   public Feedbackdescente() {
   }
 
-  public Feedbackdescente(Ordermission ordermission, String feedback, Date date_feedback, String contact) {
+  public Feedbackdescente(Ordermission ordermission, String feedback, Date date_feedback, String contact,
+      String email) {
     this.ordermission = ordermission;
     this.feedback = feedback;
     this.date_feedback = date_feedback;
     this.contact = contact;
+    this.email = email;
   }
 
   public int getIdfeedbackdescente() {
@@ -69,6 +72,14 @@ public class Feedbackdescente {
 
   public void setContact(String contact) {
     this.contact = contact;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
   }
 
 }

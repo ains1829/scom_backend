@@ -5,6 +5,15 @@ import java.util.List;
 public class CollecteJson {
   int id;
   List<String> Prix;
+  List<String> observations;
+
+  public List<String> getObservations() {
+    return observations;
+  }
+
+  public void setObservations(List<String> observations) {
+    this.observations = observations;
+  }
 
   public int getId() {
     return id;
@@ -21,4 +30,5 @@ public class CollecteJson {
   public void setPrix(List<String> prix) {
     Prix = prix;
   }
+
 }

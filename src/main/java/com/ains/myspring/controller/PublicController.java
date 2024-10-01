@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,7 @@ import com.ains.myspring.services.modules.TypeproductService;
 import com.ains.myspring.services.modules.UniteService;
 import com.ains.myspring.services.modules.lieu.DistrictService;
 import com.ains.myspring.services.modules.lieu.RegionService;
+import com.ains.myspring.services.modules.mission.OrdermissionService;
 import com.ains.myspring.services.noentity.StatMissionservice;
 
 @RestController
@@ -51,6 +53,8 @@ public class PublicController {
   private RegionService _serviceRegion;
   @Autowired
   private DistrictService _serviceDistrict;
+  @Autowired
+  private OrdermissionService _serviceOrdermission;
 
   @GetMapping("/regions")
   public List<Region> getRegions() {
@@ -93,9 +97,10 @@ public class PublicController {
   }
 
   @GetMapping("/list-directeur")
-  public HashMap<String, Object> Directeur(@RequestParam(name = "page", defaultValue = "0") int page) {
+  public HashMap<String, Object> Directeur(@RequestParam(name = "page", defaultValue = "0") int page,
+      @RequestParam(name = "region") int idregion, @RequestParam(name = "search") String text) {
     HashMap<String, Object> mapping = new HashMap<>();
-    Page<Administration> directeur = _serviceAdministration.getListDirecteurRT(page);
+    Page<Administration> directeur = _serviceAdministration.getListDirecteurRT(text, idregion, page);
     mapping.put("hasnext", directeur.hasNext());
     mapping.put("hasprevious", directeur.hasPrevious());
     mapping.put("data", directeur.getContent());
@@ -108,4 +113,14 @@ public class PublicController {
   public ResponseEntity<?> getSocieteReponse(@RequestParam("idsociete") int societe) {
     return ResponseEntity.ok(new ReturnMap(200, _statmissionservice.getRefSociete(societe)));
   }
+
+  @GetMapping("/om_byserie")
+  public ResponseEntity<?> getOrdermissionByreference(@RequestParam("ref") String reference) {
+    try {
+      return ResponseEntity.ok(new ReturnMap(200, _serviceOrdermission.getOrdermissionByNumeroSerie(reference)));
+    } catch (Exception e) {
+      return ResponseEntity.ok(new ReturnMap(201, null));
+    }
+  }
+
 }

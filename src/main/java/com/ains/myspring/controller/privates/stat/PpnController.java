@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.ains.myspring.controller.Token;
 import com.ains.myspring.models.admin.Administration;
+import com.ains.myspring.models.notentity.PpnDistrict;
 import com.ains.myspring.models.notentity.PpnRegion;
 import com.ains.myspring.services.admin.AdministrationService;
 import com.ains.myspring.services.noentity.PpnpriceService;
@@ -54,6 +55,14 @@ public class PpnController {
       @RequestParam("product") int product,
       @RequestParam("mois") int mois, @RequestParam("annee") int annee) {
     return _servicePpn.getDetailProvince(province, product, mois, annee);
+  }
+
+  @PreAuthorize("hasRole('SG') or hasRole('DG') or hasRole('DSI') or hasRole('DR') or hasRole('DT') ")
+  @GetMapping("/districtdetailbyregion")
+  public List<PpnDistrict> getDistrictbyDetailregion(@RequestParam("idregion") int idregion,
+      @RequestParam("product") int product,
+      @RequestParam("mois") int mois, @RequestParam("annee") int annee) {
+    return _servicePpn.getDistrictbyDetailregion(idregion, product, mois, annee);
   }
   // -------------------- * ////////////////////--------------------
 

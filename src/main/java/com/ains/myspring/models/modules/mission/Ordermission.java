@@ -44,13 +44,16 @@ public class Ordermission {
   @Column(name = "iddistrict", nullable = true)
   Integer iddistrict;
   String nomdistrict;
+  String context;
+  String lieu_controle;
+  Date date_validation_om;
 
   public Ordermission() {
   }
 
   public Ordermission(int idtypeordermission, Equipe equipe, Region region, String motifs, String numeroserie,
       Date dateorder, Date datedescente, Integer idsociete, String nomsociete, String addressesociete,
-      Integer iddistrict, String nomdistrict) {
+      Integer iddistrict, String nomdistrict, String context, String lieu_controle) {
     this.idtypeordermission = idtypeordermission;
     this.equipe = equipe;
     this.region = region;
@@ -63,7 +66,8 @@ public class Ordermission {
     this.addressesociete = addressesociete;
     this.iddistrict = iddistrict;
     this.nomdistrict = nomdistrict;
-
+    this.context = context;
+    this.lieu_controle = lieu_controle;
   }
 
   public int getIdordermission() {
@@ -208,6 +212,30 @@ public class Ordermission {
 
   public void setAddresseSociete(String addresseSociete) {
     this.addressesociete = addresseSociete;
+  }
+
+  public String getContext() {
+    return context;
+  }
+
+  public void setContext(String context) {
+    this.context = context;
+  }
+
+  public String getLieu_controle() {
+    return lieu_controle;
+  }
+
+  public void setLieu_controle(String lieu_controle) {
+    this.lieu_controle = lieu_controle;
+  }
+
+  public Date getDate_validation_om() {
+    return date_validation_om;
+  }
+
+  public void setDate_validation_om(Date date_validation_om) {
+    this.date_validation_om = date_validation_om;
   }
 
 }

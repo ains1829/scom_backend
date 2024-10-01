@@ -1,9 +1,13 @@
 package com.ains.myspring.models.modules.mission.collecte;
 
+import com.ains.myspring.models.modules.Product;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Detailcollecte {
@@ -11,17 +15,20 @@ public class Detailcollecte {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   int iddetailcollecte;
   int idcollecte;
-  int idproduct;
+  @ManyToOne
+  @JoinColumn(name = "idproduct")
+  Product product;
   double prix;
+  String observation;
 
   public Detailcollecte() {
-
   }
 
-  public Detailcollecte(int idcollecte, int idproduct, double prix) {
+  public Detailcollecte(int idcollecte, Product product, double prix, String observation) {
     this.idcollecte = idcollecte;
-    this.idproduct = idproduct;
+    this.product = product;
     this.prix = prix;
+    this.observation = observation;
   }
 
   public int getIddetailcollecte() {
@@ -40,12 +47,12 @@ public class Detailcollecte {
     this.idcollecte = idcollecte;
   }
 
-  public int getIdproduct() {
-    return idproduct;
+  public Product getProduct() {
+    return product;
   }
 
-  public void setIdproduct(int idproduct) {
-    this.idproduct = idproduct;
+  public void setProduct(Product product) {
+    this.product = product;
   }
 
   public double getPrix() {
@@ -55,4 +62,13 @@ public class Detailcollecte {
   public void setPrix(double prix) {
     this.prix = prix;
   }
+
+  public String getObservation() {
+    return observation;
+  }
+
+  public void setObservation(String observation) {
+    this.observation = observation;
+  }
+
 }

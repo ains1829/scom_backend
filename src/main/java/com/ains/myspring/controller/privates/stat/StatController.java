@@ -2,7 +2,6 @@ package com.ains.myspring.controller.privates.stat;
 
 import java.time.Year;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -11,14 +10,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.ains.myspring.controller.Token;
 import com.ains.myspring.controller.other.ReturnMap;
 import com.ains.myspring.models.admin.Administration;
 import com.ains.myspring.models.modules.equipe.Equipe;
 import com.ains.myspring.services.admin.AdministrationService;
+import com.ains.myspring.services.modules.equipe.DetailequipeService;
 import com.ains.myspring.services.modules.equipe.EquipeService;
 import com.ains.myspring.services.noentity.StatMissionservice;
+import com.ains.myspring.services.noentity.StatSignalementService;
 
 @RestController
 @RequestMapping("/statistique")
@@ -32,6 +32,55 @@ public class StatController {
   private AdministrationService _serviceAdministration;
   @Autowired
   private EquipeService _serviceEquipe;
+  @Autowired
+  private StatSignalementService _serviceSignalement;
+  @Autowired
+  private DetailequipeService _serviceDetailequipe;
+
+  @PreAuthorize("hasRole('DR') or hasRole('DT')")
+  @GetMapping("/repartitionanomalybyregion")
+  public ResponseEntity<?> getRepartitionAnomalybyyear(@RequestParam("annee") int annee) {
+    Optional<Administration> administration = _serviceAdministration
+        .getAdministrationByEmail(tokenemail.getEmailUserByToken());
+    return ResponseEntity.ok(new ReturnMap(200,
+        _serviceSignalement.getRepartitionanomalybyregion(annee, administration.get().getRegion().getIdregion())));
+  }
+
+  @PreAuthorize("hasRole('DR') or hasRole('DT')")
+  @GetMapping("/ombyregion")
+  public ResponseEntity<?> geOmByregion() {
+    Optional<Administration> administration = _serviceAdministration
+        .getAdministrationByEmail(tokenemail.getEmailUserByToken());
+    return ResponseEntity
+        .ok(new ReturnMap(200, _serviceStat.getOmByregion(administration.get().getRegion().getIdregion())));
+  }
+
+  @PreAuthorize("hasRole('DR') or hasRole('DT')")
+  @GetMapping("/signalementbymonthbyregion")
+  public ResponseEntity<?> getStatsignalementbyregionbymonth(@RequestParam("annee") int annee) {
+    Optional<Administration> administration = _serviceAdministration
+        .getAdministrationByEmail(tokenemail.getEmailUserByToken());
+    return ResponseEntity.ok(new ReturnMap(200, _serviceSignalement.getStatSignalementbyregionbymonth(annee,
+        administration.get().getRegion().getIdregion())));
+  }
+
+  @PreAuthorize("hasRole('SG') or hasRole('DG') or hasRole('DSI')")
+  @GetMapping("/repartitionanomalyglobal")
+  public ResponseEntity<?> getRepartitionAnomaly(@RequestParam("annee") int annee) {
+    return ResponseEntity.ok(new ReturnMap(200, _serviceSignalement.getRepartitionanomaly(annee)));
+  }
+
+  @PreAuthorize("hasRole('SG') or hasRole('DG') or hasRole('DSI')")
+  @GetMapping("/signalementbymonthglobal")
+  public ResponseEntity<?> getStatsignalementbymonth(@RequestParam("annee") int annee) {
+    return ResponseEntity.ok(new ReturnMap(200, _serviceSignalement.getStatSignalementbymonth(annee)));
+  }
+
+  @PreAuthorize("hasRole('SG') or hasRole('DG') or hasRole('DSI')")
+  @GetMapping("/signalementbyregion")
+  public ResponseEntity<?> getStatsignalementbyregion(@RequestParam("annee") int annee) {
+    return ResponseEntity.ok(new ReturnMap(200, _serviceSignalement.getStatsignalementbyregion(annee)));
+  }
 
   @PreAuthorize("hasRole('SG') or hasRole('DG')")
   @GetMapping("/om_stat")
@@ -147,6 +196,20 @@ public class StatController {
     try {
       Equipe equipe = _serviceEquipe.getEquipeByChef(administration.get().getIdadministration());
       return ResponseEntity.ok(new ReturnMap(200, _serviceStat.getMissionTypesbyEquipe(equipe.getIdequipe())));
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
+    }
+  }
+
+  @PreAuthorize("hasRole('CHEF_EQUIPE')")
+  @GetMapping("/detailequipe")
+  public ResponseEntity<?> getDetailEquipe() {
+    Optional<Administration> administration = _serviceAdministration
+        .getAdministrationByEmail(tokenemail.getEmailUserByToken());
+    try {
+      Equipe equipe = _serviceEquipe.getEquipeByChef(administration.get().getIdadministration());
+      return ResponseEntity.ok(new ReturnMap(200, _serviceDetailequipe.getDetailEquipe(equipe.getIdequipe())));
     } catch (Exception e) {
       e.printStackTrace();
       return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));

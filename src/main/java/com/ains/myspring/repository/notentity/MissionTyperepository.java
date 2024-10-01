@@ -17,15 +17,6 @@ public class MissionTyperepository {
   }
 
   @SuppressWarnings("deprecation")
-  public List<MissionType> getMissionTypebyEquipe(int idequipe) {
-    String sql = "select idtypeordermission , max(nombre_mission) as nombre_mission from (select * from  v_typeordermission_mission  union select * from get_mission_count_byequipe(?) ) as s  group by idtypeordermission order by idtypeordermission";
-    return jdbcTemplate.query(sql, new Object[] { idequipe }, (rs, rowNum) -> {
-      MissionType mission = new MissionType(rs.getInt("idtypeordermission"), rs.getInt("nombre_mission"));
-      return mission;
-    });
-  }
-
-  @SuppressWarnings("deprecation")
   public List<MissionType> getMissionGlobalType(int annee) {
     String sql = "select idtypeordermission , max(nombre_mission) as nombre_mission  , max(mission_finished) as mission_finished , max(mission_pending) as mission_pending , max(progressing) as progressing from ( select * from  v_typemission_init union select * from get_missionglobaltype_and_year(?)) as s  group by idtypeordermission order by idtypeordermission";
     return jdbcTemplate.query(sql, new Object[] { annee }, (rs, rowNum) -> {
@@ -43,6 +34,18 @@ public class MissionTyperepository {
         + //
         "    as progressing from ( select * from  v_typemission_init union select idtypeordermission , nombre_mission , mission_finished,mission_pending,progressing from get_missionglobaltypebyregion_and_year(?,?)) as s  group by idtypeordermission order by idtypeordermission";
     return jdbcTemplate.query(sql, new Object[] { region, annee }, (rs, rowNum) -> {
+      MissionType mission = new MissionType(rs.getInt("idtypeordermission"), rs.getInt("nombre_mission"));
+      mission.setMission_finished(rs.getInt("mission_finished"));
+      mission.setMission_pending(rs.getInt("mission_pending"));
+      mission.setProgressing(rs.getDouble("progressing"));
+      return mission;
+    });
+  }
+
+  @SuppressWarnings("deprecation")
+  public List<MissionType> getMissionGlobalbyEquipe(int equipe) {
+    String sql = "select * from f_stat_equipe_mission(?)";
+    return jdbcTemplate.query(sql, new Object[] { equipe }, (rs, rowNum) -> {
       MissionType mission = new MissionType(rs.getInt("idtypeordermission"), rs.getInt("nombre_mission"));
       mission.setMission_finished(rs.getInt("mission_finished"));
       mission.setMission_pending(rs.getInt("mission_pending"));

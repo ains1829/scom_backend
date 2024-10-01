@@ -39,7 +39,17 @@ public class MissionStatRepository {
     String sql = "select * from om_stat";
     return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
       Om stat = new Om(rs.getInt("om"), rs.getInt("om_valider"),
-          rs.getInt("om_nonvalider"));
+          rs.getInt("om_nonvalider"), rs.getInt("attente_dg"), rs.getInt("supprimer"));
+      return stat;
+    });
+  }
+
+  @SuppressWarnings("deprecation")
+  public Om getObByregion(int idregion) {
+    String sql = "SELECT  COUNT(*) AS om, COUNT(CASE WHEN status_validation = 100 THEN 1 END) AS om_valider,COUNT(CASE WHEN status_validation = 0 THEN 1 END) AS om_nonvalider, COUNT(CASE WHEN status_validation = 10 THEN 1 END) as attente_dg , COUNT(CASE WHEN status_validation = 500 THEN 1 END) as supprimer FROM ordermission where idregion = ?";
+    return jdbcTemplate.queryForObject(sql, new Object[] { idregion }, (rs, rowNum) -> {
+      Om stat = new Om(rs.getInt("om"), rs.getInt("om_valider"),
+          rs.getInt("om_nonvalider"), rs.getInt("attente_dg"), rs.getInt("supprimer"));
       return stat;
     });
   }

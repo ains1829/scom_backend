@@ -29,6 +29,7 @@ public class Societe {
   String responsable;
   String telephone;
   String numerofiscal;
+  String url_logo;
 
   public Societe() {
   }
@@ -144,4 +145,13 @@ public class Societe {
   public void setRegion(Region region) {
     this.region = region;
   }
+
+  public String getUrl_logo() {
+    return url_logo;
+  }
+
+  public void setUrl_logo(String url_logo) {
+    this.url_logo = url_logo;
+  }
+
 }

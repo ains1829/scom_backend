@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.ains.myspring.models.notentity.PpnAnnee;
+import com.ains.myspring.models.notentity.PpnDistrict;
 import com.ains.myspring.models.notentity.PpnRegion;
 import com.ains.myspring.models.notentity.Ppnprice;
 
@@ -19,7 +20,7 @@ public class PpnRepository {
 
   @SuppressWarnings("deprecation")
   public Ppnprice getStatglobalpricebyprovince(int idprovince, int idproduct, int mois, int annee) {
-    String sql = "select * from getStatglobalProvincebyproduct(?,?,?,?) ";
+    String sql = "select province , product, round(p_moyenne , 2) as p_moyenne , p_max , p_min , mois,annee from getStatglobalProvincebyproduct(?,?,?,?) ";
     return jdbcTemplate.queryForObject(sql, new Object[] { idprovince, idproduct, mois, annee }, (rs, rowNum) -> {
       Ppnprice price = new Ppnprice();
       price.setProvince(rs.getInt("province"));
@@ -60,6 +61,20 @@ public class PpnRepository {
       ppregion.setP_min(rs.getDouble("p_min"));
       ppregion.setMois(rs.getInt("mois"));
       ppregion.setAnnee(rs.getInt("annee"));
+      return ppregion;
+    });
+  }
+
+  @SuppressWarnings("deprecation")
+  public List<PpnDistrict> getDistrictbyDetailregion(int idregion, int idproduct, int mois, int annee) {
+    String sql = "select district.nameville , f.* from getCollecteOnDistrict(?,?,?,?) as f join district on (f.iddistrict = district.iddistrict)";
+    return jdbcTemplate.query(sql, new Object[] { annee, mois, idregion, idproduct }, (rs, rowNum) -> {
+      PpnDistrict ppregion = new PpnDistrict();
+      ppregion.setNamedistrict(rs.getString("nameville"));
+      ppregion.setIddistrict(rs.getInt("iddistrict"));
+      ppregion.setP_moyenne(rs.getDouble("prix_moyenne"));
+      ppregion.setP_max(rs.getDouble("prix_max"));
+      ppregion.setP_min(rs.getDouble("prix_min"));
       return ppregion;
     });
   }

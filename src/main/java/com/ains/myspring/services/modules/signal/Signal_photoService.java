@@ -1,5 +1,7 @@
 package com.ains.myspring.services.modules.signal;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ains.myspring.models.modules.signal.Signal_photo;
@@ -12,5 +14,9 @@ public class Signal_photoService {
 
   public Signal_photo Save(Signal_photo Signal_photo) {
     return _contextSignalPhoto.save(Signal_photo);
+  }
+
+  public List<Signal_photo> getPhotoByidSignal(int idsignal) {
+    return _contextSignalPhoto.getPhotoByIdSignal(idsignal);
   }
 }

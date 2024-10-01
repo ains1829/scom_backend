@@ -61,4 +61,12 @@ public class ProductService {
       throw new Exception("Product in conflict");
     }
   }
+
+  public Product getProductbyId(int idproduct) throws Exception {
+    Optional<Product> product = _context.findById(idproduct);
+    if (product.isEmpty()) {
+      throw new Exception("Product not found");
+    }
+    return product.get();
+  }
 }

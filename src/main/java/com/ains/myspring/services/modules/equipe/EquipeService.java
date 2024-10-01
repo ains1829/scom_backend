@@ -5,11 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.ains.myspring.models.admin.Administration;
 import com.ains.myspring.models.jsontoclass.equipe.Jsonequipe;
 import com.ains.myspring.models.modules.equipe.Detailequipe;

@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.ains.myspring.models.notentity.PpnDistrict;
 import com.ains.myspring.models.notentity.PpnRegion;
 import com.ains.myspring.models.notentity.Ppnprice;
 import com.ains.myspring.repository.notentity.PpnRepository;
@@ -12,6 +14,10 @@ import com.ains.myspring.repository.notentity.PpnRepository;
 public class PpnpriceService {
   @Autowired
   private PpnRepository _context_ppn;
+
+  public List<PpnDistrict> getDistrictbyDetailregion(int idregion, int idproduct, int mois, int annee) {
+    return _context_ppn.getDistrictbyDetailregion(idregion, idproduct, mois, annee);
+  }
 
   public List<PpnRegion> getDetailProvince(int idprovince, int idproduct, int mois, int annee) {
     return _context_ppn.getDetailByRegion(idprovince, idproduct, mois, annee);

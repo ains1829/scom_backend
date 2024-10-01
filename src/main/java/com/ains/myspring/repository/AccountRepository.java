@@ -2,6 +2,8 @@ package com.ains.myspring.repository;
 
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,5 +21,11 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 
   @Query(value = "select count(*) as n  from equipe where idadministration = :idadmin and isactive", nativeQuery = true)
   int AccountIsChef(int idadmin);
+
+  @Query(value = "select * from account where accountvalidate = true order by datevalidate desc ", nativeQuery = true)
+  Page<Account> getListAccountValidate(Pageable pageable);
+
+  @Query(value = "select * from account where accountvalidate = false order by datedemande desc", nativeQuery = true)
+  Page<Account> getListAccountNoValidate(Pageable pageable);
 
 }

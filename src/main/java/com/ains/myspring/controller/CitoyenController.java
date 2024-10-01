@@ -51,11 +51,11 @@ public class CitoyenController {
   @PostMapping("feedback")
   public ResponseEntity<?> Feedback(@RequestParam("numero_serie") String n_serie, String feedback,
       @RequestPart(name = "photo", required = false) List<MultipartFile> photo,
-      @RequestParam("contact") String contact) {
+      @RequestParam("contact") String contact, String email) {
     try {
       Ordermission mission = serviceOrdermission.getOrdermissionByNumeroSerie(n_serie);
       return ResponseEntity
-          .ok(new ReturnMap(200, serviceFeedback.Save(mission, feedback, photo, contact)));
+          .ok(new ReturnMap(200, serviceFeedback.Save(mission, feedback, photo, contact, email)));
     } catch (Exception e) {
       return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
     }

@@ -1,15 +1,17 @@
 package com.ains.myspring.models.admin;
 
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.Period;
 
 import com.ains.myspring.models.modules.lieu.Region;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Transient;
 
 @Entity
 public class Administration {
@@ -20,9 +22,9 @@ public class Administration {
   String matricule;
   String email;
   String telephone;
-  Date birthday;
   int gender;
   String addresse;
+  Date birthday;
   String photo;
   @ManyToOne
   @JoinColumn(name = "idprofil")
@@ -32,17 +34,20 @@ public class Administration {
   Region region;
   boolean haveaccount = true;
   boolean isactive = true;
+  @Transient
+  String role;
+  @Transient
+  int age;
 
   public Administration() {
   }
 
-  public Administration(String nameadministration, String matricule, String email, String telephone, Date birthday,
+  public Administration(String nameadministration, String matricule, String email, String telephone,
       int gender, String addresse, String photo, Profil profil, Region region, boolean haveaccount) {
     this.nameadministration = nameadministration;
     this.matricule = matricule;
     this.email = email;
     this.telephone = telephone;
-    this.birthday = birthday;
     this.gender = gender;
     this.addresse = addresse;
     this.photo = photo;
@@ -57,14 +62,6 @@ public class Administration {
 
   public void setRegion(Region region) {
     this.region = region;
-  }
-
-  public Date getBirthday() {
-    return birthday;
-  }
-
-  public void setBirthday(Date birthday) {
-    this.birthday = birthday;
   }
 
   public int getGender() {
@@ -153,5 +150,27 @@ public class Administration {
 
   public void setIsactive(boolean isactive) {
     this.isactive = isactive;
+  }
+
+  public String getRole() {
+    return role;
+  }
+
+  public void setRole(String role) {
+    this.role = role;
+  }
+
+  public Date getBirthday() {
+    return birthday;
+  }
+
+  public void setBirthday(Date birthday) {
+    this.birthday = birthday;
+  }
+
+  public int getAge() {
+    LocalDate birth_day = birthday.toLocalDate();
+    LocalDate anne_actuel = new Date(System.currentTimeMillis()).toLocalDate();
+    return Period.between(birth_day, anne_actuel).getYears();
   }
 }

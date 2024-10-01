@@ -10,9 +10,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 import com.ains.myspring.models.admin.Account;
+import com.ains.myspring.models.admin.Administration;
 import com.ains.myspring.models.jsontoclass.AuthUser;
 import com.ains.myspring.repository.AccountRepository;
 import com.ains.myspring.security.config.JwtService;
+import com.ains.myspring.services.admin.AdministrationService;
 
 @Service
 public class AuthService {
@@ -22,6 +24,8 @@ public class AuthService {
   private JwtService _ServiceJWT;
   @Autowired
   private AccountRepository _context_repository;
+  @Autowired
+  private AdministrationService _serviceAdministration;
 
   public HashMap<String, Object> login(AuthUser loginForm) throws Exception {
     try {
@@ -44,6 +48,9 @@ public class AuthService {
         HashMap<String, Object> map = new HashMap<>();
         map.put("token", token);
         map.put("role", role.get(0));
+        Optional<Administration> administration = _serviceAdministration.getAdministrationByEmail(loginForm.getEmail());
+        administration.get().setRole(role.get(0));
+        map.put("user", administration.get());
         return map;
       } else {
         throw new Exception("Wait the administrator validate your account");

@@ -25,6 +25,15 @@ public class JwtService {
     return Jwts.parser().setSigningKey(secret_key).parseClaimsJws(jwtToken).getBody().getSubject();
   }
 
+  @SuppressWarnings({ "deprecation", "unchecked" })
+  public List<String> getRolesByToken(String jwtToken) {
+    Claims claims = Jwts.parser()
+        .setSigningKey(secret_key)
+        .parseClaimsJws(jwtToken)
+        .getBody();
+    return claims.get("roles", List.class);
+  }
+
   public String createToken(String username, List<String> roles) {
     Claims claims = Jwts.claims().setSubject(username);
     claims.put("roles", roles);
