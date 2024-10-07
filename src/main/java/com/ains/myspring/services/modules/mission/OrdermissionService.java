@@ -135,7 +135,7 @@ public class OrdermissionService {
       _serviceEnquete.Save(new Enquete(newordermission, serviceSociete.getSocieteById(demaJson.getSociete()), 0));
     } else if (demaJson.getIdtypeordermission() == 2) {
       _serviceCollecte.Save(new Collecte(newordermission, demaJson.getDistrict(), 0,
-          new Date(System.currentTimeMillis())));
+          newordermission.getDatedescente()));
     } else {
       _serviceAutresuivi.Save(new Autresuivi(newordermission, "", 0, demaJson.getDistrict()));
     }
@@ -155,7 +155,7 @@ public class OrdermissionService {
       throw new Exception("Cette equipe a encore des mission en cours");
     }
     Region _Objectregion = _regionService.getRegionById(region);
-    String numero_serie = generateNumeroSerie(_Objectregion.getNumero());
+    String numero_serie = generateNumeroSerie(_Objectregion.getIdregion());
     Date date_now = new Date(System.currentTimeMillis());
     Ordermission ordre = null;
     int status_ordermission = 0;
@@ -199,10 +199,9 @@ public class OrdermissionService {
       String urlfile = serviceGenerateOM.Ordermission(ordermission.get());
       ordermission.get().setFileordermission(urlfile);
       IfModerationValidate(ordermission.get());
-
-      // _serviceMail.NotifAboutmission(ordermission.get().getEquipe().getChefequipe().getEmail(),
-      // ordermission.get(),
-      // false);
+      _serviceMail.NotifAboutmission(ordermission.get().getEquipe().getChefequipe().getEmail(),
+          ordermission.get(),
+          false);
     } else {
       ordermission.get().setStatus_validation(500);
     }

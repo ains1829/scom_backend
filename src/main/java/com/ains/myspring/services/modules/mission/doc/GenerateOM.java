@@ -9,6 +9,8 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.common.BitMatrix;
+
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -19,10 +21,6 @@ import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.sql.Date;
@@ -31,21 +29,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.nio.file.Path;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.docx4j.Docx4J;
+// import org.docx4j.Docx4J;
+import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+// import java.io.OutputStream;
+// import org.docx4j.convert.out.FOSettings;
+import org.docx4j.convert.out.pdf.PdfConversion;
+import org.docx4j.convert.out.pdf.viaXSLFO.Conversion;
+import org.docx4j.convert.out.pdf.viaXSLFO.PdfSettings;
 
 @Service
 public class GenerateOM {
   @Autowired
   private DetailequipeService servicedetailequipe;
 
+  @SuppressWarnings("deprecation")
   public String Ordermission(Ordermission ordermission) throws Exception {
     String src = "src/main/resources/static/doc/Modelfinal.docx";
     String rendre = "";
     String object = "";
     String qrCodePath = "src/main/resources/static/doc/example-1.png";
     String dest = "src/main/resources/static/" + ordermission.getNumeroserie() + ".docx";
+    String outputPdfPath = "src/main/resources/static/" + ordermission.getNumeroserie() + ".pdf";
     Date now = new Date(System.currentTimeMillis());
     SimpleDateFormat yearMonthFormat = new SimpleDateFormat("MM/yyyy");
     String yearMonth = yearMonthFormat.format(now);
@@ -65,13 +75,15 @@ public class GenerateOM {
     } catch (WriterException | IOException e) {
       e.printStackTrace();
     }
-    FileInputStream fis = new FileInputStream(src);
-    try (XWPFDocument document = new XWPFDocument(fis)) {
+    try (FileInputStream fis = new FileInputStream(src);
+        XWPFDocument document = new XWPFDocument(fis);
+        FileOutputStream fos = new FileOutputStream(dest)) {
       for (XWPFParagraph paragraph : document.getParagraphs()) {
         for (XWPFRun run : paragraph.getRuns()) {
           String text = run.getText(0);
           if (text != null) {
-            text = text.replace("{numero}", ordermission.getNumeroserie()).replace("{date}", yearMonth)
+            text = text.replace("{numero}", ordermission.getNumeroserie())
+                .replace("{date}", yearMonth)
                 .replace("{debutmission}", "" + ordermission.getDatedescente());
             run.setText(text, 0);
           }
@@ -116,16 +128,35 @@ public class GenerateOM {
             break;
           }
         }
-        paragraph.setPageBreak(false);
       }
-      FileOutputStream fos = new FileOutputStream(dest);
       document.write(fos);
+    } catch (IOException e) {
+      e.printStackTrace();
+      return null;
     }
-    File docxFile = new File(dest);
-    WordprocessingMLPackage word = WordprocessingMLPackage.load(docxFile);
-    File pdFile = new File(ordermission.getNumeroserie() + ".pdf");
-    FileOutputStream pdFileOutputStream = new FileOutputStream(pdFile);
-    Docx4J.toPDF(word, pdFileOutputStream);
+    File fileDocx = new File(dest);
+    if (fileDocx.exists()) {
+      try (
+          InputStream templateInputStream = new FileInputStream(dest);
+          FileOutputStream os = new FileOutputStream(outputPdfPath)) {
+        WordprocessingMLPackage wordMLPackage = WordprocessingMLPackage.load(templateInputStream);
+        PdfSettings pdfSettings = new PdfSettings();
+        PdfConversion pdfConversion = new Conversion(wordMLPackage);
+        pdfConversion.output(os, pdfSettings);
+        os.flush();
+        os.close();
+        // FOSettings foSettings = Docx4J.createFOSettings();
+        // foSettings.setWmlPackage(wordMLPackage);
+        // foSettings.setApacheFopMime("application/pdf");
+        // Docx4J.toFO(foSettings, os, Docx4J.FLAG_EXPORT_PREFER_XSL);
+        return ordermission.getNumeroserie() + ".pdf";
+      } catch (IOException | Docx4JException e) {
+        e.printStackTrace();
+      }
+
+    } else {
+      System.err.println("Le fichier DOCX n'a pas été créé : " + dest);
+    }
     return ordermission.getNumeroserie() + ".pdf";
   }
 
@@ -156,7 +187,7 @@ public class GenerateOM {
       XWPFTableRow row1 = table.createRow();
       setTextAndFormat(row1.getCell(0), detailequipe.get(i).getNameadministration(), 11,
           false);
-      setTextAndFormat(row1.getCell(1), detailequipe.get(i).getProfil(),
+      setTextAndFormat(row1.getCell(1), detailequipe.get(i).getProfil().toLowerCase(),
           11,
           false);
       setTextAndFormat(row1.getCell(2), detailequipe.get(i).getMatricule(), 11, false);

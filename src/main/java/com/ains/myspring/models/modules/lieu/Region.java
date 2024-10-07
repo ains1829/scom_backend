@@ -16,7 +16,6 @@ public class Region {
   @JoinColumn(name = "idprovince")
   Province province;
   String nameregion;
-  int numero;
 
   public int getIdregion() {
     return idregion;
@@ -40,14 +39,6 @@ public class Region {
 
   public void setProvince(Province province) {
     this.province = province;
-  }
-
-  public int getNumero() {
-    return numero;
-  }
-
-  public void setNumero(int numero) {
-    this.numero = numero;
   }
 
 }
