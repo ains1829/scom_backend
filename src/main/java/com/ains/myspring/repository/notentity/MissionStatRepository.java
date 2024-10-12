@@ -1,9 +1,12 @@
 package com.ains.myspring.repository.notentity;
 
+import java.util.List;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.ains.myspring.models.notentity.MissionStat;
+import com.ains.myspring.models.notentity.MissionStatmois;
 import com.ains.myspring.models.notentity.Om;
 
 @Repository
@@ -13,6 +16,24 @@ public class MissionStatRepository {
 
   public MissionStatRepository(JdbcTemplate jdbcTemplate) {
     this.jdbcTemplate = jdbcTemplate;
+  }
+
+  @SuppressWarnings("deprecation")
+  public List<MissionStatmois> getMissionStatbyMonth_Type(int annee, int idtypeordermission) {
+    String sql = "select mois , max(nb_mission) as nb_mission from ( select idmois as mois  , 0 as nb_mission from mois  union select * from f_count_missions_by_month_and_type(?,?)) group by mois order by mois";
+    return jdbcTemplate.query(sql, new Object[] { annee, idtypeordermission }, (rs, rowNum) -> {
+      MissionStatmois stat = new MissionStatmois(rs.getInt("mois"), rs.getInt("nb_mission"));
+      return stat;
+    });
+  }
+
+  @SuppressWarnings("deprecation")
+  public List<MissionStatmois> getMissionStatbyMonth(int annee) {
+    String sql = "select mois , max(nb_mission) as nb_mission from ( select idmois as mois  , 0 as nb_mission from mois  union select * from f_count_missions_by_month(?)) group by mois order by mois";
+    return jdbcTemplate.query(sql, new Object[] { annee }, (rs, rowNum) -> {
+      MissionStatmois stat = new MissionStatmois(rs.getInt("mois"), rs.getInt("nb_mission"));
+      return stat;
+    });
   }
 
   @SuppressWarnings("deprecation")

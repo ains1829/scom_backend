@@ -1,6 +1,7 @@
 package com.ains.myspring.controller.privates.stat;
 
 import java.time.Year;
+import java.util.HashMap;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -80,6 +81,22 @@ public class StatController {
   @GetMapping("/signalementbyregion")
   public ResponseEntity<?> getStatsignalementbyregion(@RequestParam("annee") int annee) {
     return ResponseEntity.ok(new ReturnMap(200, _serviceSignalement.getStatsignalementbyregion(annee)));
+  }
+
+  @PreAuthorize("hasRole('SG') or hasRole('DG') or hasRole('DSI')")
+  @GetMapping("/statmission_month_type")
+  public ResponseEntity<?> getMissionStatMonthType(@RequestParam("annee") int annee) {
+    HashMap<String, Object> data = new HashMap<>();
+    data.put("enquete", _serviceStat.getMissionStatBymonth_Type(annee, 1));
+    data.put("collecte", _serviceStat.getMissionStatBymonth_Type(annee, 2));
+    data.put("autre_suivi", _serviceStat.getMissionStatBymonth_Type(annee, 3));
+    return ResponseEntity.ok(new ReturnMap(annee, data));
+  }
+
+  @PreAuthorize("hasRole('SG') or hasRole('DG') or hasRole('DSI')")
+  @GetMapping("/statmission_month")
+  public ResponseEntity<?> getMissionStatMonth(@RequestParam("annee") int annee) {
+    return ResponseEntity.ok(new ReturnMap(annee, _serviceStat.getMissionStatBymonth(annee)));
   }
 
   @PreAuthorize("hasRole('SG') or hasRole('DG')")

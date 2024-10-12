@@ -22,6 +22,7 @@ import com.ains.myspring.models.admin.Account;
 import com.ains.myspring.models.admin.Administration;
 import com.ains.myspring.models.jsontoclass.JsonAdministration;
 import com.ains.myspring.models.jsontoclass.JsonSociete;
+import com.ains.myspring.models.jsontoclass.JsonSocieteModify;
 import com.ains.myspring.models.jsontoclass.equipe.Jsonequipe;
 import com.ains.myspring.models.modules.Societe;
 import com.ains.myspring.models.modules.signal.Signal;
@@ -142,6 +143,17 @@ public class PrivateController {
       @RequestPart("data") JsonSociete societe) {
     try {
       return ResponseEntity.ok(new ReturnMap(200, _serviceSociete.AddNewSociete(photo, societe)));
+    } catch (Exception e) {
+      return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
+    }
+  }
+
+  @PreAuthorize("hasRole('DSI')")
+  @PostMapping("/updateSociete")
+  public ResponseEntity<?> UpdateSociete(@RequestPart(name = "photo", required = false) MultipartFile photo,
+      @RequestPart("data") JsonSocieteModify societe) {
+    try {
+      return ResponseEntity.ok(new ReturnMap(200, _serviceSociete.UpdateSociete(photo, societe)));
     } catch (Exception e) {
       return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
     }

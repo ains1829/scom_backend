@@ -1,6 +1,8 @@
 package com.ains.myspring.models.jsontoclass;
 
-public class JsonSociete {
+public class JsonSocieteModify {
+  int idsociete;
+
   String namesociete;
   String description;
   String nif;
@@ -12,11 +14,12 @@ public class JsonSociete {
   String telephone;
   String numerofiscal;
 
-  public JsonSociete() {
+  public JsonSocieteModify() {
   }
 
-  public JsonSociete(String namesociete, String description, String nif, String stat, int idregion, int iddistrict,
-      String addresse, String responsable, String telephone, String numerofiscal) {
+  public JsonSocieteModify(int idsociete, String namesociete, String description, String nif, String stat, int idregion,
+      int iddistrict, String addresse, String responsable, String telephone, String numerofiscal) {
+    this.idsociete = idsociete;
     this.namesociete = namesociete;
     this.description = description;
     this.nif = nif;
@@ -27,6 +30,14 @@ public class JsonSociete {
     this.responsable = responsable;
     this.telephone = telephone;
     this.numerofiscal = numerofiscal;
+  }
+
+  public int getIdsociete() {
+    return idsociete;
+  }
+
+  public void setIdsociete(int idsociete) {
+    this.idsociete = idsociete;
   }
 
   public String getNamesociete() {
@@ -108,4 +119,5 @@ public class JsonSociete {
   public void setNumerofiscal(String numerofiscal) {
     this.numerofiscal = numerofiscal;
   }
+
 }

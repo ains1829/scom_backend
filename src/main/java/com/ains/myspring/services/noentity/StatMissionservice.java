@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import com.ains.myspring.models.notentity.Enqueregion;
 import com.ains.myspring.models.notentity.EnqueteStat;
 import com.ains.myspring.models.notentity.MissionStat;
+import com.ains.myspring.models.notentity.MissionStatmois;
 import com.ains.myspring.models.notentity.MissionType;
 import com.ains.myspring.models.notentity.Om;
 import com.ains.myspring.models.notentity.RegionStatistic;
@@ -22,6 +23,14 @@ public class StatMissionservice {
   private MissionTyperepository _contextmissiontype;
   @Autowired
   private EnqueteStatRepository _contextEnquetestat;
+
+  public List<MissionStatmois> getMissionStatBymonth_Type(int annee, int idtypeordermission) {
+    return _contextmissionStat.getMissionStatbyMonth_Type(annee, idtypeordermission);
+  }
+
+  public List<MissionStatmois> getMissionStatBymonth(int annee) {
+    return _contextmissionStat.getMissionStatbyMonth(annee);
+  }
 
   public List<MissionType> getMissionProgressionByregion(int region, int annee) {
     return _contextmissiontype.getMissionGlobalTypebyregion(region, annee);

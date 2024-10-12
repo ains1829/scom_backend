@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ains.myspring.models.jsontoclass.JsonSociete;
+import com.ains.myspring.models.jsontoclass.JsonSocieteModify;
 import com.ains.myspring.models.modules.Societe;
 import com.ains.myspring.models.modules.lieu.District;
 import com.ains.myspring.repository.modules.SocieteRepository;
@@ -69,18 +70,34 @@ public class SocieteService {
     return getSociete.get();
   }
 
-  public Societe UpdateSociete(Societe societe) throws Exception {
-    try {
-      getSocieteById(societe.getIdsociete());
-      if (!FiscalIsExist(societe.getNumerofiscal()) && !StatIsExist(societe.getStat())
-          && !NifIsExist(societe.getNif())) {
-        return _contextsociete.save(societe);
-      } else {
-        throw new Exception("Update societe failed");
-      }
-    } catch (Exception e) {
-      throw new Exception(e.getMessage());
+  public Societe UpdateSociete(MultipartFile logo, JsonSocieteModify societe) throws Exception {
+    District district = _serviceDistrict.getById(societe.getIddistrict());
+    String url_logo = "";
+    if (logo != null) {
+      url_logo = logo.getOriginalFilename();
     }
+    Societe societe_modify = getSocieteById(societe.getIdsociete());
+    societe_modify.setNamesociete(societe.getNamesociete());
+    societe_modify.setDescription(societe.getDescription());
+    societe_modify.setNif(societe.getNif());
+    societe_modify.setStat(societe.getStat());
+    societe_modify.setRegion(district.getRegion());
+    societe_modify.setDistrict(district);
+    societe_modify.setAddresse(societe.getAddresse());
+    societe_modify.setResponsable(societe.getResponsable());
+    societe_modify.setTelephone(societe.getTelephone());
+    societe_modify.setNumerofiscal(societe.getNumerofiscal());
+    societe_modify.setUrl_logo(url_logo);
+    if (societe_modify.getNumerofiscal() != societe.getNumerofiscal()) {
+      FiscalIsExist(societe.getNumerofiscal());
+    }
+    if (societe_modify.getStat() != societe.getStat()) {
+      StatIsExist(societe.getStat());
+    }
+    if (societe_modify.getNif() != societe.getNif()) {
+      NifIsExist(societe.getNif());
+    }
+    return _contextsociete.save(societe_modify);
   }
 
   public Societe DesactivateSociete(int idsociete) throws Exception {

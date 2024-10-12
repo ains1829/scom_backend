@@ -92,7 +92,8 @@ public class OrdermissionService {
     equipe.setMission_encours(equipe.getMission_encours() - 1);
     _serviceEquipe.Save(equipe);
     ordermission.setDateorderend(new Date(System.currentTimeMillis()));
-    _serviceMail.NotifAboutmission(ordermission.getSender().getEmail(), ordermission, true);
+    // _serviceMail.NotifAboutmission(ordermission.getSender().getEmail(),
+    // ordermission, true);
     return UpdateOrdermission(ordermission);
   }
 

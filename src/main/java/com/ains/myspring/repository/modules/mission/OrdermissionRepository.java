@@ -10,10 +10,10 @@ import org.springframework.data.repository.query.Param;
 import com.ains.myspring.models.modules.mission.Ordermission;
 
 public interface OrdermissionRepository extends JpaRepository<Ordermission, Integer> {
-  @Query(value = "Select * from ordermission where status_validation = :statu and (motifs ilike '%'||:text||'%' or nomsociete ilike '%'||:text||'%' or numeroserie ilike '%'||:text||'%') order by dateorder desc", nativeQuery = true)
+  @Query(value = "Select * from ordermission where status_validation = :statu and (context ilike '%'||:text||'%' or motifs ilike '%'||:text||'%' or nomsociete ilike '%'||:text||'%' or numeroserie ilike '%'||:text||'%') order by dateorder desc", nativeQuery = true)
   Page<Ordermission> getOrdermissionValiderOrSupprimerstatus(int statu, String text, Pageable page);
 
-  @Query(value = "Select * from ordermission where (status_validation = 10 or status_validation = 0) and (motifs ilike '%'||:text||'%' or nomsociete ilike '%'||:text||'%' or numeroserie ilike '%'||:text||'%') order by dateorder desc", nativeQuery = true)
+  @Query(value = "Select * from ordermission where (status_validation = 10 or status_validation = 0) and (context ilike '%'||:text||'%' or motifs ilike '%'||:text||'%' or nomsociete ilike '%'||:text||'%' or numeroserie ilike '%'||:text||'%') order by dateorder desc", nativeQuery = true)
   Page<Ordermission> getOrdermissionNovaliderstatus(String text, Pageable page);
 
   @Query(value = "Select * from ordermission where dateorderend is not null and status_validation = 100 order by dateorder desc", nativeQuery = true)
@@ -22,7 +22,7 @@ public interface OrdermissionRepository extends JpaRepository<Ordermission, Inte
   @Query(value = "Select * from ordermission where status_validation = 100 dateorderend is null order by dateorder desc", nativeQuery = true)
   Page<Ordermission> getOrdermissionMissionNotFinish(Pageable page);
 
-  @Query(value = "Select * from ordermission where motifs ilike '%'||:text||'%' or nomsociete ilike '%'||:text||'%' or numeroserie ilike '%'||:text||'%' order by dateorder desc", nativeQuery = true)
+  @Query(value = "Select * from ordermission where context ilike '%'||:text||'%' or motifs ilike '%'||:text||'%' or nomsociete ilike '%'||:text||'%' or numeroserie ilike '%'||:text||'%' order by dateorder desc", nativeQuery = true)
   Page<Ordermission> getOrdermissionAll(String text, Pageable page);
 
   @Query(value = "Select * from ordermission where lower(motifs) = lower(:motif)", nativeQuery = true)
@@ -31,14 +31,14 @@ public interface OrdermissionRepository extends JpaRepository<Ordermission, Inte
   @Query(value = "select * from ordermission where numeroserie = :numero_serie ", nativeQuery = true)
   Optional<Ordermission> getOrdermissionByNumeroSerie(@Param("numero_serie") String numero);
 
-  @Query(value = "Select * from ordermission where (motifs ilike '%'||:text||'%' or nomsociete ilike '%'||:text||'%' or numeroserie ilike '%'||:text||'%') and idregion = :region order by dateorder desc", nativeQuery = true)
+  @Query(value = "Select * from ordermission where (context ilike '%'||:text||'%' or motifs ilike '%'||:text||'%' or nomsociete ilike '%'||:text||'%' or numeroserie ilike '%'||:text||'%') and idregion = :region order by dateorder desc", nativeQuery = true)
   Page<Ordermission> getOrdermissionAllByDrDt(String text, @Param("region") int id, Pageable page);
 
-  @Query(value = "Select * from ordermission where status_validation = :statu and (motifs ilike '%'||:text||'%' or nomsociete ilike '%'||:text||'%' or numeroserie ilike '%'||:text||'%') and idregion = :region order by dateorder desc", nativeQuery = true)
+  @Query(value = "Select * from ordermission where status_validation = :statu and (context ilike '%'||:text||'%' or motifs ilike '%'||:text||'%' or nomsociete ilike '%'||:text||'%' or numeroserie ilike '%'||:text||'%') and idregion = :region order by dateorder desc", nativeQuery = true)
   Page<Ordermission> getOrdermissionValiderOrSupprimerForDrDt(int statu, @Param("region") int id, String text,
       Pageable page);
 
-  @Query(value = "Select * from ordermission where (status_validation = 0 or status_validation = 10) and (motifs ilike '%'||:text||'%' or nomsociete ilike '%'||:text||'%' or numeroserie ilike '%'||:text||'%') and idregion = :region order by dateorder desc", nativeQuery = true)
+  @Query(value = "Select * from ordermission where (status_validation = 0 or status_validation = 10) and (context ilike '%'||:text||'%' or motifs ilike '%'||:text||'%' or nomsociete ilike '%'||:text||'%' or numeroserie ilike '%'||:text||'%') and idregion = :region order by dateorder desc", nativeQuery = true)
   Page<Ordermission> getOrdermissionNovaliderForDrDt(@Param("region") int id, String text, Pageable page);
 
   @Query(value = "Select * from ordermission where idregion = :region and status_validation = 100 and extract(year from dateorder) = :year order by dateorder desc", nativeQuery = true)
