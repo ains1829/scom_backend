@@ -29,16 +29,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.nio.file.Path;
-// import org.docx4j.Docx4J;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-// import java.io.OutputStream;
-// import org.docx4j.convert.out.FOSettings;
 import org.docx4j.convert.out.pdf.PdfConversion;
 import org.docx4j.convert.out.pdf.viaXSLFO.Conversion;
 import org.docx4j.convert.out.pdf.viaXSLFO.PdfSettings;
@@ -48,7 +44,6 @@ public class GenerateOM {
   @Autowired
   private DetailequipeService servicedetailequipe;
 
-  @SuppressWarnings("deprecation")
   public String Ordermission(Ordermission ordermission) throws Exception {
     String src = "src/main/resources/static/doc/Modelfinal.docx";
     String rendre = "";
@@ -136,28 +131,29 @@ public class GenerateOM {
     }
     File fileDocx = new File(dest);
     if (fileDocx.exists()) {
-      try (
-          InputStream templateInputStream = new FileInputStream(dest);
-          FileOutputStream os = new FileOutputStream(outputPdfPath)) {
-        WordprocessingMLPackage wordMLPackage = WordprocessingMLPackage.load(templateInputStream);
-        PdfSettings pdfSettings = new PdfSettings();
-        PdfConversion pdfConversion = new Conversion(wordMLPackage);
-        pdfConversion.output(os, pdfSettings);
-        os.flush();
-        os.close();
-        // FOSettings foSettings = Docx4J.createFOSettings();
-        // foSettings.setWmlPackage(wordMLPackage);
-        // foSettings.setApacheFopMime("application/pdf");
-        // Docx4J.toFO(foSettings, os, Docx4J.FLAG_EXPORT_PREFER_XSL);
-        return ordermission.getNumeroserie() + ".pdf";
-      } catch (IOException | Docx4JException e) {
-        e.printStackTrace();
-      }
+      generatePdf(dest, outputPdfPath);
+      return ordermission.getNumeroserie() + ".pdf";
 
     } else {
       System.err.println("Le fichier DOCX n'a pas été créé : " + dest);
     }
     return ordermission.getNumeroserie() + ".pdf";
+  }
+
+  @SuppressWarnings("deprecation")
+  private void generatePdf(String file_docx, String outputPdfPath) {
+    try (
+        InputStream templateInputStream = new FileInputStream(file_docx);
+        FileOutputStream os = new FileOutputStream(outputPdfPath)) {
+      WordprocessingMLPackage wordMLPackage = WordprocessingMLPackage.load(templateInputStream);
+      PdfSettings pdfSettings = new PdfSettings();
+      PdfConversion pdfConversion = new Conversion(wordMLPackage);
+      pdfConversion.output(os, pdfSettings);
+      os.flush();
+      os.close();
+    } catch (IOException | Docx4JException e) {
+      e.printStackTrace();
+    }
   }
 
   private void generateQRCodeImage(String text, int width, int height, String filePath)
@@ -166,7 +162,6 @@ public class GenerateOM {
     Map<EncodeHintType, Object> hints = new HashMap<>();
     hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
     BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height, hints);
-
     Path path = FileSystems.getDefault().getPath(filePath);
     MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
   }
