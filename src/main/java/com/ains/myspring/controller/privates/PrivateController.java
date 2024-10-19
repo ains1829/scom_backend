@@ -25,12 +25,14 @@ import com.ains.myspring.models.jsontoclass.JsonSociete;
 import com.ains.myspring.models.jsontoclass.JsonSocieteModify;
 import com.ains.myspring.models.jsontoclass.equipe.Jsonequipe;
 import com.ains.myspring.models.modules.Societe;
+import com.ains.myspring.models.modules.mission.Collecte;
 import com.ains.myspring.models.modules.signal.Signal;
 import com.ains.myspring.services.admin.AccountService;
 import com.ains.myspring.services.admin.AdministrationService;
 import com.ains.myspring.services.modules.SocieteService;
 import com.ains.myspring.services.modules.equipe.EquipeService;
 import com.ains.myspring.services.modules.lieu.DistrictService;
+import com.ains.myspring.services.modules.mission.CollecteService;
 import com.ains.myspring.services.modules.signal.SignalService;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -52,12 +54,47 @@ public class PrivateController {
   private Token token_email;
   @Autowired
   private SignalService _serviceSignal;
+  @Autowired
+  private CollecteService _serviceCollecte;
 
   @PreAuthorize("hasRole('DR') or hasRole('DT') or hasRole('CHEF_EQUIPE') or hasRole('SG') or hasRole('DSI') or hasRole('DG')")
   @GetMapping("/getrole")
   public ResponseEntity<?> getRole() {
     try {
       return ResponseEntity.ok(new ReturnMap(200, token_email.getRole()));
+    } catch (Exception e) {
+      return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
+    }
+  }
+
+  @PreAuthorize("hasRole('DSI')")
+  @GetMapping("/validate_resultatcollecte")
+  public ResponseEntity<?> ValidateCollecte(@RequestParam("validate") boolean validate,
+      @RequestParam("idcollecte") int idcollecte) {
+    try {
+      _serviceCollecte.ValidateCollecte(validate, idcollecte);
+      if (validate == true) {
+        return ResponseEntity.ok(new ReturnMap(200, "valider"));
+      } else {
+        return ResponseEntity.ok(new ReturnMap(200, "rejeter"));
+      }
+    } catch (Exception e) {
+      return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
+    }
+  }
+
+  @PreAuthorize("hasRole('DSI')")
+  @GetMapping("/gestion_collecte")
+  public ResponseEntity<?> getCollecte(@RequestParam("page") int page) {
+    try {
+      HashMap<String, Object> mapping = new HashMap<>();
+      Page<Collecte> collecte = _serviceCollecte.getCollecteToValidate(page);
+      mapping.put("hasnext", collecte.hasNext());
+      mapping.put("hasprevious", collecte.hasPrevious());
+      mapping.put("data", collecte.getContent());
+      mapping.put("nombrepage", collecte.getTotalPages());
+      mapping.put("page", page);
+      return ResponseEntity.ok(new ReturnMap(200, mapping));
     } catch (Exception e) {
       return ResponseEntity.ok(new ReturnMap(500, e.getMessage()));
     }

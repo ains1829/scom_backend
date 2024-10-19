@@ -133,7 +133,6 @@ public class GenerateOM {
     if (fileDocx.exists()) {
       generatePdf(dest, outputPdfPath);
       return ordermission.getNumeroserie() + ".pdf";
-
     } else {
       System.err.println("Le fichier DOCX n'a pas été créé : " + dest);
     }

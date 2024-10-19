@@ -20,6 +20,7 @@ public class Collecte {
   int iddistrict;
   int statu;
   Date datecollecte;
+  Date datevalidate_collecte;
 
   public Collecte() {
   }
@@ -69,5 +70,13 @@ public class Collecte {
 
   public void setOrdermission(Ordermission ordermission) {
     this.ordermission = ordermission;
+  }
+
+  public Date getDatevalidate_collecte() {
+    return datevalidate_collecte;
+  }
+
+  public void setDatevalidate_collecte(Date datevalidate_collecte) {
+    this.datevalidate_collecte = datevalidate_collecte;
   }
 }

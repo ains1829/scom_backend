@@ -113,12 +113,11 @@
 		<artifactId>docx4j</artifactId>
 		<version>6.1.2</version>
 	</dependency>
-<dependency>
+		<dependency>
         <groupId>org.docx4j</groupId>
         <artifactId>docx4j-export-fo</artifactId>
         <version>6.1.0</version> <!-- Utilisez la même version que ci-dessus -->
     </dependency>
-
 	<dependency>
 		<groupId>javax.xml.bind</groupId>
 		<artifactId>jaxb-api</artifactId>
