@@ -228,7 +228,7 @@ public class MissionController {
   @PreAuthorize("hasRole('DR') or hasRole('DT')")
   @GetMapping("/suivi_mission_sender")
   public ResponseEntity<?> Suivi_missionDrDt(@RequestParam(name = "page", defaultValue = "0") int pagenumber,
-      @RequestParam("annee") int annee, @RequestParam("filter") int filter) {
+      @RequestParam("annee") int annee, @RequestParam("filter") int filter, @RequestParam("ref") String ref) {
     Optional<Administration> administration = _serviceAdministration
         .getAdministrationByEmail(tokenemail.getEmailUserByToken());
     try {
@@ -236,13 +236,13 @@ public class MissionController {
       Page<Ordermission> ordermission = null;
       if (filter == 0) {
         ordermission = _serviceOrdre.getMissionAllByDrDt(administration.get().getRegion().getIdregion(), annee,
-            pagenumber);
+            ref, pagenumber);
       } else if (filter == 1) {
         ordermission = _serviceOrdre.getMissionFinishByDrDt(administration.get().getRegion().getIdregion(), annee,
-            pagenumber);
+            ref, pagenumber);
       } else {
         ordermission = _serviceOrdre.getMissionNotFinishByDrDt(administration.get().getRegion().getIdregion(), annee,
-            pagenumber);
+            ref, pagenumber);
       }
       mapping.put("hasnext", ordermission.hasNext());
       mapping.put("hasprevious", ordermission.hasPrevious());

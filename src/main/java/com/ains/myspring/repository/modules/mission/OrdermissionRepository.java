@@ -41,17 +41,17 @@ public interface OrdermissionRepository extends JpaRepository<Ordermission, Inte
   @Query(value = "Select * from ordermission where (status_validation = 0 or status_validation = 10) and (context ilike '%'||:text||'%' or motifs ilike '%'||:text||'%' or nomsociete ilike '%'||:text||'%' or numeroserie ilike '%'||:text||'%') and idregion = :region order by dateorder desc", nativeQuery = true)
   Page<Ordermission> getOrdermissionNovaliderForDrDt(@Param("region") int id, String text, Pageable page);
 
-  @Query(value = "Select * from ordermission where idregion = :region and status_validation = 100 and extract(year from dateorder) = :year order by dateorder desc", nativeQuery = true)
-  Page<Ordermission> getMissionAllByDrDt(@Param("region") int id, int year, Pageable page);
+  @Query(value = "Select * from ordermission where idregion = :region and status_validation = 100 and extract(year from dateorder) = :year and numeroserie ilike '%'||:text||'%'  order by dateorder desc", nativeQuery = true)
+  Page<Ordermission> getMissionAllByDrDt(@Param("region") int id, int year, String text, Pageable page);
 
   @Query(value = "Select * from ordermission where idregion = :region and status_validation = 100 and extract(year from dateorder) = :year order by dateorder desc", nativeQuery = true)
   List<Ordermission> getMissionAllCalendarByDrDt(@Param("region") int id, int year);
 
-  @Query(value = "Select * from ordermission where idregion = :region and status_validation = 100 and extract(year from dateorder) = :year and dateorderend is not null order by dateorder desc", nativeQuery = true)
-  Page<Ordermission> getMissionFinishByDrDt(@Param("region") int id, int year, Pageable page);
+  @Query(value = "Select * from ordermission where idregion = :region and status_validation = 100 and extract(year from dateorder) = :year and dateorderend is not null and numeroserie ilike '%'||:text||'%'  order by dateorder desc", nativeQuery = true)
+  Page<Ordermission> getMissionFinishByDrDt(@Param("region") int id, int year, String text, Pageable page);
 
-  @Query(value = "Select * from ordermission where idregion = :region and status_validation = 100 and extract(year from dateorder) = :year and dateorderend is null order by dateorder desc", nativeQuery = true)
-  Page<Ordermission> getMissionNotFinishByDrDt(@Param("region") int id, int year, Pageable page);
+  @Query(value = "Select * from ordermission where idregion = :region and status_validation = 100 and extract(year from dateorder) = :year and dateorderend is null and numeroserie ilike '%'||:text||'%' order by dateorder desc", nativeQuery = true)
+  Page<Ordermission> getMissionNotFinishByDrDt(@Param("region") int id, int year, String text, Pageable page);
 
   @Query(value = "Select * from ordermission where idequipe = :equipe and status_validation = 100 order by dateorder desc", nativeQuery = true)
   Page<Ordermission> getOrdermissionAllByEquipe(int equipe, Pageable pageable);

@@ -75,7 +75,7 @@ public class PrivateController {
       _serviceCollecte.ValidateCollecte(validate, idcollecte);
       if (validate == true) {
         return ResponseEntity.ok(new ReturnMap(200, "valider"));
-      } else {
+      } else {  
         return ResponseEntity.ok(new ReturnMap(200, "rejeter"));
       }
     } catch (Exception e) {

@@ -295,22 +295,22 @@ public class OrdermissionService {
     return _contextOrder.getOrdermissionAllByDrDt(text, idregion, page);
   }
 
-  public Page<Ordermission> getMissionAllByDrDt(int idregion, int year, int pagenumber) {
+  public Page<Ordermission> getMissionAllByDrDt(int idregion, int year, String ref, int pagenumber) {
     int size = 20;
     Pageable page = PageRequest.of(pagenumber, size);
-    return _contextOrder.getMissionAllByDrDt(idregion, year, page);
+    return _contextOrder.getMissionAllByDrDt(idregion, year, ref, page);
   }
 
-  public Page<Ordermission> getMissionFinishByDrDt(int idregion, int year, int pagenumber) {
+  public Page<Ordermission> getMissionFinishByDrDt(int idregion, int year, String ref, int pagenumber) {
     int size = 20;
     Pageable page = PageRequest.of(pagenumber, size);
-    return _contextOrder.getMissionFinishByDrDt(idregion, year, page);
+    return _contextOrder.getMissionFinishByDrDt(idregion, year, ref, page);
   }
 
-  public Page<Ordermission> getMissionNotFinishByDrDt(int idregion, int year, int pagenumber) {
+  public Page<Ordermission> getMissionNotFinishByDrDt(int idregion, int year, String ref, int pagenumber) {
     int size = 20;
     Pageable page = PageRequest.of(pagenumber, size);
-    return _contextOrder.getMissionNotFinishByDrDt(idregion, year, page);
+    return _contextOrder.getMissionNotFinishByDrDt(idregion, year, ref, page);
   }
 
   public List<Ordermission> getOrdermissionCalendar(int idregion, int year) {

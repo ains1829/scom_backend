@@ -1,5 +1,6 @@
 package com.ains.myspring.repository.notentity;
 
+import java.sql.Date;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -40,11 +41,12 @@ public class EnqueteStatRepository {
 
   @SuppressWarnings("deprecation")
   public List<SocieteOm> getRefSociete(int societe) {
-    String sql = "select ordermission.idordermission , ordermission.numeroserie from enquete join ordermission on (enquete.idordermission = ordermission.idordermission)  where enquete.idsociete = ?";
+    String sql = "select ordermission.idordermission , ordermission.numeroserie , ordermission.dateorder from enquete join ordermission on (enquete.idordermission = ordermission.idordermission)  where enquete.idsociete = ?";
     return jdbcTemplate.query(sql, new Object[] { societe }, (rs, rowNum) -> {
       SocieteOm ref_om = new SocieteOm();
       ref_om.setIdorderdemission(rs.getInt("idordermission"));
       ref_om.setNumeroserie(rs.getString("numeroserie"));
+      ref_om.setDate_om(Date.valueOf(rs.getString("dateorder")));
       return ref_om;
     });
   }
